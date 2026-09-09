@@ -38,6 +38,8 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
+  private static boolean tty = false;
+
   public static void main(String args[]) {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-system.log", true);
     JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
@@ -47,12 +49,17 @@ public class Startup  implements ShellProcessListener {
     user = System.getenv("USER");
     Linux.init();
     load_config();
+    if (tty) {
+      int sid = LinuxAPI.getInstance().getSID();
+      JFLog.log("old sid=" + sid);
+      LinuxAPI.getInstance().setSID();
+      sid = LinuxAPI.getInstance().getSID();
+      JFLog.log("new sid=" + sid);
+    }
     LinuxAPI.getInstance().ttySetActiveVT(8);
-    int sid = LinuxAPI.getInstance().getSID();
-    JFLog.log("old sid=" + sid);
-    LinuxAPI.getInstance().setSID();
-    sid = LinuxAPI.getInstance().getSID();
-    JFLog.log("new sid=" + sid);
+    if (tty) {
+      LinuxAPI.getInstance().ttyTakeOwnership();
+    }
     try {
       if (!is_wayland) {
         /* Setup X11 display */
@@ -132,7 +139,7 @@ public class Startup  implements ShellProcessListener {
     ShellProcess sp = new ShellProcess();
     sp.keepOutput(true);
     String loginctl = sp.run(new String[] {"/usr/bin/loginctl"}, true);
-    JFLog.log(loginctl);
+    JFLog.log("loginctl:\n" + loginctl);
   }
 
   private static void start() throws Exception {

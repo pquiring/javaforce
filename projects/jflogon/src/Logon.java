@@ -425,6 +425,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         "/usr/bin/systemd-run",
         "--property=User=" + uid,
         "--property=Group=" + gid,
+        "--property=TTYPath=/dev/tty8",
+        "--property=WorkingDirectory=/home/" + user,
         "--property=PAMName=javaforce",
         "--property=EnvironmentFile=" + envfile,
         "/usr/bin/dbus-run-session",

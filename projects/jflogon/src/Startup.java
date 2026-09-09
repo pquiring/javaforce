@@ -161,7 +161,7 @@ public class Startup implements ShellProcessListener {
     ShellProcess sp = new ShellProcess();
     sp.keepOutput(true);
     String loginctl = sp.run(new String[] {"/usr/bin/loginctl"}, true);
-    JFLog.log(loginctl);
+    JFLog.log("loginctl:\n" + loginctl);
   }
 
   private static void wait_wayland_socket_opened() {
