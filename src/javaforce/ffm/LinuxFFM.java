@@ -66,6 +66,9 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle getGID;
   public int getGID() { try { int _ret_value_ = (int)getGID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle getSID;
+  public int getSID() { try { int _ret_value_ = (int)getSID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle getUID;
   public int getUID() { try { int _ret_value_ = (int)getUID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -80,6 +83,9 @@ public class LinuxFFM implements LinuxAPI {
 
   private MethodHandle setGID;
   public int setGID(int a1) { try { int _ret_value_ = (int)setGID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle setSID;
+  public int setSID() { try { int _ret_value_ = (int)setSID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle setUID;
   public int setUID(int a1) { try { int _ret_value_ = (int)setUID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -168,11 +174,13 @@ public class LinuxFFM implements LinuxAPI {
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
     fileGetMode = ffm.getFunctionPtr("_fileGetMode", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
     getGID = ffm.getFunctionPtr("_getGID", ffm.getFunctionDesciptor(JAVA_INT));
+    getSID = ffm.getFunctionPtr("_getSID", ffm.getFunctionDesciptor(JAVA_INT));
     getUID = ffm.getFunctionPtr("_getUID", ffm.getFunctionDesciptor(JAVA_INT));
     geteGID = ffm.getFunctionPtr("_geteGID", ffm.getFunctionDesciptor(JAVA_INT));
     geteUID = ffm.getFunctionPtr("_geteUID", ffm.getFunctionDesciptor(JAVA_INT));
     ptyRead = ffm.getFunctionPtr("_ptyRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
     setGID = ffm.getFunctionPtr("_setGID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
+    setSID = ffm.getFunctionPtr("_setSID", ffm.getFunctionDesciptor(JAVA_INT));
     setUID = ffm.getFunctionPtr("_setUID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
     getConsolePos = ffm.getFunctionPtr("_getConsolePos", ffm.getFunctionDesciptorVoid());
     getConsoleSize = ffm.getFunctionPtr("_getConsoleSize", ffm.getFunctionDesciptorVoid());

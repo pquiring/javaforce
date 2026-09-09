@@ -232,6 +232,16 @@ jint setGID(int gid)
   return setgid(gid);
 }
 
+jint getSID()
+{
+  return getsid(0);
+}
+
+jint setSID()
+{
+  return setsid();
+}
+
 JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
   void* lib = dlopen("libjvm.so", RTLD_NOW | RTLD_GLOBAL);
   if (lib == NULL) {
@@ -257,6 +267,8 @@ extern "C" {
   JNIEXPORT jint (*_geteGID)() = & geteGID;
   JNIEXPORT jint (*_setUID)(int) = & setUID;
   JNIEXPORT jint (*_setGID)(int) = & setGID;
+  JNIEXPORT jint (*_getSID)() = & getSID;
+  JNIEXPORT jint (*_setSID)() = & setSID;
 
   JNIEXPORT jboolean JNICALL LinuxAPIinit(const char* libpam_so, const char* libncurses_so) {
     isWayland = getenv("WAYLAND_DISPLAY") != NULL;
