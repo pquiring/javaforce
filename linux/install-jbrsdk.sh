@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=25.04
+VERSION=25.0.4
 FILE=jbrsdk-25.0.4.1-linux-x64-b583.48.tar.gz
 
 cd /opt
