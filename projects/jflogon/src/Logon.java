@@ -443,11 +443,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("XDG_SEAT", "seat0");
       if (is_wayland) {
         env.remove("WAYLAND_DISPLAY");  //inherited from parent
-        if (is_nested) {
-          env.put("XDG_VTNR", "8");
-        } else {
-          env.put("XDG_VTNR", "7");
-        }
+        env.put("XDG_VTNR", "8");
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
@@ -467,9 +463,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         dispose();
         if (!is_nested) {
           stop();
-          LinuxAPI.getInstance().ttyReleaseOwnership();
-        } else {
-          LinuxAPI.getInstance().ttySetActiveVT(8);
         }
       }
       try {
@@ -485,12 +478,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JF.sleep(1500);  //wait for windows to close
       if (is_wayland) {
         if (!is_nested) {
-          LinuxAPI.getInstance().ttyTakeOwnership();
+          LinuxAPI.getInstance().ttyFreeVT(8);
           start();
           new Logon().setVisible(true);
-        } else {
-          LinuxAPI.getInstance().ttySetActiveVT(7);
-          LinuxAPI.getInstance().ttyFreeVT(8);
         }
       } else {
         Linux.x11_rr_reset("800x600");
