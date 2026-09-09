@@ -162,7 +162,7 @@
     </jar>
   </target>
 
-  <target name="jar" depends="depjars,compile,icons,utils" unless="fast-build" description="build jar file">
+  <target name="jar" depends="depjars,compile,icons,utils" if="have-jfexec" unless="fast-build" description="build jar file">
     <!-- Build jar file from class files -->
     <java classpath="${home}/utils.jar" classname="javaforce.utils.GenMeta" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="src/javaforce/vk"/>
@@ -253,7 +253,7 @@
     <exec command="glslang -V src/javaforce/vk/glsl/testvk-frag.frag -o ${build}/javaforce/vk/glsl/testvk-frag.spv"/>
   </target>
 
-  <target name="genffm" depends="utils" description="generate FFM sources">
+  <target name="genffm" depends="utils" if="have-jfexec" description="generate FFM sources">
     <java classpath="${home}/utils.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="javaforce.gl.GL"/>
       <arg value="src/javaforce/ffm/GLFFM.java"/>
@@ -387,7 +387,6 @@
       <arg value="PipesAPI"/>
     </java>
   </target>
-
 
   <target name="clean" description="deletes compiled files">
     <delete>
