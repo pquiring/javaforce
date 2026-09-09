@@ -86,4 +86,6 @@ public interface LinuxAPI {
   //tty
   public boolean ttySetActiveVT(int number);
   public boolean ttyFreeVT(int number);
+  public boolean ttyTakeOwnership();
+  public boolean ttyReleaseOwnership();
 }

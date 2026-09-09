@@ -42,7 +42,37 @@ jboolean ttyFreeVT(int number) {
   return JNI_TRUE;
 }
 
+jboolean ttyTakeOwnership() {
+  int fd = open(CONSOLE, O_RDONLY | O_NOCTTY, 0);
+  if (fd < 0) {
+    printf("ttyTakeOwnership:open(tty) failed\n");
+    return JNI_FALSE;
+  }
+  if (ioctl(fd, TIOCSCTTY, 0) < 0) {
+    printf("ttyTakeOwnership:ioctl(TIOCSCTTY) failed\n");
+    return JNI_FALSE;
+  }
+  close(fd);
+  return JNI_TRUE;
+}
+
+jboolean ttyReleaseOwnership() {
+  int fd = open(CONSOLE, O_RDONLY | O_NOCTTY, 0);
+  if (fd < 0) {
+    printf("ttyReleaseOwnership:open(tty) failed\n");
+    return JNI_FALSE;
+  }
+  if (ioctl(fd, TIOCNOTTY) < 0) {
+    printf("ttyReleaseOwnership:ioctl(TIOCNOTTY) failed\n");
+    return JNI_FALSE;
+  }
+  close(fd);
+  return JNI_TRUE;
+}
+
 extern "C" {
   JNIEXPORT jboolean (*_ttySetActiveVT)(int) = &ttySetActiveVT;
   JNIEXPORT jboolean (*_ttyFreeVT)(int) = &ttyFreeVT;
+  JNIEXPORT jboolean (*_ttyTakeOwnership)() = &ttyTakeOwnership;
+  JNIEXPORT jboolean (*_ttyReleaseOwnership)() = &ttyReleaseOwnership;
 }

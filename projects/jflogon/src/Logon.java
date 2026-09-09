@@ -467,6 +467,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         dispose();
         if (!is_nested) {
           stop();
+          LinuxAPI.getInstance().ttyReleaseOwnership();
         } else {
           LinuxAPI.getInstance().ttySetActiveVT(8);
         }
@@ -484,6 +485,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JF.sleep(1500);  //wait for windows to close
       if (is_wayland) {
         if (!is_nested) {
+          LinuxAPI.getInstance().ttyTakeOwnership();
           start();
           new Logon().setVisible(true);
         } else {

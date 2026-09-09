@@ -54,8 +54,14 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle ttyFreeVT;
   public boolean ttyFreeVT(int a1) { try { boolean _ret_value_ = (boolean)ttyFreeVT.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle ttyReleaseOwnership;
+  public boolean ttyReleaseOwnership() { try { boolean _ret_value_ = (boolean)ttyReleaseOwnership.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle ttySetActiveVT;
   public boolean ttySetActiveVT(int a1) { try { boolean _ret_value_ = (boolean)ttySetActiveVT.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle ttyTakeOwnership;
+  public boolean ttyTakeOwnership() { try { boolean _ret_value_ = (boolean)ttyTakeOwnership.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle readConsole;
   public char readConsole() { try { char _ret_value_ = (char)readConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return (char)-1;} }
@@ -170,7 +176,9 @@ public class LinuxFFM implements LinuxAPI {
     pamSetItem = ffm.getFunctionPtr("_pamSetItem", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,ADDRESS));
     peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     ttyFreeVT = ffm.getFunctionPtr("_ttyFreeVT", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
+    ttyReleaseOwnership = ffm.getFunctionPtr("_ttyReleaseOwnership", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     ttySetActiveVT = ffm.getFunctionPtr("_ttySetActiveVT", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
+    ttyTakeOwnership = ffm.getFunctionPtr("_ttyTakeOwnership", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
     fileGetMode = ffm.getFunctionPtr("_fileGetMode", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
     getGID = ffm.getFunctionPtr("_getGID", ffm.getFunctionDesciptor(JAVA_INT));

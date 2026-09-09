@@ -47,6 +47,12 @@ public class Startup  implements ShellProcessListener {
     user = System.getenv("USER");
     Linux.init();
     load_config();
+    int sid = LinuxAPI.getInstance().getSID();
+    JFLog.log("old sid=" + sid);
+    LinuxAPI.getInstance().setSID();
+    sid = LinuxAPI.getInstance().getSID();
+    JFLog.log("new sid=" + sid);
+    LinuxAPI.getInstance().ttyTakeOwnership();
     try {
       if (!is_wayland) {
         /* Setup X11 display */
