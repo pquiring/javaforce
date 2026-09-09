@@ -466,6 +466,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         if (!is_nested) {
           stop();
         }
+        LinuxAPI.getInstance().ttySetActiveVT(8);
       }
       try {
         Process p = pb.start();
@@ -479,8 +480,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
       if (is_wayland) {
+        LinuxAPI.getInstance().ttySetActiveVT(7);
+        LinuxAPI.getInstance().ttyFreeVT(8);
         if (!is_nested) {
-          LinuxAPI.getInstance().ttyFreeVT(8);
           start();
           new Logon().setVisible(true);
         }

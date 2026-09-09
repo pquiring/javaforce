@@ -55,9 +55,6 @@ public class Startup  implements ShellProcessListener {
       LinuxAPI.getInstance().setSID();
       sid = LinuxAPI.getInstance().getSID();
       JFLog.log("new sid=" + sid);
-    }
-    LinuxAPI.getInstance().ttySetActiveVT(8);
-    if (tty) {
       LinuxAPI.getInstance().ttyTakeOwnership();
     }
     try {
