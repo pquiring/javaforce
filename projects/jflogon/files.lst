@@ -1,6 +1,5 @@
 /usr/bin/jflogon
 /usr/bin/jflogon-ui
-/usr/bin/jffork
 /usr/share/java/jflogon.jar
 /usr/lib/systemd/system/jflogon.service
 /etc/jflogon/labwc-rc.xml

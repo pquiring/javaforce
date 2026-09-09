@@ -7,8 +7,8 @@ After=systemd-user-sessions.service
 ExecStart=/usr/bin/jflogon
 ExecStop=/usr/bin/jflogon --stop
 Restart=always
-PAMName=login
-TTYPath=/dev/tty1
+PAMName=javaforce
+TTYPath=/dev/tty7
 TTYReset=yes
 WorkingDirectory=/root
 StandardOutput=tty
@@ -17,4 +17,3 @@ StandardError=journal
 
 [Install]
 Alias=display-manager.service
-

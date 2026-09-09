@@ -389,8 +389,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  private static boolean jflogon_session = false;
-
   public void runSession(String session) {
     try {
       setState(false);
@@ -422,22 +420,16 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       Linux.chown(xdg_runtime_dir, user);
       String envfile = xdg_runtime_dir + "/environ";
       String cmd[] = null;
-      if (jflogon_session) {
-        cmd = new String[] {
-          "/usr/bin/jflogon-session",
-        };
-      } else {
-        //NOTE : can not use --scope here (does not support PAMName) so must pass environment thru a file
-        cmd = new String[] {
-          "/usr/bin/systemd-run",
-          "--property=User=" + uid,
-          "--property=Group=" + gid,
-          "--property=PAMName=javaforce",
-          "--property=EnvironmentFile=" + envfile,
-          "/usr/bin/dbus-run-session",
-          session
-        };
-      }
+      //NOTE : can not use --scope here (does not support PAMName) so must pass environment thru a file
+      cmd = new String[] {
+        "/usr/bin/systemd-run",
+        "--property=User=" + uid,
+        "--property=Group=" + gid,
+        "--property=PAMName=javaforce",
+        "--property=EnvironmentFile=" + envfile,
+        "/usr/bin/dbus-run-session",
+        session
+      };
       ProcessBuilder pb = new ProcessBuilder(cmd);
       Map<String,String> env = pb.environment();
       env.put("USER", user);
@@ -481,34 +473,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
       try {
         Process p = pb.start();
-        if (jflogon_session) {
-          if (debug) JFLog.log("Writing creds to child session");
-          OutputStream stdin = p.getOutputStream();
-          BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
-          InputStream stdout = p.getInputStream();
-          BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
-          bw.write(user + "\n");
-          bw.write(pass + "\n");
-          bw.write(LinuxAPI.pamGetBackend() + "\n");
-          bw.flush();
-          if (debug) JFLog.log("Reading result from child session");
-          String res = br.readLine();
-          if (debug) JFLog.log("child session result=" + res);
-          if (res.startsWith("ERROR:")) {
-            showError(res.substring(6));
-            setState(true);
-            return;
-          } else if (res.startsWith("SUCCESS:")) {
-            bw.write(uid + "\n");
-            bw.write(gid + "\n");
-            bw.write(session + "\n");
-            bw.flush();
-          } else {
-            showError(res);
-            setState(true);
-            return;
-          }
-        }
         p.waitFor();
       } catch (Throwable t2) {
         JFLog.log(t2);
