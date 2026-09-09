@@ -122,9 +122,17 @@ public class Startup  implements ShellProcessListener {
     JF.sleep(1000);
   }
 
+  private static void loginctl() {
+    ShellProcess sp = new ShellProcess();
+    sp.keepOutput(true);
+    String loginctl = sp.run(new String[] {"/usr/bin/loginctl"}, true);
+    JFLog.log(loginctl);
+  }
+
   private static void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
     int uid = LinuxAPI.getInstance().getUID();
+    loginctl();
     switch (window_mgr) {
       case "openbox":
         config_openbox();
