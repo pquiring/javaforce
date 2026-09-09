@@ -33,9 +33,17 @@ public class Session {
         public void run() {
           try {
             JFLog.log("Creating Dock");
-            new Dock().setVisible(true);
+            try {
+              new Dock().setVisible(true);
+            } catch (Throwable t1) {
+              JFLog.log(t1);
+            }
             JFLog.log("Creating Desktop");
-            new Desktop().setVisible(true);
+            try {
+              new Desktop().setVisible(true);
+            } catch (Throwable t2) {
+              JFLog.log(t2);
+            }
           } catch (Throwable t) {
             JFLog.log(t);
           }
