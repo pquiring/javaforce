@@ -6,7 +6,6 @@ FILE=jbrsdk-25.0.4.1-linux-x64-b583.48.tar.gz
 cd /opt
 
 wget https://cache-redirector.jetbrains.com/intellij-jbr/$FILE
-cd jbrsdk-$VERSION-amd64
 tar xf $FILE
 mv jbrsdk-25.0.4.1-linux-x64-b583.48 jbrsdk-$VERSION-amd64
 
