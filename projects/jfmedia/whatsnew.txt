@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Sept 9, 2026 : v0.32 released
+  - new : added Camera Source
+
 Jul 7, 2026 : v0.31 released
   - fix : Media Framework fixes
 
