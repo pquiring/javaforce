@@ -179,32 +179,81 @@ public class Startup implements ShellProcessListener {
     JFLog.log("Starting Display Manager:" + display_mgr);
     if (debug) loginctl();
     boolean res = false;
+    String xdg_runtime_dir = "/run/user/0";
+    String envfile = xdg_runtime_dir + "/environ";
     switch (display_mgr) {
       case "X":
         config_X();
-        res = start(new String[] {"/usr/bin/X"}, null);
+        res = start(
+          new String[] {
+            "/usr/bin/X"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/0",
+            "XDG_VTNR=7"
+          },
+          false
+        );
         break;
       case "weston":
         config_weston();
         res = start(
-          new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--property=TTYPath=/dev/tty7",
+            "--property=WorkingDirectory=/root",
+            "--property=PAMName=javaforce",
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/weston",
+            "--modules",
+            "jf-desktop-shell.so"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/0",
+            "XDG_VTNR=7"
+          },
+          true
         );
         wait_wayland_socket_opened();
         break;
       case "labwc":
         config_labwc();
         res = start(
-          new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/labwc"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--property=TTYPath=/dev/tty7",
+            "--property=WorkingDirectory=/root",
+            "--property=PAMName=javaforce",
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/labwc"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/0",
+            "XDG_VTNR=7"
+          },
+          true
         );
         wait_wayland_socket_opened();
         break;
       case "sway":
         config_sway();
         res = start(
-          new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/sway"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--property=TTYPath=/dev/tty7",
+            "--property=WorkingDirectory=/root",
+            "--property=PAMName=javaforce",
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/sway"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/0",
+            "XDG_VTNR=7"
+          },
+          true
         );
         wait_wayland_socket_opened();
         break;
@@ -216,23 +265,36 @@ public class Startup implements ShellProcessListener {
     return res;
   }
 
-  private static boolean start(String[] cmds, String[] envs) throws Exception {
+  private static boolean start(String[] cmds, String[] envs, boolean use_envfile) {
     if (display_mgr_process != null) return false;
     new Thread() {
       public void run() {
-        display_mgr_process = new ShellProcess();
-        display_mgr_process.keepOutput(false);
-        display_mgr_process.addListener(new Startup());
-        if (envs != null) {
-          for(String e : envs) {
-            int idx = e.indexOf('=');
-            if (idx == -1) continue;
-            String name = e.substring(0, idx);
-            String value = e.substring(idx + 1);
-            display_mgr_process.addEnvironmentVariable(name, value);
+        try {
+          display_mgr_process = new ShellProcess();
+          display_mgr_process.keepOutput(false);
+          display_mgr_process.addListener(new Startup());
+          if (envs != null) {
+            if (use_envfile) {
+              FileOutputStream fos = new FileOutputStream("/run/user/0/environ");
+              for(String e : envs) {
+                byte[] ln = (e + "\n").getBytes();
+                fos.write(ln);
+              }
+              fos.close();
+            } else {
+              for(String e : envs) {
+                int idx = e.indexOf('=');
+                if (idx == -1) continue;
+                String name = e.substring(0, idx);
+                String value = e.substring(idx + 1);
+                display_mgr_process.addEnvironmentVariable(name, value);
+              }
+            }
           }
+          display_mgr_process.run(cmds, true);
+        } catch (Exception e) {
+          JFLog.log(e);
         }
-        display_mgr_process.run(cmds, true);
       }
     }.start();
     return true;

@@ -420,7 +420,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       Linux.chown(xdg_runtime_dir, user);
       String envfile = xdg_runtime_dir + "/environ";
       String cmd[] = null;
-      //NOTE : can not use --scope here (does not support PAMName) so must pass environment thru a file
       cmd = new String[] {
         "/usr/bin/systemd-run",
         "--wait",
