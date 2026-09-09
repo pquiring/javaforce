@@ -1,5 +1,11 @@
 what's new in native API (since 113.0)
 
+118.0
+  - windows : camera : fixed issues
+  - linux : camera : impl listModes()
+  - linux : added more tty and uid,gid,sid functions
+  - media : fixed decoder getCodecInfo()
+
 117.0
   - more Vulkan support
 

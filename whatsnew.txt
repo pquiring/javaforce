@@ -1,5 +1,17 @@
 What's new...
 
+Sept 9/2026 : JF/118.0
+  - new : jfLinux now supports Wayland graphics
+    - requires the JetBrains Runtime (fork of OpenJDK with Wakefield implementation)
+    - currently very unstable - it will crash even if you just look at it
+    - see linux/readme.txt for more info
+  - new : jfMedia/0.32
+    - added support to play camera
+  - Camera
+    - Windows : fixed issues
+    - Linux : impl listModes()
+  - fix : media : fixed getCodecInfo()
+
 Aug 28/2026 : JF/117.0
   - new : more Vulkan support (Vulkan tutorial completed)
   - fix : WebUIServer : createServlet() only uses zero arg ctor
