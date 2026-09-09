@@ -187,7 +187,7 @@ public class Startup implements ShellProcessListener {
       case "weston":
         config_weston();
         res = start(
-          new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
+          new String[] {"/usr/bin/systemd-run", "--wait", "--scope", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
         wait_wayland_socket_opened();
@@ -195,7 +195,7 @@ public class Startup implements ShellProcessListener {
       case "labwc":
         config_labwc();
         res = start(
-          new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/labwc"},
+          new String[] {"/usr/bin/systemd-run", "--wait", "--scope", "/usr/bin/labwc"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
         wait_wayland_socket_opened();
@@ -203,7 +203,7 @@ public class Startup implements ShellProcessListener {
       case "sway":
         config_sway();
         res = start(
-          new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/sway"},
+          new String[] {"/usr/bin/systemd-run", "--wait", "--scope", "/usr/bin/sway"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
         wait_wayland_socket_opened();

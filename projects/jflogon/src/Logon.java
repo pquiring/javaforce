@@ -423,6 +423,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       //NOTE : can not use --scope here (does not support PAMName) so must pass environment thru a file
       cmd = new String[] {
         "/usr/bin/systemd-run",
+        "--wait",
         "--property=User=" + uid,
         "--property=Group=" + gid,
         "--property=TTYPath=/dev/tty8",
