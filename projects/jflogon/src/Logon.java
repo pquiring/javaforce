@@ -131,7 +131,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     });
     xMenu.add(Shutdown);
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
     lUser.setText("Username");
 
@@ -188,7 +188,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jLabel4)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(lUser)
@@ -356,6 +356,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     user = (String)username.getSelectedItem();
     pass = new String(password.getPassword());
     password.setText("");
+    if (user.equals("root")) {
+      showError("root not permitted");
+      return;
+    }
     //save lastUser
     try {
       Properties props = new Properties();
