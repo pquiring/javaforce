@@ -86,13 +86,27 @@ public class Startup  implements ShellProcessListener {
       JFLog.log("uid=" + uid);
       if (is_wayland) {
         startUI(
-          new String[] {"/usr/bin/jfdesktop-session"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_SESSION_TYPE=wayland", "WAYLAND_DISPLAY=wayland-0"}
+          new String[] {
+            "/usr/bin/jfdesktop-session"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/" + uid,
+            "XDG_SESSION_TYPE=wayland",
+            "WAYLAND_DISPLAY=wayland-0",
+            "WAYLAND_PID=" + window_mgr_process.getProcess().pid(),
+          }
         );
       } else {
         startUI(
-          new String[] {"/usr/bin/jfdesktop-session"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"}
+          new String[] {
+            "/usr/bin/jfdesktop-session"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/" + uid,
+            "XAUTHORITY=/root/.Xauthority",
+            "DISPLAY=:0",
+            "WAYLAND_PID=" + window_mgr_process.getProcess().pid(),
+          }
         );
       }
     } catch (Throwable t) {
@@ -242,6 +256,7 @@ public class Startup  implements ShellProcessListener {
   }
 
   public static boolean reconfig() {
+    //NOTE : this runs in Session process
     JFLog.log(LOG_DISPLAY, "reconfig:taskbar_height=" + taskbar_height);
     switch (window_mgr) {
       case "openbox":
@@ -258,7 +273,7 @@ public class Startup  implements ShellProcessListener {
         config_labwc();
         reconfig(
           new String[] {"/usr/bin/labwc", "--reconfigure"},
-          new String[] {"LABWC_PID=" + window_mgr_process.getProcess().pid()}
+          new String[] {"LABWC_PID=" + System.getenv("WAYLAND_PID")}
         );
         break;
       case "sway":
