@@ -489,11 +489,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         LinuxAPI.getInstance().ttySetActiveVT(7);
         LinuxAPI.getInstance().ttyFreeVT(8);
         if (!is_nested) {
+          start();
           if (false) {
             //greeter form fails to display (no errors)
-            start();
             startUI();
           } else {
+            //force Startup.createLogon() to recreate Logon form
             System.exit(0);
           }
         }
@@ -841,7 +842,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   public static void startUI() {
     try {
-      JFLog.log("Creating Logon JFrame");
+      JFLog.log("Creating Logon form");
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
           instance = new Logon();
