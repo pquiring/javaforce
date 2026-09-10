@@ -25,7 +25,7 @@ public class Startup  implements ShellProcessListener {
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
 
-  public static int taskbar_height = 48;
+  public static int taskbar_height = 62;
 
   private static void load_config() {
     props = Linux.getJavaForceProperties();
