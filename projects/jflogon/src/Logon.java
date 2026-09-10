@@ -360,6 +360,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       showError("root not permitted");
       return;
     }
+    JFLog.log("Logon:" + user);
     //save lastUser
     try {
       Properties props = new Properties();

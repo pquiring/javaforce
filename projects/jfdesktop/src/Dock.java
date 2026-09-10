@@ -359,7 +359,12 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private void LogoffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogoffActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to logoff?")) return;
-    closeAllApps();
+    JFLog.log("LogOff");
+    try {
+      closeAllApps();
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
     System.exit(0);
   }//GEN-LAST:event_LogoffActionPerformed
 
