@@ -428,6 +428,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       cmd = new String[] {
         "/usr/bin/systemd-run",
         "--wait",
+        "--unit=jfdesktop_session",
         "--property=User=" + uid,
         "--property=Group=" + gid,
         "--property=TTYPath=/dev/tty8",
@@ -437,8 +438,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         "/usr/bin/dbus-run-session",
         session
       };
-      ProcessBuilder pb = new ProcessBuilder(cmd);
-      Map<String,String> env = pb.environment();
+      ShellProcess sp = new ShellProcess();
+      sp.keepOutput(false);
+      Map<String,String> env = sp.getEnvironment();
       env.put("USER", user);
       env.put("LOGNAME", user);
       env.put("SHELL", shellPath);
@@ -474,8 +476,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         LinuxAPI.getInstance().ttySetActiveVT(8);
       }
       try {
-        Process p = pb.start();
-        p.waitFor();
+        sp.run(cmd, true);
       } catch (Throwable t2) {
         JFLog.log(t2);
       }
@@ -832,7 +833,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   public static void main(String[] args) {
-    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-session.log", true);
+    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-greeter.log", true);
     log_env();
     //display greeter
     try {

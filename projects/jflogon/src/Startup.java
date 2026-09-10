@@ -186,6 +186,13 @@ public class Startup implements ShellProcessListener {
         config_X();
         res = start(
           new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--unit=jflogon_display_manager",
+            "--property=TTYPath=/dev/tty7",
+            "--property=WorkingDirectory=/root",
+            "--property=PAMName=javaforce",
+            "--property=EnvironmentFile=" + envfile,
             "/usr/bin/X"
           },
           new String[] {
@@ -201,6 +208,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "/usr/bin/systemd-run",
             "--wait",
+            "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
             "--property=PAMName=javaforce",
@@ -223,6 +231,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "/usr/bin/systemd-run",
             "--wait",
+            "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
             "--property=PAMName=javaforce",
@@ -243,6 +252,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "/usr/bin/systemd-run",
             "--wait",
+            "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
             "--property=PAMName=javaforce",
@@ -315,19 +325,15 @@ public class Startup implements ShellProcessListener {
     if (display_mgr_process == null) return false;
     if (display_mgr_process != null) {
       JFLog.log("Stopping Display Manager...");
-      display_mgr_process.destroy();
-      JF.sleep(500);
-      for(int a=0;a<3;a++) {
-        if (!display_mgr_process.isAlive()) break;
-        JF.sleep(1000);
-      }
+      JF.exec(new String[] {
+        "/usr/bin/systemctl",
+        "stop",
+        "jflogon_display_manager"
+      });
       if (is_wayland) {
         wait_wayland_socket_closed();
       }
-      if (display_mgr_process.isAlive()) {
-        display_mgr_process.destroyForcibly();
-        JF.sleep(500);
-      }
+      display_mgr_process.wait();
       display_mgr_process = null;
       JFLog.log("Display Manager stopped...");
     }

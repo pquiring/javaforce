@@ -15,6 +15,7 @@ import java.io.*;
 
 public class ShellProcess {
 
+  private ProcessBuilder pb = new ProcessBuilder();
   private Process p;
   private InputStream is, es;
   private OutputStream os;
@@ -168,7 +169,7 @@ public class ShellProcess {
       System.arraycopy(cmd, 1, newcmd, 2, cmd.length - 1);
       cmd = newcmd;
     }
-    ProcessBuilder pb = new ProcessBuilder(cmd);
+    pb.command(cmd);
     if (redirStderr) {
       pb.redirectErrorStream(true);
     }
@@ -419,6 +420,16 @@ public class ShellProcess {
 
   public Process getProcess() {
     return p;
+  }
+
+  /** Get ProcessBuilder. */
+  public ProcessBuilder getProcessBuilder() {
+    return pb;
+  }
+
+  /** Get ProcessBuilder.environment(). */
+  public Map<String, String> getEnvironment() {
+    return pb.environment();
   }
 
   /** Executes a command and returns the ShellProcess.Output with stdout, stderr and errorLevel. */

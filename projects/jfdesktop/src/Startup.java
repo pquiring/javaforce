@@ -145,7 +145,10 @@ public class Startup  implements ShellProcessListener {
     switch (window_mgr) {
       case "openbox":
         config_openbox();
-        start(new String[] {"/usr/bin/openbox"}, null);
+        start(
+          new String[] {"/usr/bin/openbox"},
+          null
+        );
         break;
       case "weston":
         config_weston();
