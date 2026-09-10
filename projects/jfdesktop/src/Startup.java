@@ -25,6 +25,8 @@ public class Startup  implements ShellProcessListener {
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
 
+  public static int taskbar_height = 48;
+
   private static void load_config() {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
@@ -186,7 +188,7 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
-  private static void start(String[] cmds, String[] envs) throws Exception {
+  private static void start(String[] cmds, String[] envs) {
     new Thread() {
       public void run() {
         window_mgr_process = new ShellProcess();
@@ -239,6 +241,61 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
+  public static boolean reconfig() {
+    switch (window_mgr) {
+      case "openbox":
+        config_openbox();
+        reconfig(
+          new String[] {"/usr/bin/openbox"},
+          null
+        );
+        break;
+      case "weston":
+        config_weston();
+        return false;  //not supported
+      case "labwc":
+        config_labwc();
+        reconfig(
+          new String[] {"/usr/bin/labwc", "--reconfigure"},
+          new String[] {"LABWC_PID=" + window_mgr_process.getProcess().pid()}
+        );
+        break;
+      case "sway":
+        config_sway();
+        reconfig(
+          new String[] {"/usr/bin/swaymsg", "reload"},
+          new String[] {}
+        );
+        break;
+      case "javaforce":
+        config_jf_wayland();
+        start_jf_wayland();
+        break;
+    }
+    return true;
+  }
+
+  private static void reconfig(String[] cmds, String[] envs) {
+    new Thread() {
+      public void run() {
+        ShellProcess process = new ShellProcess();
+        process.keepOutput(false);
+        process.addListener(new Startup());
+        if (envs != null) {
+          for(String e : envs) {
+            int idx = e.indexOf('=');
+            if (idx == -1) continue;
+            String name = e.substring(0, idx);
+            String value = e.substring(idx + 1);
+            process.addEnvironmentVariable(name, value);
+          }
+        }
+        JFLog.log("Reconfigure Window Manager...");
+        process.run(cmds, true);
+      }
+    }.start();
+  }
+
   private static String getProperty(String name) {
     String prop = props.getProperty(name);
     if (prop == null) prop = "";
@@ -257,13 +314,27 @@ public class Startup  implements ShellProcessListener {
     wayland.stop();
   }
 
+  private static void copyAll(String src, String dst, String replace_find, String replace_with) {
+    try {
+      FileInputStream fis = new FileInputStream(src);
+      byte[] data = fis.readAllBytes();
+      fis.close();
+      String str = new String(data).replace(replace_find, replace_with);
+      FileOutputStream fos = new FileOutputStream(dst);
+      fos.write(str.getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   private static void config_weston() {
     JF.copyAll("/etc/jflogon/weston.ini", "/etc/xdg/weston/weston.ini");
   }
   private static void config_labwc() {
     String labwc =  JF.getUserPath() + "/.config/labwc";
     new File(labwc).mkdirs();
-    JF.copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml");
+    copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml", "$SIZE", Integer.toString(taskbar_height));
     JF.copyAll("/etc/jfdesktop/labwc-menu.xml", labwc + "/menu.xml");
   }
   private static void config_sway() {
