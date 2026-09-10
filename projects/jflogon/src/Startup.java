@@ -276,7 +276,10 @@ public class Startup implements ShellProcessListener {
   }
 
   private static boolean start(String[] cmds, String[] envs, boolean use_envfile) {
-    if (display_mgr_process != null) return false;
+    if (display_mgr_process != null) {
+      JFLog.log("ERROR:start():display manager already running");
+      return false;
+    }
     new Thread() {
       public void run() {
         try {
@@ -322,7 +325,10 @@ public class Startup implements ShellProcessListener {
   }
 
   public static boolean stop() throws Exception {
-    if (display_mgr_process == null) return false;
+    if (display_mgr_process == null) {
+      JFLog.log("ERROR:stop():display manager not running");
+      return false;
+    }
     if (display_mgr_process != null) {
       JFLog.log("Stopping Display Manager...");
       JF.exec(new String[] {
@@ -391,9 +397,9 @@ public class Startup implements ShellProcessListener {
     }
     try {
       if (is_wayland) {
-        startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_SESSION_TYPE=wayland", "WAYLAND_DISPLAY=wayland-0", "XDG_VTNR=7"});
+        startUI(new String[] {"/usr/bin/jflogon-greeter"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_SESSION_TYPE=wayland", "WAYLAND_DISPLAY=wayland-0", "XDG_VTNR=7"});
       } else {
-        startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
+        startUI(new String[] {"/usr/bin/jflogon-greeter"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
       }
     } catch (Exception e) {
       JFLog.log(e);
