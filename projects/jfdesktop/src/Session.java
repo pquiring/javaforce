@@ -12,6 +12,9 @@ public class Session {
   private static Properties props;
   public static boolean is_wayland = false;
   private static int LOG_DEFAULT = 0;
+  public static Dock dock;
+  public static Desktop desktop;
+  private static Object lock = new Object();
 
   private static void load_config() {
     props = Linux.getJavaForceProperties();
@@ -24,6 +27,19 @@ public class Session {
     return prop.trim();
   }
 
+  public static void dispose() {
+    synchronized (lock) {
+      if (desktop != null) {
+        desktop.dispose();
+        desktop = null;
+      }
+      if (dock != null) {
+        dock.dispose();
+        dock = null;
+      }
+    }
+  }
+
   public static void main(String[] args) {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-session.log", true);
     log_env();
@@ -34,13 +50,15 @@ public class Session {
           try {
             JFLog.log("Creating Dock");
             try {
-              new Dock().setVisible(true);
+              dock = new Dock();
+              dock.setVisible(true);
             } catch (Throwable t1) {
               JFLog.log(t1);
             }
             JFLog.log("Creating Desktop");
             try {
-              new Desktop().setVisible(true);
+              desktop = new Desktop();
+              desktop.setVisible(true);
             } catch (Throwable t2) {
               JFLog.log(t2);
             }

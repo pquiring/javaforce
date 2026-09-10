@@ -360,33 +360,34 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   private void LogoffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogoffActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to logoff?")) return;
     JFLog.log("LogOff");
-    try {
-      closeAllApps();
-    } catch (Throwable t) {
-      JFLog.log(t);
-    }
+    saveConfig();
+    Session.dispose();
     System.exit(0);
   }//GEN-LAST:event_LogoffActionPerformed
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
+    JFLog.log("Reboot");
     try {
       jbusServer.invoke(SystemBusNames.system, "reboot");
     } catch (Exception e) {
       JFLog.log(e);
     }
-    closeAllApps();
+    saveConfig();
+    Session.dispose();
     System.exit(0);
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
+    JFLog.log("Shutdown");
     try {
       jbusServer.invoke(SystemBusNames.system, "shutdown");
     } catch (Exception e) {
       JFLog.log(e);
     }
-    closeAllApps();
+    saveConfig();
+    Session.dispose();
     System.exit(0);
   }//GEN-LAST:event_ShutdownActionPerformed
 
@@ -2051,21 +2052,6 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     for(int a=0;a<cnt;a++) {
       jc.getComponent(a).addMouseListener(this);
     }
-  }
-
-  private void closeAllApps() {
-    saveConfig();
-    //close open VPN connections
-    try {
-      jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-    //close all apps belonging to this user
-    //BUG : killall may kill other sessions of same user???
-    try {
-      Runtime.getRuntime().exec(new String[] {"killall", "-u", System.getenv("USER")});
-    } catch (Exception e) {JFLog.log(e);}
   }
 
   public void showConfig() {
