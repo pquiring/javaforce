@@ -66,6 +66,7 @@ public class Startup implements ShellProcessListener {
       create_server_xauth();
       //switch to vt7
       LinuxAPI.getInstance().ttySetActiveVT(7);
+        JF.exec(new String[] {"numlockx", "on"});
       boolean retry;
       do {
         retry = false;
@@ -75,9 +76,10 @@ public class Startup implements ShellProcessListener {
           JFLog.log(e);
         }
 
-        JF.exec(new String[] {"numlockx", "on"});
         try {
-          createLogon();
+          while (true) {
+            createLogon();
+          }
         } catch (java.awt.HeadlessException he) {
           JFLog.log(he);
           JF.sleep(500);
@@ -397,9 +399,27 @@ public class Startup implements ShellProcessListener {
     }
     try {
       if (is_wayland) {
-        startUI(new String[] {"/usr/bin/jflogon-greeter"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_SESSION_TYPE=wayland", "WAYLAND_DISPLAY=wayland-0", "XDG_VTNR=7"});
+        startUI(
+          new String[] {
+            "/usr/bin/jflogon-greeter"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/0",
+            "XDG_SESSION_TYPE=wayland",
+            "WAYLAND_DISPLAY=wayland-0",
+            "XDG_VTNR=7"
+          }
+        );
       } else {
-        startUI(new String[] {"/usr/bin/jflogon-greeter"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
+        startUI(
+          new String[] {
+            "/usr/bin/jflogon-greeter"
+          },
+          new String[] {
+            "XDG_RUNTIME_DIR=/run/user/0",
+            "XAUTHORITY=/root/.Xauthority",
+            "DISPLAY=:0"
+          });
       }
     } catch (Exception e) {
       JFLog.log(e);

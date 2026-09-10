@@ -489,8 +489,13 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         LinuxAPI.getInstance().ttySetActiveVT(7);
         LinuxAPI.getInstance().ttyFreeVT(8);
         if (!is_nested) {
-          start();
-          startUI();
+          if (false) {
+            //greeter form fails to display (no errors)
+            start();
+            startUI();
+          } else {
+            System.exit(0);
+          }
         }
       } else {
         Linux.x11_rr_reset("800x600");
