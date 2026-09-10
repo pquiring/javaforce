@@ -339,7 +339,7 @@ public class Startup implements ShellProcessListener {
       if (is_wayland) {
         wait_wayland_socket_closed();
       }
-      display_mgr_process.wait();
+      display_mgr_process.waitFor();
       display_mgr_process = null;
       JFLog.log("Display Manager stopped...");
     }

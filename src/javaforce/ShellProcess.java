@@ -432,6 +432,17 @@ public class ShellProcess {
     return pb.environment();
   }
 
+  /** Wait for process to terminate. */
+  public void waitFor() {
+    try {
+      if (p != null) {
+        p.waitFor();
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   /** Executes a command and returns the ShellProcess.Output with stdout, stderr and errorLevel. */
   public static ShellProcess.Output exec(String[] cmd, boolean redirStderr) {
     try {
