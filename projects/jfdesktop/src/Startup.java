@@ -242,6 +242,7 @@ public class Startup  implements ShellProcessListener {
   }
 
   public static boolean reconfig() {
+    JFLog.log("reconfig:taskbar_height=" + taskbar_height);
     switch (window_mgr) {
       case "openbox":
         config_openbox();
