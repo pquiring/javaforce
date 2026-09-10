@@ -44,6 +44,7 @@ public class Session {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-session.log", true);
     log_env();
     load_config();
+    Startup.load_config();
     try {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {

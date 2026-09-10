@@ -27,7 +27,7 @@ public class Startup  implements ShellProcessListener {
 
   public static int taskbar_height = 57;
 
-  private static void load_config() {
+  public static void load_config() {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
@@ -242,7 +242,7 @@ public class Startup  implements ShellProcessListener {
   }
 
   public static boolean reconfig() {
-    JFLog.log("reconfig:taskbar_height=" + taskbar_height);
+    JFLog.log(LOG_DISPLAY, "reconfig:taskbar_height=" + taskbar_height);
     switch (window_mgr) {
       case "openbox":
         config_openbox();
