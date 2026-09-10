@@ -340,7 +340,6 @@ public class Startup implements ShellProcessListener {
   private static void startUI(String[] cmds, String[] envs) throws Exception {
     ShellProcess process = new ShellProcess();
     process.keepOutput(false);
-    process.addListener(new Startup());
     if (envs != null) {
       for(String e : envs) {
         int idx = e.indexOf('=');

@@ -31,11 +31,11 @@ jboolean ttySetActiveVT(int number) {
 jboolean ttyFreeVT(int number) {
   int fd = open(CONSOLE, O_RDONLY | O_NOCTTY, 0);
   if (fd < 0) {
-    printf("ttySetActiveVT:open(tty) failed\n");
+    printf("ttyFreeVT:open(tty) failed\n");
     return JNI_FALSE;
   }
   if (ioctl(fd, VT_DISALLOCATE, number) < 0) {
-    printf("ttySetActiveVT:ioctl(VT_DISALLOCATE) failed\n");
+    printf("ttyFreeVT:ioctl(VT_DISALLOCATE) failed\n");
     return JNI_FALSE;
   }
   close(fd);
