@@ -41,7 +41,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
    * Creates new form LogonApp
    */
   public Logon() {
-    This = this;
     try {
       load_config();
       initComponents();
@@ -320,7 +319,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   // End of variables declaration//GEN-END:variables
 
   public static JBusServer jbusServer;
-  public static Logon This;
+  public static Logon instance;
   private String lastUser;
 
   private void listUsers() {
@@ -470,6 +469,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       if (is_wayland) {
         dispose();
+        instance = null;
         if (!is_nested) {
           stop();
         }
@@ -490,8 +490,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         LinuxAPI.getInstance().ttyFreeVT(8);
         if (!is_nested) {
           start();
-          JFLog.log("recreating Logon form");
-          new Logon().setVisible(true);
+          startUI();
         }
       } else {
         Linux.x11_rr_reset("800x600");
@@ -835,15 +834,23 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  public static void main(String[] args) {
-    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-greeter.log", true);
-    log_env();
-    //display greeter
+  public static void startUI() {
     try {
-      Logon logon = new Logon();
-      logon.setVisible(true);
+      JFLog.log("Creating Logon JFrame");
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          instance = new Logon();
+          instance.setVisible(true);
+        }
+      });
     } catch (Throwable t) {
       JFLog.log(t);
     }
+  }
+
+  public static void main(String[] args) {
+    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-greeter.log", true);
+    log_env();
+    startUI();
   }
 }
