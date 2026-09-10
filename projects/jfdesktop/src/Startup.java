@@ -96,6 +96,11 @@ public class Startup  implements ShellProcessListener {
     } catch (Throwable t) {
       JFLog.log(t);
     }
+    try {
+      stop();
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
     JF.sleep(1000);
   }
 
@@ -222,7 +227,9 @@ public class Startup  implements ShellProcessListener {
         if (!window_mgr_process.isAlive()) break;
         JF.sleep(1000);
       }
-      wait_wayland_socket_closed();
+      if (is_wayland) {
+        wait_wayland_socket_closed();
+      }
       if (window_mgr_process.isAlive()) {
         window_mgr_process.destroyForcibly();
         JF.sleep(500);

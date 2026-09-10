@@ -490,6 +490,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         LinuxAPI.getInstance().ttyFreeVT(8);
         if (!is_nested) {
           start();
+          JFLog.log("recreating Logon form");
           new Logon().setVisible(true);
         }
       } else {
@@ -501,10 +502,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void start() {
+    JFLog.log("restarting display manager");
     jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
   }
 
   private void stop() {
+    JFLog.log("stopping display manager");
     jbusServer.invoke(SystemBusNames.system, "stopDisplayManager");
   }
 
