@@ -66,6 +66,7 @@ public class Startup  implements ShellProcessListener {
         cfg = Linux.x11_rr_get_setup(cfg);
         Linux.x11_rr_set(cfg);
       }
+      start_systemd();
       start();
     } catch (Exception e) {
       JFLog.log(e);
@@ -159,11 +160,23 @@ public class Startup  implements ShellProcessListener {
     JFLog.log("loginctl:\n" + loginctl);
   }
 
+  private static void start_systemd() throws Exception {
+    String[] cmd = new String[] {
+      "/usr/bin/systemctl",
+      "start",
+      "user@" + LinuxAPI.getInstance().getUID(),
+    };
+    ShellProcess sp = new ShellProcess();
+    sp.keepOutput(true);
+    String res = sp.run(cmd, true);
+    JFLog.log("start_systemd:" + res);
+  }
+
   private static void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
     int uid = LinuxAPI.getInstance().getUID();
     loginctl();
-    String envfile = System.getenv("XDG_RUNTIME_DIR") + "/environ";
+    String envfile = System.getenv("XDG_RUNTIME_DIR") + "/wm_environ";
     switch (window_mgr) {
       case "openbox":
         config_openbox();
@@ -248,7 +261,7 @@ public class Startup  implements ShellProcessListener {
         window_mgr_process.addListener(new Startup());
 
         if (envs != null) {
-          String envfile = System.getenv("XDG_RUNTIME_DIR") + "/environ";
+          String envfile = System.getenv("XDG_RUNTIME_DIR") + "/wm_environ";
           try {
             FileOutputStream fos = new FileOutputStream(envfile);
             for(String e : envs) {
