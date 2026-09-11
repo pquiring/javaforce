@@ -51,9 +51,9 @@ public class WLObject {
         case "java.lang.String":
           int strlen = LE.getuint32(pkt, offset);
           offset += 4;
-          args[a] = new String(pkt, offset, strlen);
+          args[a] = new String(pkt, offset, strlen - 1);
           offset += strlen;
-          offset++;  //null byte
+//          offset++;  //null byte
           break;
         default:
           JFLog.log("WLObject:unknown arg type:" + type);
