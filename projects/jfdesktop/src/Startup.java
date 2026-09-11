@@ -187,7 +187,6 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=TTYPath=/dev/tty8",
             "--property=EnvironmentFile=" + envfile,
             "/usr/bin/weston",
             "--modules",
@@ -206,7 +205,6 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=TTYPath=/dev/tty8",
             "--property=EnvironmentFile=" + envfile,
             "/usr/bin/labwc",
             "-d",  //enable debugging : view with journalctl -u jfdesktop_window_manager_$LOGNAME
@@ -224,7 +222,6 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=TTYPath=/dev/tty8",
             "--property=EnvironmentFile=" + envfile,
             "/usr/bin/sway"
           },
