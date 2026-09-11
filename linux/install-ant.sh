@@ -5,7 +5,7 @@
 # installing ant thru debian repo forces default-jre which is still based on Java 21 so install ant manually
 
 if [ ! -f /opt/ant/bin/ant ]; then
-  version=1.10.17
+  version=1.10.18
 
   zip=apache-ant-$version-bin.zip
 
