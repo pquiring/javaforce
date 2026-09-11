@@ -163,35 +163,69 @@ public class Startup  implements ShellProcessListener {
     JFLog.log("Starting window manager:" + window_mgr);
     int uid = LinuxAPI.getInstance().getUID();
     loginctl();
+    String envfile = System.getenv("XDG_RUNTIME_DIR") + "/environ";
     switch (window_mgr) {
       case "openbox":
         config_openbox();
         start(
-          new String[] {"/usr/bin/openbox"},
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--unit=jfdesktop_window_manager_" + user,
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/openbox"
+          },
           null
         );
         break;
       case "weston":
         config_weston();
         start(
-          new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
-          new String[] {}
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--unit=jfdesktop_window_manager_" + user,
+            "--property=TTYPath=/dev/tty8",
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/weston",
+            "--modules",
+            "jf-desktop-shell.so"
+          },
+          new String[] {
+          }
         );
         wait_wayland_socket_opened();
         break;
       case "labwc":
         config_labwc();
         start(
-          new String[] {"/usr/bin/labwc"},
-          new String[] {}
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--unit=jfdesktop_window_manager_" + user,
+            "--property=TTYPath=/dev/tty8",
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/labwc",
+            "-d",  //enable debugging : view with journalctl -u jfdesktop_window_manager_$LOGNAME
+          },
+          new String[] {
+          }
         );
         wait_wayland_socket_opened();
         break;
       case "sway":
         config_sway();
         start(
-          new String[] {"/usr/bin/sway"},
-          new String[] {}
+          new String[] {
+            "/usr/bin/systemd-run",
+            "--wait",
+            "--unit=jfdesktop_window_manager_" + user,
+            "--property=TTYPath=/dev/tty8",
+            "--property=EnvironmentFile=" + envfile,
+            "/usr/bin/sway"
+          },
+          new String[] {
+          }
         );
         wait_wayland_socket_opened();
         break;
@@ -208,13 +242,18 @@ public class Startup  implements ShellProcessListener {
         window_mgr_process = new ShellProcess();
         window_mgr_process.keepOutput(false);
         window_mgr_process.addListener(new Startup());
+
         if (envs != null) {
-          for(String e : envs) {
-            int idx = e.indexOf('=');
-            if (idx == -1) continue;
-            String name = e.substring(0, idx);
-            String value = e.substring(idx + 1);
-            window_mgr_process.addEnvironmentVariable(name, value);
+          String envfile = System.getenv("XDG_RUNTIME_DIR") + "/environ";
+          try {
+            FileOutputStream fos = new FileOutputStream(envfile);
+            for(String e : envs) {
+              e += "\n";
+              fos.write(e.getBytes());
+            }
+            fos.close();
+          } catch (Exception e) {
+            JFLog.log(e);
           }
         }
         JFLog.log("Starting Window Manager...");
@@ -234,25 +273,26 @@ public class Startup  implements ShellProcessListener {
     JF.sleep(1000);
   }
 
-  public static void stop() throws Exception {
+  public static boolean stop() throws Exception {
+    if (window_mgr_process == null) {
+      JFLog.log("ERROR:stop():window manager not running");
+      return false;
+    }
     if (window_mgr_process != null) {
       JFLog.log("Stopping Window Manager...");
-      window_mgr_process.destroy();
-      JF.sleep(500);
-      for(int a=0;a<3;a++) {
-        if (!window_mgr_process.isAlive()) break;
-        JF.sleep(1000);
-      }
+      JF.exec(new String[] {
+        "/usr/bin/systemctl",
+        "stop",
+        "jfdesktop_window_manager_" + user,
+      });
       if (is_wayland) {
         wait_wayland_socket_closed();
       }
-      if (window_mgr_process.isAlive()) {
-        window_mgr_process.destroyForcibly();
-        JF.sleep(500);
-      }
+      window_mgr_process.waitFor();
       window_mgr_process = null;
       JFLog.log("Window Manager stopped...");
     }
+    return true;
   }
 
   public static boolean reconfig() {
