@@ -173,10 +173,8 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=EnvironmentFile=" + envfile,
             "/usr/bin/openbox"
-          },
-          null
+          }
         );
         break;
       case "weston":
@@ -187,12 +185,9 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=EnvironmentFile=" + envfile,
             "/usr/bin/weston",
             "--modules",
             "jf-desktop-shell.so"
-          },
-          new String[] {
           }
         );
         wait_wayland_socket_opened();
@@ -205,11 +200,8 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=EnvironmentFile=" + envfile,
             "/usr/bin/labwc",
             "-d",  //enable debugging : view with journalctl -u jfdesktop_window_manager_$LOGNAME
-          },
-          new String[] {
           }
         );
         wait_wayland_socket_opened();
@@ -222,10 +214,7 @@ public class Startup  implements ShellProcessListener {
             "--scope",
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
-            "--property=EnvironmentFile=" + envfile,
             "/usr/bin/sway"
-          },
-          new String[] {
           }
         );
         wait_wayland_socket_opened();
@@ -237,26 +226,12 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
-  private static void start(String[] cmds, String[] envs) {
+  private static void start(String[] cmds) {
     new Thread() {
       public void run() {
         window_mgr_process = new ShellProcess();
         window_mgr_process.keepOutput(false);
         window_mgr_process.addListener(new Startup());
-
-        if (envs != null) {
-          String envfile = System.getenv("XDG_RUNTIME_DIR") + "/wm_environ";
-          try {
-            FileOutputStream fos = new FileOutputStream(envfile);
-            for(String e : envs) {
-              e += "\n";
-              fos.write(e.getBytes());
-            }
-            fos.close();
-          } catch (Exception e) {
-            JFLog.log(e);
-          }
-        }
         JFLog.log("Starting Window Manager...");
         window_mgr_process.run(cmds, true);
       }
