@@ -38,7 +38,7 @@ public abstract class WLObject {
   private int align32(int offset) {
     int diff = offset & 0x3;
     if (diff == 0) return offset;
-    int pad = (0x03 - diff);
+    int pad = (0x04 - diff);
     return offset + pad;
   }
   public boolean dispatchEvent(int opcode, byte[] pkt, int offset, int length) {

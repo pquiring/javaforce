@@ -19,7 +19,7 @@ import javaforce.*;
 public class WLClient {
   public static boolean debug = true;
   public static boolean debug_io = false;
-  public static boolean debug_packet = true;
+  public static boolean debug_packet = false;
 
   private SocketChannel socket;
   private Reader reader;
