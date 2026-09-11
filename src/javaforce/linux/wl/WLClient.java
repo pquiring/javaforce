@@ -29,9 +29,10 @@ public class WLClient {
   private Object next_id_lock = new Object();
   /** Next client side id. */
   private int next_id = 2;  //1 = reserved for wl_display
+  private WLDisplay display;
 
   public WLClient() {
-    objects.put(1, new WLDisplay(this));
+    display = new WLDisplay(this, 1);
   }
 
   public boolean connect() {
@@ -73,6 +74,10 @@ public class WLClient {
       JFLog.log(e);
       return false;
     }
+  }
+
+  public WLDisplay get_display() {
+    return display;
   }
 
   public int read(byte[] data, int offset, int length) {

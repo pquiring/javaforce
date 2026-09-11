@@ -16,8 +16,7 @@ public class WLRForeignToplevelManager extends WLObject {
 
   @SuppressWarnings("unchecked")
   public WLRForeignToplevelManager(WLClient client, int id) {
-    super(client);
-    this.id = id;
+    super(client, id);
     Class cls = getClass();
     try {
       events = new Method[] {

@@ -12,8 +12,7 @@ import javaforce.*;
 public class WLRegistry extends WLObject {
   @SuppressWarnings("unchecked")
   public WLRegistry(WLClient client, int id) {
-    super(client);
-    this.id = id;
+    super(client, id);
     Class cls = getClass();
     try {
       events = new Method[] {
@@ -31,8 +30,8 @@ public class WLRegistry extends WLObject {
 
   //requests
 
-  public void bind(int name, int new_id) {
-    invokeRequest(id, 0, name, new_id);
+  public void bind(int name, String iface, int ver, int new_id) {
+    invokeRequest(id, 0, name, iface, ver, new_id);
   }
 
   //events

@@ -29,7 +29,7 @@ public class TestWL implements WLNotify {
     if (!client.connect()) {
       return;
     }
-    display = new WLDisplay(client);
+    display = client.get_display();
     registry = display.get_registry(this);
     while (active) {
       JF.sleep(1000);
@@ -50,8 +50,7 @@ public class TestWL implements WLNotify {
               case "zwlr_foreign_toplevel_manager_v1":
                 int new_id = client.get_next_id();
                 toplevel_manager = new WLRForeignToplevelManager(client, new_id);
-                client.setObject(new_id, toplevel_manager);
-                registry.bind(name, new_id);
+                registry.bind(name, iface, ver, new_id);
                 break;
             }
             break;

@@ -11,9 +11,8 @@ import javaforce.*;
 
 public class WLDisplay extends WLObject {
   @SuppressWarnings("unchecked")
-  public WLDisplay(WLClient client) {
-    super(client);
-    id = 1;
+  public WLDisplay(WLClient client, int id) {
+    super(client, id);
     Class cls = getClass();
     try {
       events = new Method[] {
@@ -49,8 +48,8 @@ public class WLDisplay extends WLObject {
 
   //events
 
-  public void error(int obj_id, int code, String msg) {
-    JFLog.log("Wayland Error:" + obj_id + ":" + code + ":" + msg);
+  public void error(int obj_id, int error_code, String msg) {
+    JFLog.log("Wayland Error:object=" + obj_id + ":error_code=" + error_code + ":" + msg);
   }
 
   public void delete_id(int old_id) {

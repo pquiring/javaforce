@@ -12,8 +12,7 @@ import javaforce.*;
 public class WLSharedMemoryPool extends WLObject {
   @SuppressWarnings("unchecked")
   public WLSharedMemoryPool(WLClient client, int id) {
-    super(client);
-    this.id = id;
+    super(client, id);
     Class cls = getClass();
     try {
       events = new Method[] {

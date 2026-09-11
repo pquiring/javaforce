@@ -12,8 +12,7 @@ import javaforce.*;
 public class WLRForeignToplevelHandle extends WLObject {
   @SuppressWarnings("unchecked")
   public WLRForeignToplevelHandle(WLClient client, int id) {
-    super(client);
-    this.id = id;
+    super(client, id);
     Class cls = getClass();
     try {
       events = new Method[] {

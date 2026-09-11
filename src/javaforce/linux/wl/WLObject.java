@@ -19,8 +19,10 @@ public abstract class WLObject {
 //  public Method[] requests;
   protected WLNotify notify;
 
-  public WLObject(WLClient client) {
+  public WLObject(WLClient client, int id) {
     this.client = client;
+    this.id = id;
+    client.setObject(id, this);
   }
 
   public abstract String getName();
