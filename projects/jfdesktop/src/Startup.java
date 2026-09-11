@@ -170,6 +170,7 @@ public class Startup  implements ShellProcessListener {
         start(
           new String[] {
             "/usr/bin/systemd-run",
+            "--scope",
             "--user",
             "--wait",
             "--unit=jfdesktop_window_manager_" + user,
@@ -184,6 +185,7 @@ public class Startup  implements ShellProcessListener {
         start(
           new String[] {
             "/usr/bin/systemd-run",
+            "--scope",
             "--user",
             "--wait",
             "--unit=jfdesktop_window_manager_" + user,
@@ -203,6 +205,7 @@ public class Startup  implements ShellProcessListener {
         start(
           new String[] {
             "/usr/bin/systemd-run",
+            "--scope",
             "--user",
             "--wait",
             "--unit=jfdesktop_window_manager_" + user,
@@ -221,6 +224,7 @@ public class Startup  implements ShellProcessListener {
         start(
           new String[] {
             "/usr/bin/systemd-run",
+            "--scope",
             "--user",
             "--wait",
             "--unit=jfdesktop_window_manager_" + user,
