@@ -30,7 +30,7 @@ public class WLRForeignToplevelManager extends WLObject {
   }
 
   public String getName() {
-    return "wlr_foreign_toplevel_manager_v1";
+    return "zwlr_foreign_toplevel_manager_v1";
   }
 
   //requests

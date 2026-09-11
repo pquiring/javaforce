@@ -32,7 +32,7 @@ public class WLRForeignToplevelHandle extends WLObject {
   }
 
   public String getName() {
-    return "wlr_foreign_toplevel_handle_v1";
+    return "zwlr_foreign_toplevel_handle_v1";
   }
 
   //requests

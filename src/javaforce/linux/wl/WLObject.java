@@ -73,7 +73,7 @@ public abstract class WLObject {
       JFLog.log(e);
     }
     if (notify != null) {
-      notify.onEvent(this.getClass().getName(), method.getName(), args);
+      notify.onEvent(getName(), method.getName(), args);
     }
     return true;
   }

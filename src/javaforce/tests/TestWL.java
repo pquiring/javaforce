@@ -38,8 +38,9 @@ public class TestWL implements WLNotify {
   }
 
   public void onEvent(String cls, String method, Object[] args) {
+    JFLog.log("onEvent:" + cls + "," + method);
     switch (cls) {
-      case "WLRegistry": {
+      case "wl_registry": {
         switch (method) {
           case "global": {
             int name = (Integer)args[0];
@@ -58,10 +59,10 @@ public class TestWL implements WLNotify {
         }
         break;
       }
-      case "WLRForeignToplevelManager": {
+      case "zwlr_foreign_toplevel_manager_v1": {
         break;
       }
-      case "WLRForeignToplevelHandle": {
+      case "zwlr_foreign_toplevel_handle_v1": {
         break;
       }
     }
