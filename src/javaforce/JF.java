@@ -66,13 +66,12 @@ public class JF {
   public static final boolean isJavaForceLoader = Boolean.getBoolean("javaforce.loader");
 
   /** Returns true if this JVM was created from JavaForce loaders.
-   * This also implies that JNI methods are available.
    */
   public static boolean isJavaForceLoader() {
     return isJavaForceLoader;
   }
 
-  /** Returns true if JavaForce native API is available (JNI or FFM).
+  /** Returns true if JavaForce native API is available.
    */
   public static boolean hasNativeSupport() {
     return isJavaForceLoader || FFM.enabled();

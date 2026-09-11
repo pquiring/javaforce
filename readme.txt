@@ -176,7 +176,7 @@ Also try adding -Xlog:gc*:gc.log to the OPTIONS= in the project .cfg file.  Then
 WIP
 ---
 The following components are WIP and not working yet:
-  - Wayland components
+  - Wayland (javaforce.linux.wl)
   - Bluetooth
   - RDP
 

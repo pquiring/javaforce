@@ -4,7 +4,7 @@ import javaforce.api.*;
 import javaforce.ffm.*;
 import javaforce.api.windows.PipesAPI;
 
-/** Windows Pipes (JNI or FFM)
+/** Windows Pipes
  *
  * @author pquiring
  */

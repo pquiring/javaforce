@@ -10,6 +10,8 @@ import static javaforce.linux.Linux.*;
 
 /** Wayland Compositor.
  *
+ * WIP (incomplete)
+ *
  * Based on wlroots.
  *
  * @author pquiring
