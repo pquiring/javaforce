@@ -66,7 +66,6 @@ public class Startup  implements ShellProcessListener {
         cfg = Linux.x11_rr_get_setup(cfg);
         Linux.x11_rr_set(cfg);
       }
-      start_systemd();
       start();
     } catch (Exception e) {
       JFLog.log(e);
@@ -158,18 +157,6 @@ public class Startup  implements ShellProcessListener {
     sp.keepOutput(true);
     String loginctl = sp.run(new String[] {"/usr/bin/loginctl"}, true);
     JFLog.log("loginctl:\n" + loginctl);
-  }
-
-  private static void start_systemd() throws Exception {
-    String[] cmd = new String[] {
-      "/usr/bin/systemctl",
-      "start",
-      "user@" + LinuxAPI.getInstance().getUID(),
-    };
-    ShellProcess sp = new ShellProcess();
-    sp.keepOutput(true);
-    String res = sp.run(cmd, true);
-    JFLog.log("start_systemd:" + res);
   }
 
   private static void start() throws Exception {

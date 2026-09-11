@@ -393,10 +393,23 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
+  private static void start_user_systemd() throws Exception {
+    String[] cmd = new String[] {
+      "/usr/bin/systemctl",
+      "start",
+      "user@" + uid,
+    };
+    ShellProcess sp = new ShellProcess();
+    sp.keepOutput(true);
+    String res = sp.run(cmd, true);
+    JFLog.log("start_systemd:" + res);
+  }
+
   public void runSession(String session) {
     try {
       setState(false);
       getUserDetails(user);
+      start_user_systemd();
       LinuxAPI api = LinuxAPI.getInstance();
       long pam = api.pamOpen(user, pass, LinuxAPI.pamGetBackend());
       if (pam == 0) {
