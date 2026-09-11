@@ -11,6 +11,7 @@ import javaforce.*;
 
 public abstract class WLObject {
   public static boolean debug = true;
+  public static boolean debug_packet = false;
 
   public WLClient client;
   public int id;
@@ -143,7 +144,7 @@ public abstract class WLObject {
         offset = align32(offset);
       }
     }
-    if (debug) JFLog.log("write.packet=", pkt, 0, pktlen);
+    if (debug_packet) JFLog.log("write.packet=", pkt, 0, pktlen);
     return client.write(pkt, 0, pktlen);
   }
   public void setNotify(WLNotify notify) {
