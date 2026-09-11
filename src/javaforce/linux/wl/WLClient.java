@@ -110,12 +110,12 @@ public class WLClient {
       int pktlen = 0;
       try {
         while (socket != null) {
-          int read = read(pkt, pktpos, pkt.length - pktlen);
+          int read = read(pkt, pktpos, 8 - pktlen);
           if (read > 0) {
             pktpos += read;
             pktlen += read;
           }
-          if (pktlen > 8) {
+          if (pktlen == 8) {
             int id = LE.getuint32(pkt, 0);
             int opcode = LE.getuint16(pkt, 4);
             int size = LE.getuint16(pkt, 6);
@@ -127,7 +127,7 @@ public class WLClient {
               pkt = new_pkt;
             }
             while (pktlen < toread) {
-              read = read(pkt, toread, pkt.length - toread);
+              read = read(pkt, pktpos, toread - pktlen);
               if (read == -1) throw new Exception("read failed");
               if (read > 0) {
                 pktpos += read;
