@@ -38,7 +38,7 @@ public class WLRegistry extends WLObject {
 
   public void global(int name, String iface, int ver) {
     if (debug) JFLog.log("WLRegistry.global:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver));
-    client.setGlobal(name, iface);
+    client.setGlobal(name, iface, ver);
   }
 
   public void global_remove(int name) {

@@ -50,7 +50,7 @@ public class TestWL implements WLNotify {
               case "zwlr_foreign_toplevel_manager_v1":
                 int new_id = client.get_next_id();
                 toplevel_manager = new WLRForeignToplevelManager(client, new_id);
-                registry.bind(name, iface, ver, new_id);
+                registry.bind(name, iface, toplevel_manager.getVersion(), new_id);
                 break;
             }
             break;

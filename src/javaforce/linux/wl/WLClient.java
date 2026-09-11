@@ -24,7 +24,7 @@ public class WLClient {
   private Reader reader;
 
   private HashMap<Integer, WLObject> objects = new HashMap<>();  //client side objects (id)
-  private HashMap<Integer, String> globals = new HashMap<>();  //server side objects (name)
+  private HashMap<Integer, WLGlobal> globals = new HashMap<>();  //server side objects (name)
 
   private Object next_id_lock = new Object();
   /** Next client side id. */
@@ -127,18 +127,22 @@ public class WLClient {
   }
 
   /** Add server side Object name. */
-  public void setGlobal(int id, String name) {
-    globals.put(id, name);
+  public void setGlobal(int name, String iface, int ver) {
+    WLGlobal global = new WLGlobal();
+    global.name = name;
+    global.iface = iface;
+    global.ver = ver;
+    globals.put(name, global);
   }
 
-  /** Get server side Object name. */
-  public String getGlobal(int id) {
-    return globals.get(id);
+  /** Get server side global object. */
+  public WLGlobal getGlobal(int name) {
+    return globals.get(name);
   }
 
   /** Remove server side Object name. */
-  public void removeGlobal(int id) {
-    globals.remove(id);
+  public void removeGlobal(int name) {
+    globals.remove(name);
   }
 
   private class Reader extends Thread {

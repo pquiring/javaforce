@@ -15,6 +15,7 @@ public abstract class WLObject {
 
   public WLClient client;
   public int id;
+  public int ver = 1;
   public Method[] events;
 //  public Method[] requests;
   protected WLNotify notify;
@@ -26,6 +27,14 @@ public abstract class WLObject {
   }
 
   public abstract String getName();
+
+  public void setVersion(int ver) {
+    this.ver = ver;
+  }
+
+  public int getVersion() {
+    return ver;
+  }
 
   private int align32(int offset) {
     int diff = offset & 0x3;
