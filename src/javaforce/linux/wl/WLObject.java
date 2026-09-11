@@ -122,7 +122,7 @@ public class WLObject {
           case "java.lang.String":
             String str = (String)arg;
             int strlen = str.length();
-            LE.setuint32(pkt, offset, strlen);
+            LE.setuint32(pkt, offset, strlen + 1);  //includes null
             offset += 4;
             System.arraycopy(str.getBytes(), 0, pkt, offset, strlen);
             offset += strlen;
