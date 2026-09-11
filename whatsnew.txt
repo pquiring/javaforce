@@ -1,5 +1,8 @@
 What's new...
 
+Sept 11/2026 : JF/118.1
+  - fix : jfLogon : logon/logoff issues
+
 Sept 9/2026 : JF/118.0
   - new : jfLinux now supports Wayland graphics
     - requires the JetBrains Runtime (fork of OpenJDK with Wakefield implementation)

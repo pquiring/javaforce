@@ -28,7 +28,7 @@ public class JF {
 
   /** Returns JavaForce version as a String. */
   public static String getVersion() {
-    return "118.0";
+    return "118.1";
   }
 
   /** Returns JavaForce min native version as a String. */
