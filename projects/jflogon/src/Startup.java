@@ -189,7 +189,6 @@ public class Startup implements ShellProcessListener {
         res = start(
           new String[] {
             "/usr/bin/systemd-run",
-            "--wait",
             "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
@@ -209,7 +208,6 @@ public class Startup implements ShellProcessListener {
         res = start(
           new String[] {
             "/usr/bin/systemd-run",
-            "--wait",
             "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
@@ -232,7 +230,6 @@ public class Startup implements ShellProcessListener {
         res = start(
           new String[] {
             "/usr/bin/systemd-run",
-            "--wait",
             "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
@@ -253,7 +250,6 @@ public class Startup implements ShellProcessListener {
         res = start(
           new String[] {
             "/usr/bin/systemd-run",
-            "--wait",
             "--unit=jflogon_display_manager",
             "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",

@@ -258,8 +258,9 @@ public class Startup  implements ShellProcessListener {
       JFLog.log("Stopping Window Manager...");
       JF.exec(new String[] {
         "/usr/bin/systemctl",
+        "--user",
         "stop",
-        "jfdesktop_window_manager_" + user,
+        "jfdesktop_window_manager_" + user + ".scope",
       });
       if (is_wayland) {
         wait_wayland_socket_closed();
