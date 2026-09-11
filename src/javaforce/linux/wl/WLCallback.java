@@ -24,6 +24,10 @@ public class WLCallback extends WLObject {
     }
   }
 
+  public String getName() {
+    return "wl_callback";
+  }
+
   //requests
 
   //events

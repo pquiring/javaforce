@@ -23,6 +23,10 @@ public class WLCompositor extends WLObject {
     }
   }
 
+  public String getName() {
+    return "wl_compositor";
+  }
+
   //requests
 
   public void create_surface(int new_id) {

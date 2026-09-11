@@ -25,6 +25,10 @@ public class WLDisplay extends WLObject {
     }
   }
 
+  public String getName() {
+    return "wl_display";
+  }
+
   //requests
 
   public void sync() {
@@ -37,7 +41,7 @@ public class WLDisplay extends WLObject {
     if (debug) JFLog.log("get_registry");
     int new_id = client.get_next_id();
     WLRegistry registry = new WLRegistry(client, new_id);
-    client.objTypes.put(new_id, registry);
+    client.setObject(new_id, registry);
     invokeRequest(id, 1, new_id);
     return registry;
   }
@@ -49,6 +53,6 @@ public class WLDisplay extends WLObject {
   }
 
   public void delete_id(int old_id) {
-    client.objTypes.remove(old_id);
+    client.removeObject(old_id);
   }
 }

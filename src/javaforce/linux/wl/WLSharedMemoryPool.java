@@ -23,6 +23,10 @@ public class WLSharedMemoryPool extends WLObject {
     }
   }
 
+  public String getName() {
+    return "wl_shm_pool";
+  }
+
   //requests
 
   public void create_buffer(int new_id, int offset, int width, int height, int stride, int format) {

@@ -9,17 +9,21 @@ import javaforce.*;
  * @author pquiring
  */
 
-public class WLObject {
+public abstract class WLObject {
   public static boolean debug = true;
 
   public WLClient client;
   public int id;
   public Method[] events;
 //  public Method[] requests;
+  protected WLNotify notify;
 
   public WLObject(WLClient client) {
     this.client = client;
   }
+
+  public abstract String getName();
+
   private int align32(int offset) {
     int diff = offset & 0x3;
     if (diff == 0) return offset;
@@ -27,15 +31,16 @@ public class WLObject {
     return offset + pad;
   }
   public boolean dispatchEvent(int opcode, byte[] pkt, int offset, int length) {
-    if (debug) JFLog.log("WLObject.dispatchEvent:this=" + getClass().getName() + ":opcode=" + opcode);
     if (opcode >= events.length) {
+      if (debug) JFLog.log("ERROR:WLObject.dispatchEvent:opcode >= events:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
     Method method = events[opcode];
     if (method == null) {
+      if (debug) JFLog.log("ERROR:WLObject.dispatchEvent:method==null:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
-    if (debug) JFLog.log("WLObject.dispatchEvent:method=" + method.getName());
+    if (debug) JFLog.log("WLObject.dispatchEvent:this=" + getClass().getName() + ":opcode=" + opcode + ":method=" + method.getName());
     Class[] types = method.getParameterTypes();
     Object[] args = new Object[types.length];
     //unmarshal args from byte[]
@@ -65,6 +70,9 @@ public class WLObject {
       method.invoke(this, args);
     } catch (Exception e) {
       JFLog.log(e);
+    }
+    if (notify != null) {
+      notify.onEvent(this.getClass().getName(), method.getName(), args);
     }
     return true;
   }
@@ -137,5 +145,8 @@ public class WLObject {
     }
     if (debug) JFLog.log("write.packet=", pkt, 0, pktlen);
     return client.write(pkt, 0, pktlen);
+  }
+  public void setNotify(WLNotify notify) {
+    this.notify = notify;
   }
 }

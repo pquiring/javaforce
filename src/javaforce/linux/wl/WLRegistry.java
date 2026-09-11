@@ -25,6 +25,10 @@ public class WLRegistry extends WLObject {
     }
   }
 
+  public String getName() {
+    return "wl_registry";
+  }
+
   //requests
 
   public void bind(int name, int new_id) {
@@ -35,11 +39,11 @@ public class WLRegistry extends WLObject {
 
   public void global(int name, String iface, int ver) {
     if (debug) JFLog.log("WLRegistry.global:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver));
-    client.globals.put(name, iface + ":" + ver);
+    client.setGlobal(name, iface);
   }
 
   public void global_remove(int name) {
     if (debug) JFLog.log("WLRegistry.global_remove:name=" + name);
-    client.globals.remove(name);
+    client.removeGlobal(name);
   }
 }

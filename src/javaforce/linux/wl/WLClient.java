@@ -22,14 +22,15 @@ public class WLClient {
   private SocketChannel socket;
   private Reader reader;
 
-  public HashMap<Integer, WLObject> objTypes = new HashMap<>();
-  public HashMap<Integer, String> globals = new HashMap<>();
+  private HashMap<Integer, WLObject> objects = new HashMap<>();  //client side objects (id)
+  private HashMap<Integer, String> globals = new HashMap<>();  //server side objects (name)
 
-  public Object next_id_lock = new Object();
-  public int next_id = 2;  //1 = reserved for wl_display
+  private Object next_id_lock = new Object();
+  /** Next client side id. */
+  private int next_id = 2;  //1 = reserved for wl_display
 
   public WLClient() {
-    objTypes.put(1, new WLDisplay(this));
+    objects.put(1, new WLDisplay(this));
   }
 
   public boolean connect() {
@@ -95,12 +96,43 @@ public class WLClient {
     }
   }
 
+  /** Returns next client side id. */
   public int get_next_id() {
     int id;
     synchronized (next_id_lock) {
       id = next_id++;
     }
     return id;
+  }
+
+  /** Add client side WLObject. */
+  public void setObject(int id, WLObject obj) {
+    objects.put(id, obj);
+  }
+
+  /** Get client side WLObject. */
+  public WLObject getObject(int id) {
+    return objects.get(id);
+  }
+
+  /** Remove client side WLObject. */
+  public void removeObject(int id) {
+    objects.remove(id);
+  }
+
+  /** Add server side Object name. */
+  public void setGlobal(int id, String name) {
+    globals.put(id, name);
+  }
+
+  /** Get server side Object name. */
+  public String getGlobal(int id) {
+    return globals.get(id);
+  }
+
+  /** Remove server side Object name. */
+  public void removeGlobal(int id) {
+    globals.remove(id);
   }
 
   private class Reader extends Thread {
@@ -134,7 +166,7 @@ public class WLClient {
                 pktlen += read;
               }
             }
-            WLObject object = objTypes.get(id);
+            WLObject object = objects.get(id);
             if (object == null) {
               JFLog.log("Wayland.Client:Error:id not registered:" + id);
               continue;
