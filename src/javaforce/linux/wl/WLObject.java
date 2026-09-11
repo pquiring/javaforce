@@ -11,7 +11,6 @@ import javaforce.*;
 
 public abstract class WLObject {
   public static boolean debug = true;
-  public static boolean debug_packet = false;
 
   public WLClient client;
   public int id;
@@ -88,15 +87,6 @@ public abstract class WLObject {
     }
     return true;
   }
-  private boolean invokeRequest(int id, int opcode, byte[] args) {
-    int len = 8 + args.length;
-    byte[] pkt = new byte[len];
-    LE.setuint32(pkt, 0, id);
-    LE.setuint16(pkt, 4, opcode);
-    LE.setuint16(pkt, 6, pkt.length);  //full packet length including header
-    System.arraycopy(args, 0, pkt, 8, args.length);
-    return client.write(pkt, 0, pkt.length);
-  }
   public boolean invokeRequest(int id, int opcode, Object... args) {
     //marshall args into byte[]
     int pktlen = 8;  //header
@@ -155,7 +145,6 @@ public abstract class WLObject {
         offset = align32(offset);
       }
     }
-    if (debug_packet) JFLog.log("write.packet=", pkt, 0, pktlen);
     return client.write(pkt, 0, pktlen);
   }
   public void setNotify(WLNotify notify) {

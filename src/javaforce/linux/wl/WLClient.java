@@ -18,7 +18,8 @@ import javaforce.*;
 
 public class WLClient {
   public static boolean debug = true;
-  public static boolean debug_packet = false;
+  public static boolean debug_io = false;
+  public static boolean debug_packet = true;
 
   private SocketChannel socket;
   private Reader reader;
@@ -83,7 +84,7 @@ public class WLClient {
   public int read(byte[] data, int offset, int length) {
     try {
       int read = socket.read(ByteBuffer.wrap(data, offset, length));
-      if (debug_packet) JFLog.log("read=" + read);
+      if (debug_io) JFLog.log("read=" + read);
       return read;
     } catch (Exception e) {
       JFLog.log(e);
@@ -92,9 +93,10 @@ public class WLClient {
   }
 
   public boolean write(byte[] data, int offset, int length) {
+    if (debug_packet) JFLog.log("write.packet=", data, offset, length);
     try {
       int write = socket.write(ByteBuffer.wrap(data, offset, length));
-      if (debug_packet) JFLog.log("write=" + write);
+      if (debug_io) JFLog.log("write=" + write);
       return write == length;
     } catch (Exception e) {
       JFLog.log(e);
@@ -161,15 +163,14 @@ public class WLClient {
             int id = LE.getuint32(pkt, 0);
             int opcode = LE.getuint16(pkt, 4);
             int size = LE.getuint16(pkt, 6);
-            int toread = size;
-            while (pkt.length < toread) {
+            while (pkt.length < size) {
               //grow pkt if needed
               byte[] new_pkt = new byte[pkt.length << 1];
               System.arraycopy(pkt, 0, new_pkt, 0, pkt.length);
               pkt = new_pkt;
             }
-            while (pktlen < toread) {
-              read = read(pkt, pktpos, toread - pktlen);
+            while (pktlen < size) {
+              read = read(pkt, pktpos, size - pktlen);
               if (read == -1) throw new Exception("read failed");
               if (read > 0) {
                 pktpos += read;
@@ -181,7 +182,7 @@ public class WLClient {
               JFLog.log("Wayland.Client:Error:id not registered:" + id);
               continue;
             }
-            if (debug_packet) JFLog.log("read.packet=", pkt, 0, toread);
+            if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
             object.dispatchEvent(opcode, pkt, 8, size);
             pktpos = 0;
             pktlen = 0;
