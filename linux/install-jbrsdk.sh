@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# installs the JetBrains Runtime : https://github.com/JetBrains/JetBrainsRuntime
+# OpenJDK fork with Project Wakefield implemented : https://openjdk.org/projects/wakefield/
+
 VERSION=25.0.4.1
 BUILD=b583.48
 BASE=jbrsdk-$VERSION-linux-x64-$BUILD
