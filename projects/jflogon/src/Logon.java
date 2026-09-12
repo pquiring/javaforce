@@ -443,7 +443,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         "--unit=jfdesktop_session",
         "--property=User=" + uid,
         "--property=Group=" + gid,
-        "--property=TTYPath=/dev/tty8",
+        "--property=TTYPath=/dev/tty" + (is_wayland ? "8" : "7"),
         "--property=WorkingDirectory=/home/" + user,
         "--property=PAMName=javaforce",
         "--property=EnvironmentFile=" + envfile,
