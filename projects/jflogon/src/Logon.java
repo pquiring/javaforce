@@ -436,20 +436,20 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       new File(xdg_runtime_dir).mkdir();
       Linux.chown(xdg_runtime_dir, user);
       String envfile = xdg_runtime_dir + "/environ";
-      String cmd[] = null;
-      cmd = new String[] {
-        "/usr/bin/systemd-run",
-        "--wait",
-        "--unit=jfdesktop_session",
-        "--property=User=" + uid,
-        "--property=Group=" + gid,
-        "--property=TTYPath=/dev/tty" + (is_wayland ? "8" : "7"),
-        "--property=WorkingDirectory=/home/" + user,
-        "--property=PAMName=javaforce",
-        "--property=EnvironmentFile=" + envfile,
-        "/usr/bin/dbus-run-session",
-        session
-      };
+      ArrayList<String> cmd = new ArrayList<>();
+      cmd.add("/usr/bin/systemd-run");
+      cmd.add("--wait");
+      cmd.add("--unit=jfdesktop_session");
+      cmd.add("--property=User=" + uid);
+      cmd.add("--property=Group=" + gid);
+      if (is_wayland) {
+        cmd.add("--property=TTYPath=/dev/tty8");
+      }
+      cmd.add("--property=WorkingDirectory=/home/" + user);
+      cmd.add("--property=PAMName=javaforce");
+      cmd.add("--property=EnvironmentFile=" + envfile);
+      cmd.add("/usr/bin/dbus-run-session");
+      cmd.add(session);
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(false);
       Map<String,String> env = sp.getEnvironment();

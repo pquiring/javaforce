@@ -65,8 +65,10 @@ public class Startup implements ShellProcessListener {
       hidePlymouth();
       create_server_xauth();
       //switch to vt7
-      LinuxAPI.getInstance().ttySetActiveVT(7);
-        JF.exec(new String[] {"numlockx", "on"});
+      if (is_wayland) {
+        LinuxAPI.getInstance().ttySetActiveVT(7);
+      }
+      JF.exec(new String[] {"numlockx", "on"});
       boolean retry;
       do {
         retry = false;
@@ -190,7 +192,6 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "/usr/bin/systemd-run",
             "--unit=jflogon_display_manager",
-            "--property=TTYPath=/dev/tty7",
             "--property=WorkingDirectory=/root",
             "--property=PAMName=javaforce",
             "--property=EnvironmentFile=" + envfile,
