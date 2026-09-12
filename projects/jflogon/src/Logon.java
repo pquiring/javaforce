@@ -20,7 +20,7 @@ import javaforce.net.*;
  * @author pquiring
  */
 
-public class Logon extends javax.swing.JFrame implements ActionListener {
+public class Logon extends javax.swing.JFrame implements ActionListener, ShellProcessListener {
 
   private static boolean debug = true;
   private static Properties props;
@@ -437,21 +437,22 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       Linux.chown(xdg_runtime_dir, user);
       String envfile = xdg_runtime_dir + "/environ";
       ArrayList<String> cmd = new ArrayList<>();
-      cmd.add("/usr/bin/systemd-run");
-      cmd.add("--wait");
-      cmd.add("--unit=jfdesktop_session");
-      cmd.add("--property=User=" + uid);
-      cmd.add("--property=Group=" + gid);
       if (is_wayland) {
+        cmd.add("/usr/bin/systemd-run");
+        cmd.add("--wait");
+        cmd.add("--unit=jfdesktop_session");
+        cmd.add("--property=User=" + uid);
+        cmd.add("--property=Group=" + gid);
         cmd.add("--property=TTYPath=/dev/tty8");
+        cmd.add("--property=WorkingDirectory=/home/" + user);
+        cmd.add("--property=PAMName=javaforce");
+        cmd.add("--property=EnvironmentFile=" + envfile);
       }
-      cmd.add("--property=WorkingDirectory=/home/" + user);
-      cmd.add("--property=PAMName=javaforce");
-      cmd.add("--property=EnvironmentFile=" + envfile);
       cmd.add("/usr/bin/dbus-run-session");
       cmd.add(session);
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(false);
+      sp.addListener(this);
       Map<String,String> env = sp.getEnvironment();
       env.put("USER", user);
       env.put("LOGNAME", user);
@@ -865,6 +866,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     } catch (Throwable t) {
       JFLog.log(t);
     }
+  }
+
+  public void shellProcessOutput(String out) {
+    JFLog.log(out);
   }
 
   public static void main(String[] args) {
