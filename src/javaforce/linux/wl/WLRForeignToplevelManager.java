@@ -33,6 +33,10 @@ public class WLRForeignToplevelManager extends WLObject {
     return "zwlr_foreign_toplevel_manager_v1";
   }
 
+  public WLRForeignToplevelHandle[] getWindows() {
+    return handles.values().toArray(new WLRForeignToplevelHandle[0]);
+  }
+
   //requests
 
   public void stop() {

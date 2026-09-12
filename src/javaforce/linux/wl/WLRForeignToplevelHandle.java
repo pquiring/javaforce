@@ -30,8 +30,19 @@ public class WLRForeignToplevelHandle extends WLObject {
     }
   }
 
+  private String title;
+  private String app_id;
+
   public String getName() {
     return "zwlr_foreign_toplevel_handle_v1";
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getAppID() {
+    return app_id;
   }
 
   //requests
@@ -81,11 +92,11 @@ public class WLRForeignToplevelHandle extends WLObject {
   //events
 
   public void title(String title) {
-
+    this.title = title;
   }
 
   public void app_id(String app_id) {
-
+    this.app_id = app_id;
   }
 
   public void output_enter(int wl_output) {
