@@ -105,7 +105,6 @@ public class Startup  implements ShellProcessListener {
             "XDG_RUNTIME_DIR=/run/user/" + uid,
             "XAUTHORITY=/root/.Xauthority",
             "DISPLAY=:0",
-            "WAYLAND_PID=" + window_mgr_process.getProcess().pid(),
           }
         );
       }
@@ -161,9 +160,7 @@ public class Startup  implements ShellProcessListener {
 
   private static void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
-    int uid = LinuxAPI.getInstance().getUID();
     loginctl();
-    String envfile = System.getenv("XDG_RUNTIME_DIR") + "/wm_environ";
     switch (window_mgr) {
       case "openbox":
         config_openbox();
