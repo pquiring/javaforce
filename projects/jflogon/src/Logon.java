@@ -437,7 +437,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener, ShellPr
       Linux.chown(xdg_runtime_dir, user);
       String envfile = xdg_runtime_dir + "/environ";
       ArrayList<String> cmd = new ArrayList<>();
-      if (is_wayland) {
+      if (!is_wayland) {
+        cmd.add("sudo");
+        cmd.add("-E");
+        cmd.add("-u");
+        cmd.add(user);
+      } else {
         cmd.add("/usr/bin/systemd-run");
         cmd.add("--wait");
         cmd.add("--unit=jfdesktop_session");
