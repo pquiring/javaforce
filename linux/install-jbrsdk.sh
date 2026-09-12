@@ -1,28 +1,34 @@
 #!/bin/bash
 
-function install() {
-  update-alternatives --install /usr/bin/$1 $1 /usr/lib/jvm/jbrsdk-$VERSION-openjdk-amd64/bin/$1 2540
-  update-alternatives --set $1 /usr/lib/jvm/jbrsdk-$VERSION-openjdk-amd64/bin/$1
+VERSION=25.0.4.1
+BUILD=b583.48
+BASE=jbrsdk-$VERSION-linux-x64-$BUILD
+TAR=$BASE.tar.gz
+FOLDER=jbrsdk-$VERSION-openjdk-amd64
+
+function install_link() {
+  ln -s /opt/$FOLDER/bin/$1 /usr/bin/$1
 }
 
-VERSION=25.0.4
-FILE=jbrsdk-25.0.4.1-linux-x64-b583.48.tar.gz
+function install_sdk() {
 
-cd /usr/lib/jvm
+  cd /opt
 
-wget https://cache-redirector.jetbrains.com/intellij-jbr/$FILE
-tar xf $FILE
-mv jbrsdk-25.0.4.1-linux-x64-b583.48 jbrsdk-$VERSION-openjdk-amd64
+  wget https://cache-redirector.jetbrains.com/intellij-jbr/$TAR
+  tar xf $TAR
+  mv $BASE $FOLDER
 
-#install with update-java-alternatives (not working)
-#wget http://pquiring.github.io/javaforce/linux/jbrsdk-$VERSION-openjdk-amd64.jinfo
-#mv jbrsdk-$VERSION-openjdk-amd64.jinfo .jbrsdk-$VERSION-openjdk-amd64.jinfo
-#update-java-alternatives -s jbrsdk-$VERSION-openjdk-amd64
+  install_link java
+  install_link javac
+  install_link javadoc
+  install_link jlink
+  install_link jimage
+  install_link keytool
 
-#install manually
-install java
-install javac
-install javadoc
-install jlink
-install jimage
-install keytool
+}
+
+if [ -f /usr/bin/java ]; then
+  echo /usr/bin/java already exists, please uninstall all JVMs.
+else
+  install_sdk
+fi
