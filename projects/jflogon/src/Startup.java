@@ -199,8 +199,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/0",
             "XDG_VTNR=7"
-          },
-          false
+          }
         );
         break;
       case "weston":
@@ -220,8 +219,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/0",
             "XDG_VTNR=7"
-          },
-          true
+          }
         );
         wait_wayland_socket_opened();
         break;
@@ -240,8 +238,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/0",
             "XDG_VTNR=7"
-          },
-          true
+          }
         );
         wait_wayland_socket_opened();
         break;
@@ -260,8 +257,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/0",
             "XDG_VTNR=7"
-          },
-          true
+          }
         );
         wait_wayland_socket_opened();
         break;
@@ -273,7 +269,7 @@ public class Startup implements ShellProcessListener {
     return res;
   }
 
-  private static boolean start(String[] cmds, String[] envs, boolean use_envfile) {
+  private static boolean start(String[] cmds, String[] envs) {
     if (display_mgr_process != null) {
       JFLog.log("ERROR:start():display manager already running");
       return false;
@@ -285,22 +281,12 @@ public class Startup implements ShellProcessListener {
           display_mgr_process.keepOutput(false);
           display_mgr_process.addListener(new Startup());
           if (envs != null) {
-            if (use_envfile) {
-              FileOutputStream fos = new FileOutputStream("/run/user/0/environ");
-              for(String e : envs) {
-                byte[] ln = (e + "\n").getBytes();
-                fos.write(ln);
-              }
-              fos.close();
-            } else {
-              for(String e : envs) {
-                int idx = e.indexOf('=');
-                if (idx == -1) continue;
-                String name = e.substring(0, idx);
-                String value = e.substring(idx + 1);
-                display_mgr_process.addEnvironmentVariable(name, value);
-              }
+            FileOutputStream fos = new FileOutputStream("/run/user/0/environ");
+            for(String e : envs) {
+              byte[] ln = (e + "\n").getBytes();
+              fos.write(ln);
             }
+            fos.close();
           }
           display_mgr_process.run(cmds, true);
         } catch (Exception e) {
