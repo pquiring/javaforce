@@ -169,10 +169,6 @@ public class Startup  implements ShellProcessListener {
         config_openbox();
         start(
           new String[] {
-            "/usr/bin/systemd-run",
-            "--scope",
-            "--user",
-            "--unit=jfdesktop_window_manager_" + user,
             "/usr/bin/openbox"
           }
         );
@@ -256,14 +252,18 @@ public class Startup  implements ShellProcessListener {
     }
     if (window_mgr_process != null) {
       JFLog.log("Stopping Window Manager...");
-      JF.exec(new String[] {
-        "/usr/bin/systemctl",
-        "--user",
-        "stop",
-        "jfdesktop_window_manager_" + user + ".scope",
-      });
-      if (is_wayland) {
-        wait_wayland_socket_closed();
+      if (!is_wayland) {
+        window_mgr_process.destroy();
+      } else {
+        JF.exec(new String[] {
+          "/usr/bin/systemctl",
+          "--user",
+          "stop",
+          "jfdesktop_window_manager_" + user + ".scope",
+        });
+        if (is_wayland) {
+          wait_wayland_socket_closed();
+        }
       }
       window_mgr_process.waitFor();
       window_mgr_process = null;
