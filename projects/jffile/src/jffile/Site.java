@@ -874,21 +874,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     //TODO
   }
 
-  public static class SiteFileClipboard implements FileClipboard {
-    public void get() {
-      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "getFileSelection");
-    }
-
-    public void set(String fileset) {
-      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "setFileSelection", fileset);
-    }
-
-    public void clear() {
-      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "clearFileSelection");
-    }
-  }
-
-  SiteFileClipboard sfc = new SiteFileClipboard();
+  FileClipboard sfc = new FileClipboard();
 
   public void init(String initLocalDir, boolean localOnly) {
     if (initLocalDir.length() == 0) initLocalDir = JF.getUserPath();
@@ -1157,6 +1143,9 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
   public void _mkdir(String path) {
     File file = new File(path);
     file.mkdir();
+    if (!file.exists()) {
+      JFAWT.showError("Error", "Failed to create folder");
+    }
   }
 
   public void remote_mkdir() {

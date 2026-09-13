@@ -1149,15 +1149,5 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
       drives.storageInfo(dev, volName, fsType, mountPt);
       return true;
     }
-    public boolean getFileSelection(String fs) {
-      //call paste in JFileBrowser
-      if (fs == null) return false;
-      int idx = tabs.getSelectedIndex();
-      if (idx == -1) return false;
-      Site site = (Site)tabs.getSelectedComponent();
-      if (site == null) return false;
-      site.getFocusBrowser().paste(fs);
-      return true;
-    }
   }
 }

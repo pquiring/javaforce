@@ -4,9 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 import java.io.*;
+import java.util.*;
+
 import javax.swing.*;
 
 import javaforce.*;
+import static javaforce.awt.FileList.*;
 
 /** Clipboard functions.
  *
@@ -112,16 +115,6 @@ public class JFClipboard {
     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
   }
 
-  public static class FileList {
-    public java.util.List<File> files;
-    public int action;
-  }
-
-  public static final int NONE = 0;
-  public static final int COPY = 1;
-  public static final int MOVE = 2;  //cut
-  public static final int COPY_OR_MOVE = 3;
-
   public static boolean useAWT = false;  //does not support action types
 
   public static class JComp extends JComponent {}
@@ -197,6 +190,7 @@ public class JFClipboard {
         if (t != null && t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
         {
           java.util.List<File> files = (java.util.List<File>)t.getTransferData(DataFlavor.javaFileListFlavor);
+          fl.files = new ArrayList<File>();
           fl.files.addAll(files);
           fl.action = NONE;
           return fl;

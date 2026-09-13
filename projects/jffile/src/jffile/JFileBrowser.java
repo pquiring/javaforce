@@ -1527,44 +1527,48 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
   public void cut() {
     FileEntry list[] = getSelected();
     if ((list == null) || (list.length == 0)) return;
-    String fs = "cut";
+    FileList files = new FileList();
+    files.files = new ArrayList<>();
     for(int a=0;a<list.length;a++) {
-      fs += ":" + list[a].file;
+      files.files.add(new File(list[a].file));
     }
-    fileClipboard.set(fs);
+    files.action = FileList.MOVE;
+    fileClipboard.set(files);
     setSelectedTransparent();
   }
+
   public void copy() {
     FileEntry list[] = getSelected();
     if ((list == null) || (list.length == 0)) return;
-    String fs = "copy";
+    FileList files = new FileList();
+    files.files = new ArrayList<>();
     for(int a=0;a<list.length;a++) {
-      fs += ":" + list[a].file;
+      files.files.add(new File(list[a].file));
     }
-    fileClipboard.set(fs);
+    files.action = FileList.COPY;
+    fileClipboard.set(files);
   }
 
   public void paste() {
-    fileClipboard.get();
+    paste(fileClipboard.get());
   }
 
-  public void paste(String fileSelection) {
-    if (fileSelection == null) return;
-    String f[] = fileSelection.split(":");
+  public void paste(FileList files) {
+    if (files == null) return;
     ArrayList<String> cmd = new ArrayList<String>();
-    if (f[0].equals("cut")) {
+    if (files.action == FileList.MOVE) {
       //cut
       cmd.add("jfmv");
-    } else if (f[0].equals("copy")) {
+    } else if (files.action == FileList.COPY) {
       //copy
       cmd.add("jfcp");
     } else {
-      JFLog.log("Error:unknown clipboard operation=" + f[0]);
+      JFLog.log("Error:unknown clipboard operation=" + files.action);
     }
-    for(int a=1;a<f.length;a++) {
-      cmd.add(f[a]);
+    for(File src : files.files) {
+      cmd.add(src.getAbsolutePath());
     }
-    cmd.add(path);
+    cmd.add(path);  //dst
     runCmd(this, cmd.toArray(new String[0]));
   }
 

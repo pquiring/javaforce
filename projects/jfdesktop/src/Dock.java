@@ -22,7 +22,7 @@ import jffile.*;
  * @author pquiring
  */
 
-public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, FileClipboard {
+public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener {
 
   /**
    * Creates new form Dock
@@ -599,7 +599,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   private long x11id;
   public static ArrayList<BlueToothDevice> btDevices = new ArrayList<BlueToothDevice>();
   private int buttonsCount = 0;  //# of app buttons shown in dock (pinned & !pinned)
-  private String fileSelection = "";
+  private FileList fileSelection = null;
   private static final int borderSize = 4;
   private int trayPos = 0;
   private final int trayPad = 2;
@@ -2958,37 +2958,5 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       showNetworkPopup();
       return true;
     }
-    //jffile : file ops (should use clipboard)
-    public boolean setFileSelection(String selection) {
-      JFLog.log("setSelection:" + selection);
-      fileSelection = selection;
-      return true;
-    }
-    public boolean getFileSelection(String bus) {
-      if (fileSelection == null) return false;
-      JFLog.log("getSelection:" + bus);
-      try {
-        jbusServer.invoke(bus, "getFileSelection", fileSelection);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return true;
-    }
-    public boolean clearFileSelection() {
-      JFLog.log("clearSelection");
-      fileSelection = null;
-      return true;
-    }
-  }
-
-  public void get() {
-    if (fileSelection == null) return;
-    Desktop.desktop.browser.paste(fileSelection);
-  }
-  public void set(String fileset) {
-    fileSelection = fileset;
-  }
-  public void clear() {
-    fileSelection = "";
   }
 }
