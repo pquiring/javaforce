@@ -438,8 +438,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener, ShellPr
       String envfile = xdg_runtime_dir + "/environ";
       ArrayList<String> cmd = new ArrayList<>();
       if (!is_wayland) {
-        cmd.add("sudo");
-        cmd.add("-E");
+        cmd.add("runuser");
+        cmd.add("-p");  //preserve environ
         cmd.add("-u");
         cmd.add(user);
       } else {
