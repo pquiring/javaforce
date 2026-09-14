@@ -25,7 +25,7 @@ public class TestAWT extends java.awt.Frame {
         e.startDrag(DragSource.DefaultCopyDrop, transferable, null);
       }
     );
-    new DropTarget(drop_area, DnDConstants.ACTION_COPY_OR_MOVE,
+    new DropTarget(text_area, DnDConstants.ACTION_COPY_OR_MOVE,
       new DropTargetAdapter() {
       public void drop(DropTargetDropEvent evt) {
         try {
@@ -33,7 +33,7 @@ public class TestAWT extends java.awt.Frame {
           Transferable tr = evt.getTransferable();
           if (tr.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             String data = (String) tr.getTransferData(DataFlavor.stringFlavor);
-            drop_area.setText(data);
+            text_area.setText(data);
             evt.dropComplete(true);
           } else {
             evt.rejectDrop();
@@ -54,10 +54,13 @@ public class TestAWT extends java.awt.Frame {
   private void initComponents() {
 
     button1 = new java.awt.Button();
-    textField1 = new java.awt.TextField();
+    textField = new java.awt.TextField();
     drag_me = new javax.swing.JLabel();
     jScrollPane1 = new javax.swing.JScrollPane();
-    drop_area = new javax.swing.JTextArea();
+    text_area = new javax.swing.JTextArea();
+    copy = new javax.swing.JButton();
+    paste = new javax.swing.JButton();
+    cut = new javax.swing.JButton();
 
     addWindowListener(new java.awt.event.WindowAdapter() {
       public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -65,17 +68,25 @@ public class TestAWT extends java.awt.Frame {
       }
     });
 
-    button1.setLabel("button1");
+    button1.setLabel("Button");
     button1.addActionListener(this::button1ActionPerformed);
 
-    textField1.setText("textField1");
-
+    drag_me.setBackground(new java.awt.Color(0, 51, 255));
     drag_me.setText("Drag Me");
 
-    drop_area.setColumns(20);
-    drop_area.setRows(5);
-    drop_area.setText("Drop Here");
-    jScrollPane1.setViewportView(drop_area);
+    text_area.setColumns(20);
+    text_area.setRows(5);
+    text_area.setText("Drop Here");
+    jScrollPane1.setViewportView(text_area);
+
+    copy.setText("Copy");
+    copy.addActionListener(this::copyActionPerformed);
+
+    paste.setText("Paste");
+    paste.addActionListener(this::pasteActionPerformed);
+
+    cut.setText("Cut");
+    cut.addActionListener(this::cutActionPerformed);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -88,10 +99,13 @@ public class TestAWT extends java.awt.Frame {
             .addComponent(drag_me)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(textField1, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addComponent(textField, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(copy, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(cut, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(paste, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -99,12 +113,18 @@ public class TestAWT extends java.awt.Frame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(textField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(textField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(drag_me)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(copy)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(cut)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(paste))
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+          .addComponent(drag_me, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -114,13 +134,25 @@ public class TestAWT extends java.awt.Frame {
   /**
    * Exit the Application
    */
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-      System.exit(0);
-    }//GEN-LAST:event_exitForm
+  private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+    System.exit(0);
+  }//GEN-LAST:event_exitForm
 
   private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
     test();
   }//GEN-LAST:event_button1ActionPerformed
+
+  private void copyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyActionPerformed
+    cb_copy();
+  }//GEN-LAST:event_copyActionPerformed
+
+  private void cutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutActionPerformed
+    cb_cut();
+  }//GEN-LAST:event_cutActionPerformed
+
+  private void pasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteActionPerformed
+    cb_paste();
+  }//GEN-LAST:event_pasteActionPerformed
 
   /**
    * @param args the command line arguments
@@ -136,13 +168,36 @@ public class TestAWT extends java.awt.Frame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private java.awt.Button button1;
+  private javax.swing.JButton copy;
+  private javax.swing.JButton cut;
   private javax.swing.JLabel drag_me;
-  private javax.swing.JTextArea drop_area;
   private javax.swing.JScrollPane jScrollPane1;
-  private java.awt.TextField textField1;
+  private javax.swing.JButton paste;
+  private java.awt.TextField textField;
+  private javax.swing.JTextArea text_area;
   // End of variables declaration//GEN-END:variables
 
   private void test() {
-    System.out.println("button clicked!");
+    System.out.println("Button clicked!");
+    textField.setText("Button clicked!");
   }
+
+  JFClipboard cb = new JFClipboard();
+
+  private void cb_copy() {
+    JFClipboard.writeString(text_area.getText());
+  }
+
+  private void cb_cut() {
+    JFClipboard.writeString(text_area.getText());
+    text_area.setText("");
+  }
+
+  private void cb_paste() {
+    String str = JFClipboard.readString();
+    if (str == null) return;
+    text_area.setText(str);
+  }
+
+
 }
