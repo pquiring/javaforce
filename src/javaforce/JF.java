@@ -2170,11 +2170,19 @@ public class JF {
     return Runtime.getRuntime().maxMemory();
   }
 
+  /** Returns true if jfAdmin is installed. */
   public static boolean isAdminServicePresent() {
     String file = getClassFolder("jfadmin") + "/jfadmin.jar";
     return new File(file).exists();
   }
 
+  /** Returns true if superCls is derived from baseCls.
+   *
+   * Equivalent to:
+   *   superObj instanceof baseObj
+   * but using Class types instead of Objects.
+   *
+   */
   public static boolean isDerivedFrom(Class<?> superCls, Class<?> baseCls) {
     return baseCls.isAssignableFrom(superCls);
   }

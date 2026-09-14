@@ -13,10 +13,13 @@ import javaforce.*;
 public class WLRForeignToplevelManager extends WLObject {
 
   private HashMap<Integer, WLObject> handles = new HashMap<>();
+  private Object lock = new Object();
+  private WLWindowEvents win_events;
 
   @SuppressWarnings("unchecked")
-  public WLRForeignToplevelManager(WLClient client, int id) {
+  public WLRForeignToplevelManager(WLClient client, int id, WLWindowEvents win_events) {
     super(client, id);
+    this.win_events = win_events;
     setVersion(3);
     Class cls = getClass();
     try {
@@ -34,7 +37,20 @@ public class WLRForeignToplevelManager extends WLObject {
   }
 
   public WLRForeignToplevelHandle[] getWindows() {
-    return handles.values().toArray(new WLRForeignToplevelHandle[0]);
+    synchronized (lock) {
+      return handles.values().toArray(new WLRForeignToplevelHandle[0]);
+    }
+  }
+
+  public void removeWindow(WLRForeignToplevelHandle window) {
+    synchronized (lock) {
+      handles.remove(window.getHandle());
+    }
+    win_events.onWindowChange();
+  }
+
+  public void onWindowChange() {
+    win_events.onWindowChange();
   }
 
   //requests
@@ -46,10 +62,13 @@ public class WLRForeignToplevelManager extends WLObject {
   //events
 
   public void toplevel(int handle) {
-    handles.put(handle, new WLRForeignToplevelHandle(client, handle));
+    synchronized (lock) {
+      handles.put(handle, new WLRForeignToplevelHandle(client, handle, this));
+    }
+    win_events.onWindowChange();
   }
 
   public void finished() {
-
+    //stop() request has been processed
   }
 }

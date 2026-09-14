@@ -10,6 +10,7 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.bus.*;
 import javaforce.linux.*;
+import javaforce.linux.wl.*;
 import javaforce.net.*;
 import javaforce.io.*;
 
@@ -22,7 +23,7 @@ import jffile.*;
  * @author pquiring
  */
 
-public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener {
+public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, WLWindowEvents {
 
   /**
    * Creates new form Dock
@@ -127,6 +128,10 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
             }
           }
         }.start();
+      } else {
+        //start Wayland toplevel Window monitor
+        wl_window_monitor = new WLWindowMonitor(this);
+        wl_window_monitor.start();
       }
       JF.sleep(250);  //wait for threads to start
       if (new File("/usr/bin/acpi").exists()) {
@@ -605,6 +610,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   private final int trayPad = 2;
   private JButton newButton;
   private int newButtonIdx;
+  private WLWindowMonitor wl_window_monitor;
+
+  //X11Listener
 
   public void trayIconAdded(int count) {
     JFLog.log("Dock:tray icon added");
@@ -621,7 +629,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     updatePending = true;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        updateWindowList();
+        x11_updateWindowList();
       }
     });
   }
@@ -632,17 +640,36 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private static class Window {
     public long xid;
+    public WLRForeignToplevelHandle wl_window;
     public String title;
     public Window(long xid, String title) {
       this.xid = xid;
+      this.title = title;
+    }
+    public Window(WLRForeignToplevelHandle wl_window, String title) {
+      this.wl_window = wl_window;
       this.title = title;
     }
     public void show() {
       if (!Session.is_wayland) {
         Linux.x11_map_window(xid);
         Linux.x11_raise_window(xid);
+      } else {
+        wl_window.activate();
       }
     }
+  }
+
+  //WLWindowEvents
+
+  public void onWindowChange() {
+    if (updatePending) return;
+    updatePending = true;
+    java.awt.EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        wl_updateWindowList();
+      }
+    });
   }
 
   private static class Group {
@@ -657,8 +684,21 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       }
       addWindow(xid, title);
     }
+    public void updateTitle(WLRForeignToplevelHandle wl_window, String title) {
+      for(int a=0;a<windows.size();a++) {
+        Window window = windows.get(a);
+        if (window.wl_window == wl_window) {
+          window.title = title;
+          return;
+        }
+      }
+      addWindow(wl_window, title);
+    }
     public void addWindow(long xid, String title) {
       windows.add(new Window(xid, title));
+    }
+    public void addWindow(WLRForeignToplevelHandle wl_window, String title) {
+      windows.add(new Window(wl_window, title));
     }
     public void clearWindows() {
       windows.clear();
@@ -687,7 +727,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }
 
   //updates the active windows list
-  private synchronized void updateWindowList() {
+  private synchronized void x11_updateWindowList() {
     if (Session.is_wayland) return;
     //add buttons
     updatePending = false;
@@ -742,6 +782,84 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
           for(int w=0;w<winList.length;w++) {
             Linux.Window x11window = winList[w];
             if (x11window.xid == window.xid) {group_ok = true; window_ok = true; break;}
+          }
+          if (!window_ok) {
+            group.removeWindow(g);
+          } else {
+            g++;
+          }
+        }
+        if (group_ok) {
+          createAppPopupMenu(button);
+          continue;
+        }
+        //remove button (if not pinned)
+        Boolean pinned = (Boolean)button.getClientProperty("pinned");
+        if (!pinned) {
+          removeButton(button);
+          //NOTE:do NOT update buts list
+        } else {
+          createAppPopupMenu(button);  //remove any windows
+        }
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  //updates the active windows list
+  private synchronized void wl_updateWindowList() {
+    //add buttons
+    updatePending = false;
+    try {
+      WLRForeignToplevelHandle winList[] = wl_window_monitor.getWindows();
+      Component buts[] = buttons.getComponents();
+      for(int w=0;w<winList.length;w++) {
+        WLRForeignToplevelHandle wl_window = winList[w];
+        wl_window.file = null;
+        if (wl_window.file == null && wl_window.getTitle().length() > 0) wl_window.file = DesktopCache.getDesktopFromText(wl_window.getTitle());
+        if (wl_window.file == null && wl_window.getAppID().length() > 0) wl_window.file = DesktopCache.getDesktopFromText(wl_window.getAppID());
+        if (wl_window.file == null) {
+          //unable to match window (TODO : create a generic button? : would need to copy icon)
+          JFLog.log("Dock:Unable to match window to application:" + wl_window.getTitle());
+          continue;
+        }
+        boolean ok = false;
+        for(int b=0;b<buts.length;b++) {
+          if (!(buts[b] instanceof JButton)) continue;
+          JButton button = (JButton)buts[b];
+          String file = (String)button.getClientProperty("file");
+          if (file.startsWith("#")) continue;
+          Group group = (Group)button.getClientProperty("group");
+          if (file.equals(wl_window.file)) {
+            group.updateTitle(wl_window, wl_window.getTitle());
+            ok = true;
+            break;
+          }
+        }
+        if (ok) continue;
+        //add new button
+        JButton button = addButton(wl_window.file, false, -1);
+        if (button != null) {
+          Group group = (Group)button.getClientProperty("group");
+          group.addWindow(wl_window, wl_window.getTitle());
+        }
+        buts = buttons.getComponents();
+      }
+      //remove buttons
+      for(int b=0;b<buts.length;b++) {
+        if (!(buts[b] instanceof JButton)) continue;
+        JButton button = (JButton)buts[b];
+        String file = (String)button.getClientProperty("file");
+        if (file.startsWith("#")) continue;
+        Group group = (Group)button.getClientProperty("group");
+        boolean group_ok = false;
+        for(int g=0;g<group.size();) {
+          Window window = group.getWindow(g);
+          boolean window_ok = false;
+          for(int w=0;w<winList.length;w++) {
+            WLRForeignToplevelHandle wl_window = winList[w];
+            if (wl_window == window.wl_window) {group_ok = true; window_ok = true; break;}
           }
           if (!window_ok) {
             group.removeWindow(g);

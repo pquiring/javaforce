@@ -40,11 +40,7 @@ public class Desktop extends javax.swing.JFrame {
       if (!Session.is_wayland) {
         x11id = Linux.x11_get_id(this);
         JFLog.log("Desktop.window=0x" + Long.toString(x11id, 16));
-        try {
-          Linux.x11_set_desktop(x11id);
-        } catch (Throwable t) {
-          JFLog.log(t);
-        }
+        x11_set_desktop();
       }
       if (!Dock.dock.config.showIcons) {
         newShortcut.setEnabled(false);
@@ -52,11 +48,7 @@ public class Desktop extends javax.swing.JFrame {
         browser.setIconsVisible(false);
       }
       if (!Session.is_wayland) {
-        try {
-          Linux.x11_set_desktop(x11id);
-        } catch (Throwable t) {
-          JFLog.log(t);
-        }
+        x11_set_desktop();
       }
       JFLog.log("Desktop init complete");
     } catch (Exception e) {

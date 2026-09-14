@@ -11,8 +11,9 @@ import javaforce.*;
 
 public class WLRForeignToplevelHandle extends WLObject {
   @SuppressWarnings("unchecked")
-  public WLRForeignToplevelHandle(WLClient client, int id) {
+  public WLRForeignToplevelHandle(WLClient client, int id, WLRForeignToplevelManager manager) {
     super(client, id);
+    this.manager = manager;
     Class cls = getClass();
     try {
       events = new Method[] {
@@ -30,8 +31,15 @@ public class WLRForeignToplevelHandle extends WLObject {
     }
   }
 
+  private WLRForeignToplevelManager manager;
   private String title;
   private String app_id;
+
+  public String file;  //user defined
+
+  public int getHandle() {
+    return id;
+  }
 
   public String getName() {
     return "zwlr_foreign_toplevel_handle_v1";
@@ -93,10 +101,12 @@ public class WLRForeignToplevelHandle extends WLObject {
 
   public void title(String title) {
     this.title = title;
+    manager.onWindowChange();
   }
 
   public void app_id(String app_id) {
     this.app_id = app_id;
+    manager.onWindowChange();
   }
 
   public void output_enter(int wl_output) {
@@ -116,7 +126,7 @@ public class WLRForeignToplevelHandle extends WLObject {
   }
 
   public void closed() {
-
+    manager.removeWindow(this);
   }
 
   //V3

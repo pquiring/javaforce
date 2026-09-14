@@ -1,44 +1,45 @@
-package javaforce.tests;
-
-import javaforce.linux.wl.WLRegistry;
-import javaforce.linux.wl.WLClient;
-import javaforce.linux.wl.WLDisplay;
+package javaforce.linux.wl;
 
 import javaforce.*;
-import javaforce.linux.wl.*;
 
-/** TestWL.
+/** WLWindowMonitor.
  *
  * @author pquiring
  */
 
-public class TestWL implements WLNotify, WLWindowEvents {
-  public static void main(String[] args) {
-    new TestWL().run();
+public class WLWindowMonitor implements WLNotify, WLWindowEvents {
+  private boolean active;
+
+  private WLClient client;
+  private WLDisplay display;
+  private WLRegistry registry;
+  private WLRForeignToplevelManager toplevel_manager;
+
+  private WLWindowEvents events;
+
+  public WLWindowMonitor(WLWindowEvents events) {
+    this.events = events;
   }
 
-  boolean active;
-  WLClient client;
-  WLDisplay display;
-  WLRegistry registry;
-  WLRForeignToplevelManager toplevel_manager;
-
-  public void run() {
-    active = true;
+  public void start() {
     client = new WLClient();
     if (!client.connect()) {
       return;
     }
     display = client.get_display();
     registry = display.get_registry(this);
-    while (active) {
-      JF.sleep(1000);
-    }
+  }
+
+  public void stop() {
     client.disconnect();
+    client = null;
+  }
+
+  public WLRForeignToplevelHandle[] getWindows() {
+    return toplevel_manager.getWindows();
   }
 
   public void onEvent(String cls, String method, Object[] args) {
-    JFLog.log("onEvent:" + cls + "," + method);
     switch (cls) {
       case "wl_registry": {
         switch (method) {
@@ -68,6 +69,6 @@ public class TestWL implements WLNotify, WLWindowEvents {
   }
 
   public void onWindowChange() {
-    JFLog.log("TopLevel Window Change detected.");
+    events.onWindowChange();
   }
 }
