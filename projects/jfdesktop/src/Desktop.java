@@ -21,10 +21,9 @@ public class Desktop extends javax.swing.JFrame {
    */
   public Desktop() {
     try {
+      //NOTE : for X11 remove these next two lines and change to javax.swing.JWindow
       setUndecorated(true);
-      if (Session.is_wayland) {
-        setTitle("jfDesktop");
-      }
+      setTitle("jfDesktop");
       initComponents();
       setPosition();
       desktop = this;
