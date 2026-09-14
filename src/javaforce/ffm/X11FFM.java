@@ -45,7 +45,7 @@ public class X11FFM implements X11API {
   public int x11_tray_width() { try { int _ret_value_ = (int)x11_tray_width.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle x11_get_id;
-  public long x11_get_id(java.awt.Window a1) { try { long _ret_value_ = (long)x11_get_id.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long x11_get_id(java.awt.Window a1) { try { long _ret_value_ = (long)x11_get_id.invokeExact(FFM.ref_object(a1));FFM.unref_object(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle x11_map_window;
   public void x11_map_window(long a1) { try { x11_map_window.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
@@ -102,7 +102,7 @@ public class X11FFM implements X11API {
     x11_send_event_id = ffm.getFunctionPtr("_x11_send_event_id", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_BOOLEAN));
     x11_keysym_to_keycode = ffm.getFunctionPtr("_x11_keysym_to_keycode", ffm.getFunctionDesciptor(JAVA_INT,JAVA_CHAR));
     x11_tray_width = ffm.getFunctionPtr("_x11_tray_width", ffm.getFunctionDesciptor(JAVA_INT));
-    x11_get_id = ffm.getFunctionPtr("_x11_get_id", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    x11_get_id = ffm.getFunctionPtr("_x11_get_id", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));
     x11_map_window = ffm.getFunctionPtr("_x11_map_window", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     x11_minimize_all = ffm.getFunctionPtr("_x11_minimize_all", ffm.getFunctionDesciptorVoid());
     x11_raise_window = ffm.getFunctionPtr("_x11_raise_window", ffm.getFunctionDesciptorVoid(JAVA_LONG));

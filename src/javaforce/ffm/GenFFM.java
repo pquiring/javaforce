@@ -233,6 +233,8 @@ public class GenFFM {
           } else {
             if (isPrimitiveType(java_type)) {
               ValueLayout_type = "JAVA_" + java_type.toUpperCase();
+            } else if (java_type.equals("java.awt.Window")) {
+              ValueLayout_type = "JAVA_LONG";
             } else if (java_type.equals("javaforce.ui.Window")) {
               ValueLayout_type = "JAVA_LONG";
             } else if (FFMStruct.isStruct(arg)) {
@@ -287,6 +289,9 @@ public class GenFFM {
             } else if (java_type.equals("javaforce.linux.X11Listener")) {
               method.append("FFM.upcall_X11Listener");
               method.insert(before_invoke, "FFM.setX11Listener(" + arg_name + ");");
+            } else if (java_type.equals("java.awt.Window")) {
+              method.append("FFM.ref_object(" + arg_name + ")");
+              object = arg_name;
             } else if (java_type.equals("javaforce.ui.Window")) {
               method.append("FFM.ref_object(" + arg_name + ")");
               object = arg_name;
