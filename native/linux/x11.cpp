@@ -62,6 +62,7 @@ jlong x11_get_id(jlong window)
 
 void x11_set_desktop(jlong xid)
 {
+  printf("x11_set_desktop:%p\n", xid);
   Display* display = (*_XOpenDisplay)(NULL);
   int ret;
   Atom* states = (Atom*)malloc(sizeof(Atom) * 4);
@@ -84,6 +85,7 @@ void x11_set_desktop(jlong xid)
 
 void x11_set_dock(jlong xid)
 {
+  printf("x11_set_dock:%p\n", xid);
   Display* display = (*_XOpenDisplay)(NULL);
   int ret;
   Atom* states = (Atom*)malloc(sizeof(Atom) * 4);
@@ -106,6 +108,7 @@ void x11_set_dock(jlong xid)
 
 void x11_set_strut(jlong xid, jint panelHeight, jint x, jint y, jint width, jint height)
 {
+  printf("x11_set_strut:%p,%d,%d,%d,%d,%d\n", xid, panelHeight,x,y,width,height);
   Display* display = (*_XOpenDisplay)(NULL);
   Atom strut = (*_XInternAtom)(display, "_NET_WM_STRUT_PARTIAL", 0);
   Atom *values = (Atom*)malloc(sizeof(Atom) * 12);
