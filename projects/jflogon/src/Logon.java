@@ -486,8 +486,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener, ShellPr
       fos.close();
       if (debug) JFLog.log("JID=" + jid);
       if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
+      dispose();
       if (is_wayland) {
-        dispose();
         instance = null;
         if (!is_nested) {
           stop();
@@ -519,6 +519,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener, ShellPr
         }
       } else {
         Linux.x11_rr_reset("800x600");
+        startUI();
       }
     } catch (Throwable t1) {
       JFLog.log(t1);
