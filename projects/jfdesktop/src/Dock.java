@@ -56,8 +56,8 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       loadButtons();
       DisplayMode screen_mode = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
       if (Session.is_wayland) {
-        Startup.taskbar_height = panelHeight;
-        Startup.reconfig();
+        Startup.instance.taskbar_height = panelHeight;
+        Startup.instance.reconfig();
       } else {
         try {
           Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
@@ -1256,8 +1256,8 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     JFLog.log("updateConfig:screen=" + screen_mode.getWidth() + "x" + screen_mode.getHeight());
     try {
       if (Session.is_wayland) {
-        Startup.taskbar_height = panelHeight;
-        Startup.reconfig();
+        Startup.instance.taskbar_height = panelHeight;
+        Startup.instance.reconfig();
       } else {
         Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
       }

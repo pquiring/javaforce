@@ -13,21 +13,23 @@ import static javaforce.linux.Linux.*;
  * @author pquiring
  */
 
-public class Startup  implements ShellProcessListener {
-  private static Properties props;
-  private static boolean is_wayland = false;
-  private static boolean is_nested = false;
-  private static String window_mgr = "openbox";
-  private static ShellProcess window_mgr_process;
-  private static Wayland wayland;
-  private static String user;
+public class Startup implements ShellProcessListener {
+  public static Startup instance;
 
-  private static int LOG_DEFAULT = 0;
-  private static int LOG_DISPLAY = 1;
+  private Properties props;
+  private boolean is_wayland = false;
+  private boolean is_nested = false;
+  private String window_mgr = "openbox";
+  private ShellProcess window_mgr_process;
+  private Wayland wayland;
+  private String user;
 
-  public static int taskbar_height = 57;
+  private int LOG_DEFAULT = 0;
+  private int LOG_DISPLAY = 1;
 
-  public static void load_config() {
+  public int taskbar_height = 57;
+
+  public void load_config() {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
@@ -40,9 +42,14 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
-  private static boolean tty = false;
+  private boolean tty = false;
 
-  public static void main(String args[]) {
+  public void main(String args[]) {
+    new Startup().run();
+  }
+
+  public void run() {
+    instance = this;
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-system.log", true);
     JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
     JFLog.log("jfDesktop:Startup");
@@ -119,9 +126,10 @@ public class Startup  implements ShellProcessListener {
     JF.sleep(1000);
   }
 
-  private static void startUI(String[] cmds, String[] envs) throws Exception {
+  private void startUI(String[] cmds, String[] envs) throws Exception {
     ShellProcess process = new ShellProcess();
     process.keepOutput(false);
+    process.addListener(this);
     if (envs != null) {
       for(String e : envs) {
         int idx = e.indexOf('=');
@@ -140,7 +148,7 @@ public class Startup  implements ShellProcessListener {
     JFLog.log(LOG_DISPLAY, out);
   }
 
-  private static void wait_wayland_socket_opened() {
+  private void wait_wayland_socket_opened() {
     String socket = System.getenv("XDG_RUNTIME_DIR") + "/wayland-0";
     JFLog.log("Waiting for wayland socket to open:" + socket);
     for(int a=0;a<10;a++) {
@@ -151,14 +159,14 @@ public class Startup  implements ShellProcessListener {
     JF.sleep(1000);
   }
 
-  private static void loginctl() {
+  private void loginctl() {
     ShellProcess sp = new ShellProcess();
     sp.keepOutput(true);
     String loginctl = sp.run(new String[] {"/usr/bin/loginctl"}, true);
     JFLog.log("loginctl:\n" + loginctl);
   }
 
-  private static void start() throws Exception {
+  private void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
     loginctl();
     switch (window_mgr) {
@@ -219,7 +227,7 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
-  private static void start(String[] cmds) {
+  private void start(String[] cmds) {
     new Thread() {
       public void run() {
         window_mgr_process = new ShellProcess();
@@ -231,7 +239,7 @@ public class Startup  implements ShellProcessListener {
     }.start();
   }
 
-  private static void wait_wayland_socket_closed() {
+  private void wait_wayland_socket_closed() {
     String socket = System.getenv("XDG_RUNTIME_DIR") + "/wayland-0";
     JFLog.log("Waiting for wayland socket to close:" + socket);
     for(int a=0;a<10;a++) {
@@ -242,7 +250,7 @@ public class Startup  implements ShellProcessListener {
     JF.sleep(1000);
   }
 
-  public static boolean stop() throws Exception {
+  public boolean stop() throws Exception {
     if (window_mgr_process == null) {
       JFLog.log("ERROR:stop():window manager not running");
       return false;
@@ -269,7 +277,7 @@ public class Startup  implements ShellProcessListener {
     return true;
   }
 
-  public static boolean reconfig() {
+  public boolean reconfig() {
     //NOTE : this runs in Session process
     JFLog.log(LOG_DISPLAY, "reconfig:taskbar_height=" + taskbar_height);
     switch (window_mgr) {
@@ -305,7 +313,7 @@ public class Startup  implements ShellProcessListener {
     return true;
   }
 
-  private static void reconfig(String[] cmds, String[] envs) {
+  private void reconfig(String[] cmds, String[] envs) {
     new Thread() {
       public void run() {
         ShellProcess process = new ShellProcess();
@@ -326,13 +334,13 @@ public class Startup  implements ShellProcessListener {
     }.start();
   }
 
-  private static String getProperty(String name) {
+  private String getProperty(String name) {
     String prop = props.getProperty(name);
     if (prop == null) prop = "";
     return prop.trim();
   }
 
-  private static void start_jf_wayland() {
+  private void start_jf_wayland() {
     new Thread() {
       public void run() {
         wayland.start();
@@ -340,11 +348,11 @@ public class Startup  implements ShellProcessListener {
     }.start();
   }
 
-  private static void stop_jf_wayland() {
+  private void stop_jf_wayland() {
     wayland.stop();
   }
 
-  private static void copyAll(String src, String dst, String replace_find, String replace_with) {
+  private void copyAll(String src, String dst, String replace_find, String replace_with) {
     try {
       FileInputStream fis = new FileInputStream(src);
       byte[] data = fis.readAllBytes();
@@ -358,36 +366,36 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
-  private static void config_weston() {
+  private void config_weston() {
     JF.copyAll("/etc/jflogon/weston.ini", "/etc/xdg/weston/weston.ini");
   }
-  private static void config_labwc() {
+  private void config_labwc() {
     String labwc =  JF.getUserPath() + "/.config/labwc";
     new File(labwc).mkdirs();
     copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml", "$SIZE", Integer.toString(taskbar_height));
     JF.copyAll("/etc/jfdesktop/labwc-menu.xml", labwc + "/menu.xml");
   }
-  private static void config_sway() {
+  private void config_sway() {
     String sway =  JF.getUserPath() + "/.config/sway";
     new File(sway).mkdirs();
   }
-  private static void config_jf_wayland() {
+  private void config_jf_wayland() {
     wayland = new Wayland();
   }
-  private static void config_openbox() {
+  private void config_openbox() {
     String openbox =  JF.getUserPath() + "/openbox";
     new File(openbox).mkdir();
     JF.copyAll("/etc/jfdesktop/openbox-rc.xml", openbox + "/rc.xml");
     JF.copyAll("/etc/jfdesktop/openbox-menu.xml", openbox + "/menu.xml");
   }
-  private static void log_env() {
+  private void log_env() {
     JFLog.log(LOG_DEFAULT, "Environment:");
     String[] envs = JF.getEnvironment();
     for(String e : envs) {
       JFLog.log(LOG_DEFAULT, e);
     }
   }
-  private static void log_runtime_dir() {
+  private void log_runtime_dir() {
     String[] files = new File(System.getenv("XDG_RUNTIME_DIR")).list();
     JFLog.log("XDG_RUNTIME_DIR:");
     for(String file : files) {
