@@ -22,7 +22,9 @@ public class Desktop extends javax.swing.JFrame {
   public Desktop() {
     try {
       setUndecorated(true);
-      setTitle("jfDesktop");
+      if (Session.is_wayland) {
+        setTitle("jfDesktop");
+      }
       initComponents();
       setPosition();
       desktop = this;

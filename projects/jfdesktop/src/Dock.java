@@ -30,9 +30,8 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
    */
   public Dock() {
     try {
+      setUndecorated(true);
       if (Session.is_wayland) {
-        //these require JFrame and are required for Wayland for now...
-        setUndecorated(true);
         setTitle("jfDock");
       }
       initComponents();
