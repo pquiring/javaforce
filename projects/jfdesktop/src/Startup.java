@@ -44,7 +44,7 @@ public class Startup implements ShellProcessListener {
 
   private boolean tty = false;
 
-  public void main(String args[]) {
+  public static void main(String args[]) {
     new Startup().run();
   }
 
