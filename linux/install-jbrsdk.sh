@@ -25,7 +25,7 @@ TAR=$BASE.tar.gz
 FOLDER=jbrsdk-$VERSION-openjdk-$ARCH
 
 function install_link() {
-  if [ -f /usr/bin/$1 ]; then
+  if [ -f /usr/bin/$1 || -h /usr/bin/$1 ]; then
     rm /usr/bin/$1
   fi
   ln -s /opt/$FOLDER/bin/$1 /usr/bin/$1
