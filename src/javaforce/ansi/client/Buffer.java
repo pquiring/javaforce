@@ -488,7 +488,7 @@ public class Buffer implements Screen {
   public void insert() {
     Line line = lines[cy + scrollBack];
     for(int x=sx-2;x>=cx;x--) {
-      line.copy(x-1, x);
+      line.copy(x+1, x);
     }
     line.set(cx, foreColor, backColor);
   }
