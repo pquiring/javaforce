@@ -41,12 +41,8 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       dock = this;
       if (!Session.is_wayland) {
         x11id = Linux.x11_get_id(this);
-        JFLog.log("Dock.window=0x" + Long.toString(x11id, 16));
-        try {
-          Linux.x11_set_dock(x11id);
-        } catch (Throwable t) {
-          JFLog.log(t);
-        }
+        JFLog.log("Dock.window=0x" + Long.toHexString(x11id));
+        x11_set_dock();
       }
       addTo = buttons;
       loadConfig();
@@ -60,6 +56,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         Startup.instance.reconfig();
       } else {
         try {
+          JFLog.log("x11_set_strut:" + Long.toHexString(x11id));
           Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
         } catch (Throwable t) {
           JFLog.log(t);
@@ -96,7 +93,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       //connect to JBus
       JFLog.log("jbusClient:package=" + SystemBusNames.desktop + "." + System.getenv("JID"));
       jbusServer = new JBusServer(SystemBusNames.desktop + "." + System.getenv("JID"), new JBusMethods());
-      jbusServer.connect();
+      if (!jbusServer.connect()) {
+        jbusServer = null;
+      }
       if (new File("/usr/sbin/hciconfig").exists()) {
         checkBluetooth();
       }
@@ -109,6 +108,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       mkdirs();
       keyboardWindow = new KeyboardWindow();
       if (!Session.is_wayland) {
+        JFLog.log("Linux.x11_set_listener");
         Linux.x11_set_listener(this);
         new Thread() {
           public void run() {
@@ -140,11 +140,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         checkBattery();
       }
       if (!Session.is_wayland) {
-        try {
-          Linux.x11_set_dock(x11id);
-        } catch (Throwable t) {
-          JFLog.log(t);
-        }
+        x11_set_dock();
       }
       new Thread() {
         public void run() {
@@ -379,7 +375,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
     JFLog.log("Reboot");
     try {
-      jbusServer.invoke(SystemBusNames.system, "reboot");
+      if (jbusServer != null) {
+        jbusServer.invoke(SystemBusNames.system, "reboot");
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -392,7 +390,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
     JFLog.log("Shutdown");
     try {
-      jbusServer.invoke(SystemBusNames.system, "shutdown");
+      if (jbusServer != null) {
+        jbusServer.invoke(SystemBusNames.system, "shutdown");
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -416,9 +416,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   private void SleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SleepActionPerformed
     //disconnect all VPN
     try {
-      jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
-      JF.sleep(500);
-      jbusServer.invoke(SystemBusNames.system, "sleep");
+      if (jbusServer != null) {
+        jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
+        JF.sleep(500);
+        jbusServer.invoke(SystemBusNames.system, "sleep");
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -1608,7 +1610,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       }
       if (action.equals("#wap-disconnect")) {
         try {
-          jbusServer.invoke(SystemBusNames.network, "disconnectWAP");
+          if (jbusServer != null) {
+            jbusServer.invoke(SystemBusNames.network, "disconnectWAP");
+          }
         } catch (Exception e) {
           JFLog.log(e);
         }
@@ -1709,16 +1713,22 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private JFDictionary getWAPList() {
     try {
-      return (JFDictionary)jbusServer.invoke(SystemBusNames.network, "getWAPList");
+      if (jbusServer != null) {
+        return (JFDictionary)jbusServer.invoke(SystemBusNames.network, "getWAPList");
+      }
     } catch (Exception e) {
       JFLog.log(e);
       return null;
     }
+    return null;
   }
 
   private String getVPNList() {
     try {
-      return (String)jbusServer.invoke(SystemBusNames.network, "getVPNList");
+      if (jbusServer != null) {
+        return (String)jbusServer.invoke(SystemBusNames.network, "getVPNList");
+      }
+      return null;
     } catch (Exception e) {
       JFLog.log(e);
       return null;
@@ -2043,12 +2053,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   public void mouseClicked(MouseEvent me) {
     if (me.getSource() == buttons) {
-      if (x11id == 0) return;
-      try {
-        x11_set_dock();
-      } catch (Throwable t) {
-        JFLog.log(t);
-      }
+      x11_set_dock();
     }
   }
 
@@ -2396,7 +2401,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private void disconnectVPN(String name) {
     try {
-      jbusServer.invoke(SystemBusNames.network, "disconnectVPN", name);
+      if (jbusServer != null) {
+        jbusServer.invoke(SystemBusNames.network, "disconnectVPN", name);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -2408,7 +2415,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     } else {
       startNetworkTimer("cancelVPN");
       try {
-        jbusServer.invoke(SystemBusNames.network, "connectVPN", name);
+        if (jbusServer != null) {
+          jbusServer.invoke(SystemBusNames.network, "connectVPN", name);
+        }
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -2417,7 +2426,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private void disconnectWAP(String ssid) {
     try {
-      jbusServer.invoke(SystemBusNames.network, "disconnectWAP", ssid);
+      if (jbusServer != null) {
+        jbusServer.invoke(SystemBusNames.network, "disconnectWAP", ssid);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -2435,7 +2446,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       }
       startNetworkTimer("cancelWAP");
       try {
-        jbusServer.invoke(SystemBusNames.network, "connectWAP", dev, ssid, encType, key);
+        if (jbusServer != null) {
+          jbusServer.invoke(SystemBusNames.network, "connectWAP", dev, ssid, encType, key);
+        }
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -2546,7 +2559,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     if (cancelNetworkMethod == null) return;
     stopNetworkTimer();
     try {
-      jbusServer.invoke(SystemBusNames.network, cancelNetworkMethod);
+      if (jbusServer != null) {
+        jbusServer.invoke(SystemBusNames.network, cancelNetworkMethod);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -2614,6 +2629,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   public void x11_set_dock() {
     try {
       if (!Session.is_wayland) {
+        if (x11id == 0) {
+          JFLog.log("Error:x11_set_dock:x11id==0");
+          return;
+        }
+        JFLog.log("x11_set_dock:" + Long.toHexString(x11id));
         Linux.x11_set_dock(x11id);
       }
     } catch (Throwable t) {
@@ -2912,7 +2932,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     }
     public boolean getWelcome(String bus) {
       try {
-        jbusServer.invoke(bus, "setWelcome", config.welcome);
+        if (jbusServer != null) {
+          jbusServer.invoke(bus, "setWelcome", config.welcome);
+        }
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -3061,7 +3083,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
             int result = p.exitValue();
             if (_callback != null) {
               try {
-                jbusServer.invoke(_callback, result == 0 ? "mountSuccess" : "mountFail", _uri);
+                if (jbusServer != null) {
+                  jbusServer.invoke(_callback, result == 0 ? "mountSuccess" : "mountFail", _uri);
+                }
               } catch (Exception e) {
                 JFLog.log(e);
               }
