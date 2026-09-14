@@ -3,13 +3,31 @@
 # installs the JetBrains Runtime : https://github.com/JetBrains/JetBrainsRuntime
 # OpenJDK fork with Project Wakefield implemented : https://openjdk.org/projects/wakefield/
 
+case $HOSTTYPE in
+x86_64)
+  JBRARCH=x64
+  ARCH=amd64
+  ;;
+aarch64)
+  JBRARCH=aarch64
+  ARCH=arm64
+  ;;
+*)
+  echo Invalid HOSTTYPE!
+  exit
+  ;;
+esac
+
 VERSION=25.0.4.1
 BUILD=b583.48
-BASE=jbrsdk-$VERSION-linux-x64-$BUILD
+BASE=jbrsdk-$VERSION-linux-$JBRARCH-$BUILD
 TAR=$BASE.tar.gz
-FOLDER=jbrsdk-$VERSION-openjdk-amd64
+FOLDER=jbrsdk-$VERSION-openjdk-$ARCH
 
 function install_link() {
+  if [ -f /usr/bin/$1 ]; then
+    rm /usr/bin/$1
+  fi
   ln -s /opt/$FOLDER/bin/$1 /usr/bin/$1
 }
 

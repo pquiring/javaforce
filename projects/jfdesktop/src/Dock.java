@@ -30,8 +30,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
    */
   public Dock() {
     try {
-      setUndecorated(true);
-      setTitle("jfDock");
+      if (true) {
+        //these require JFrame and are required for Wayland for now...
+        setUndecorated(true);
+        setTitle("jfDock");
+      }
       initComponents();
       IconCache.setPrefix("jfdesktop-");
       arrowImage = IconCache.loadIcon("jfdesktop-arrow");
