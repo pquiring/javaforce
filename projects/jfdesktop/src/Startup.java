@@ -80,7 +80,7 @@ public class Startup implements ShellProcessListener {
       JFLog.log(e);
       System.exit(0);
     }
-    if (is_wayland) {
+    if (is_wayland && false) {
       //create wayland proxy server
       proxy = new WLProxy();
       proxy.start("wayland-0");
@@ -106,7 +106,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/" + uid,
             "XDG_SESSION_TYPE=wayland",
-            "WAYLAND_DISPLAY=wayland-99",
+            "WAYLAND_DISPLAY=wayland-0",
             "WAYLAND_PID=" + window_mgr_process.getProcess().pid(),
           }
         );
@@ -132,7 +132,10 @@ public class Startup implements ShellProcessListener {
       JFLog.log(t);
     }
     if (is_wayland) {
-      proxy.stop();
+      if (proxy != null) {
+        proxy.stop();
+        proxy = null;
+      }
     }
     JF.sleep(1000);
   }
