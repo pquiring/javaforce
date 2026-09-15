@@ -68,11 +68,6 @@ public class Startup implements ShellProcessListener {
       JFLog.log("new sid=" + sid);
       LinuxAPI.getInstance().ttyTakeOwnership();
     }
-    if (is_wayland) {
-      //create wayland proxy server
-      proxy = new WLProxy();
-      proxy.start();
-    }
     try {
       if (!is_wayland) {
         /* Setup X11 display */
@@ -84,6 +79,11 @@ public class Startup implements ShellProcessListener {
     } catch (Exception e) {
       JFLog.log(e);
       System.exit(0);
+    }
+    if (is_wayland) {
+      //create wayland proxy server
+      proxy = new WLProxy();
+      proxy.start();
     }
     /* Start PulseAudio */
     if (new File("/usr/bin/pulseaudio").exists()) {
