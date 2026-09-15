@@ -22,7 +22,7 @@ public class WLSharedMemoryPool extends WLObject {
     }
   }
 
-  public String getName() {
+  public String get_wl_name() {
     return "wl_shm_pool";
   }
 

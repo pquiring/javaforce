@@ -24,7 +24,7 @@ public class WLDisplay extends WLObject {
     }
   }
 
-  public String getName() {
+  public String get_wl_name() {
     return "wl_display";
   }
 

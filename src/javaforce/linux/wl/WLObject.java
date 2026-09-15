@@ -25,7 +25,7 @@ public abstract class WLObject {
     client.setObject(id, this);
   }
 
-  public abstract String getName();
+  public abstract String get_wl_name();
 
   public void setVersion(int ver) {
     this.ver = ver;
@@ -83,7 +83,7 @@ public abstract class WLObject {
       JFLog.log(e);
     }
     if (notify != null) {
-      notify.onEvent(getName(), method.getName(), args);
+      notify.onEvent(get_wl_name(), method.getName(), args);
     }
     return true;
   }

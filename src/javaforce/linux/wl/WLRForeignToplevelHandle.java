@@ -41,7 +41,7 @@ public class WLRForeignToplevelHandle extends WLObject {
     return id;
   }
 
-  public String getName() {
+  public String get_wl_name() {
     return "zwlr_foreign_toplevel_handle_v1";
   }
 
@@ -71,8 +71,8 @@ public class WLRForeignToplevelHandle extends WLObject {
     invokeRequest(id, 3);
   }
 
-  public void activate() {
-    invokeRequest(id, 4);
+  public void activate(WLSeat wl_seat) {
+    invokeRequest(id, 4, wl_seat.id);
   }
 
   public void close() {
@@ -93,8 +93,8 @@ public class WLRForeignToplevelHandle extends WLObject {
     invokeRequest(id, 8, wl_output);
   }
 
-  public void unset_fullscreen(int wl_output) {
-    invokeRequest(id, 9, wl_output);
+  public void unset_fullscreen() {
+    invokeRequest(id, 9);
   }
 
   //events

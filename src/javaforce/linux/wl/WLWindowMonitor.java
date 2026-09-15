@@ -14,6 +14,7 @@ public class WLWindowMonitor implements WLNotify, WLWindowEvents {
   private WLDisplay display;
   private WLRegistry registry;
   private WLRForeignToplevelManager toplevel_manager;
+  private WLSeat seat;
 
   private WLWindowEvents events;
 
@@ -48,11 +49,18 @@ public class WLWindowMonitor implements WLNotify, WLWindowEvents {
             String iface = (String)args[1];
             int ver = (Integer)args[2];
             switch (iface) {
-              case "zwlr_foreign_toplevel_manager_v1":
+              case "zwlr_foreign_toplevel_manager_v1": {
                 int new_id = client.get_next_id();
                 toplevel_manager = new WLRForeignToplevelManager(client, new_id, this);
                 registry.bind(name, iface, toplevel_manager.getVersion(), new_id);
                 break;
+              }
+              case "wl_seat": {
+                int new_id = client.get_next_id();
+                seat = new WLSeat(client, new_id);
+                registry.bind(name, iface, seat.getVersion(), new_id);
+                break;
+              }
             }
             break;
           }
