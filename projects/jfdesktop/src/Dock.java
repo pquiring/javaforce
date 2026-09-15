@@ -820,6 +820,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       for(int w=0;w<winList.length;w++) {
         WLRForeignToplevelHandle wl_window = winList[w];
         wl_window.file = null;
+        if (wl_window.getTitle() == null || wl_window.getAppID() == null) continue;
         if (wl_window.file == null && wl_window.getTitle().length() > 0) wl_window.file = DesktopCache.getDesktopFromText(wl_window.getTitle());
         if (wl_window.file == null && wl_window.getAppID().length() > 0) wl_window.file = DesktopCache.getDesktopFromText(wl_window.getAppID());
         if (wl_window.file == null) {
