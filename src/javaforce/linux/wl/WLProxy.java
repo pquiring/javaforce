@@ -142,9 +142,11 @@ public class WLProxy {
           if (monitor) {
             //TODO
           }
+          bb.rewind();
           dst.write(bb);
         } catch (Exception e) {
           JFLog.log(e);
+          return;
         }
       }
     }
