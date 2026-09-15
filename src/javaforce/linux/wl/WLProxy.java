@@ -1,5 +1,6 @@
 package javaforce.linux.wl;
 
+import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
@@ -15,7 +16,9 @@ import javaforce.*;
  */
 
 public class WLProxy {
+  private String real_socket_addr;
   private SocketChannel real_socket;  //wayland-0
+  private String proxy_socket_addr;
   private ServerSocketChannel proxy_socket;  //wayland-99
   private boolean active;
   private Server server;
@@ -33,6 +36,7 @@ public class WLProxy {
     JFLog.log("WLProxy:server.socket=" + real_path);
 
     try {
+      real_socket_addr = real_path;
       UnixDomainSocketAddress real_addr = UnixDomainSocketAddress.of(real_path);
       real_socket = SocketChannel.open(StandardProtocolFamily.UNIX);
       real_socket.connect(real_addr);
@@ -58,6 +62,7 @@ public class WLProxy {
     JFLog.log("WLProxy:proxy.socket=" + proxy_path);
 
     try {
+      proxy_socket_addr = proxy_path;
       UnixDomainSocketAddress proxy_addr = UnixDomainSocketAddress.of(proxy_path);
       proxy_socket = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
       proxy_socket.bind(proxy_addr);
@@ -88,6 +93,7 @@ public class WLProxy {
       try { proxy_socket.close(); } catch (Exception e) {}
       proxy_socket = null;
     }
+    new File(proxy_socket_addr).delete();
   }
 
   private ArrayList<Session> sessions = new ArrayList<>();
