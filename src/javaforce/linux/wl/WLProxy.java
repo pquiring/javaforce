@@ -20,9 +20,8 @@ public class WLProxy {
   private Reader proxy_real;
   private boolean active;
 
-  public boolean start() {
+  public boolean start(String real_wayland_display) {
     String real_path = System.getenv("XDG_RUNTIME_DIR");
-    String real_wayland_display = System.getenv("WAYLAND_DISPLAY");
     if (real_path == null || real_wayland_display == null) {
       JFLog.log("WLProxy:socket not found");
       return false;

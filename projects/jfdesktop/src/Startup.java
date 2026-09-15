@@ -83,7 +83,7 @@ public class Startup implements ShellProcessListener {
     if (is_wayland) {
       //create wayland proxy server
       proxy = new WLProxy();
-      proxy.start();
+      proxy.start("wayland-0");
     }
     /* Start PulseAudio */
     if (new File("/usr/bin/pulseaudio").exists()) {
