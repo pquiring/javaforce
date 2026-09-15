@@ -658,7 +658,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         Linux.x11_map_window(xid);
         Linux.x11_raise_window(xid);
       } else {
-        wl_window.activate();
+        wl_window.activate(dock.wl_window_monitor.getSeat());
       }
     }
   }

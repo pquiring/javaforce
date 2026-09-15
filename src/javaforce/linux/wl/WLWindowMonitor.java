@@ -40,6 +40,10 @@ public class WLWindowMonitor implements WLNotify, WLWindowEvents {
     return toplevel_manager.getWindows();
   }
 
+  public WLSeat getSeat() {
+    return seat;
+  }
+
   public void onEvent(String cls, String method, Object[] args) {
     switch (cls) {
       case "wl_registry": {
