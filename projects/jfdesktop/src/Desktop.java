@@ -320,11 +320,7 @@ public class Desktop extends javax.swing.JFrame {
   }//GEN-LAST:event_formComponentShown
 
   private void desktopResolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_desktopResolutionActionPerformed
-    try {
-      Runtime.getRuntime().exec(new String[] {"jfconfig", "display"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    Dock.execute(new String[] {"jfconfig", "display"});
   }//GEN-LAST:event_desktopResolutionActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

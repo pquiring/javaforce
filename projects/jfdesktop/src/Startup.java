@@ -3,6 +3,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.linux.*;
+import javaforce.linux.wl.*;
 import javaforce.api.linux.*;
 import static javaforce.linux.Linux.*;
 
@@ -23,6 +24,7 @@ public class Startup implements ShellProcessListener {
   private ShellProcess window_mgr_process;
   private Wayland wayland;
   private String user;
+  private WLProxy proxy;
 
   private int LOG_DEFAULT = 0;
   private int LOG_DISPLAY = 1;
@@ -66,6 +68,11 @@ public class Startup implements ShellProcessListener {
       JFLog.log("new sid=" + sid);
       LinuxAPI.getInstance().ttyTakeOwnership();
     }
+    if (is_wayland) {
+      //create wayland proxy server
+      proxy = new WLProxy();
+      proxy.start();
+    }
     try {
       if (!is_wayland) {
         /* Setup X11 display */
@@ -87,7 +94,7 @@ public class Startup implements ShellProcessListener {
         JFLog.log(e);
       }
     }
-    JFLog.log("jfDesktop:starting UI");
+    JFLog.log("jfDesktop:starting UI session");
     try {
       int uid = LinuxAPI.getInstance().getUID();
       JFLog.log("uid=" + uid);
@@ -99,7 +106,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/" + uid,
             "XDG_SESSION_TYPE=wayland",
-            "WAYLAND_DISPLAY=wayland-0",
+            "WAYLAND_DISPLAY=wayland-99",
             "WAYLAND_PID=" + window_mgr_process.getProcess().pid(),
           }
         );
@@ -118,10 +125,14 @@ public class Startup implements ShellProcessListener {
     } catch (Throwable t) {
       JFLog.log(t);
     }
+    JFLog.log("jfDesktop:session has ended");
     try {
       stop();
     } catch (Throwable t) {
       JFLog.log(t);
+    }
+    if (is_wayland) {
+      proxy.stop();
     }
     JF.sleep(1000);
   }

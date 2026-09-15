@@ -87,21 +87,13 @@ public class SoundWindow extends javax.swing.JWindow {
   private void sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderStateChanged
     if (sinkIdx == -1) return;
     volume = slider.getValue();
-    try {
-      Runtime.getRuntime().exec(new String[] {"pactl","set-sink-volume","" + sinkIdx,"" + volume + "%"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    Dock.execute(new String[] {"pactl","set-sink-volume","" + sinkIdx,"" + volume + "%"});
   }//GEN-LAST:event_sliderStateChanged
 
   private void muteStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_muteStateChanged
     if (sinkIdx == -1) return;
     muted = mute.isSelected();
-    try {
-      Runtime.getRuntime().exec(new String[] {"pactl","set-sink-mute","" + sinkIdx,muted ? "1" : "0"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    Dock.execute(new String[] {"pactl","set-sink-mute","" + sinkIdx,muted ? "1" : "0"});
   }//GEN-LAST:event_muteStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

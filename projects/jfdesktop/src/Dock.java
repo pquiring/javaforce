@@ -401,11 +401,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }//GEN-LAST:event_ShutdownActionPerformed
 
   private void ControlCenterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ControlCenterActionPerformed
-    try {
-      Runtime.getRuntime().exec(new String[] {"jfconfig"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(new String[] {"jfconfig"});
   }//GEN-LAST:event_ControlCenterActionPerformed
 
   private void DesktopSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DesktopSettingsActionPerformed
@@ -432,27 +428,15 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }//GEN-LAST:event_SleepActionPerformed
 
   private void SettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SettingsActionPerformed
-    try {
-      Runtime.getRuntime().exec(new String[] {"jfconfig", "sound"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(new String[] {"jfconfig", "sound"});
   }//GEN-LAST:event_SettingsActionPerformed
 
   private void AdjustTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdjustTimeActionPerformed
-    try {
-      Runtime.getRuntime().exec(new String[] {"jfconfig", "datetime"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(new String[] {"jfconfig", "datetime"});
   }//GEN-LAST:event_AdjustTimeActionPerformed
 
   private void HelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HelpActionPerformed
-    try {
-      Runtime.getRuntime().exec(new String[] {"jfhelp", "jfdesktop"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(new String[] {"jfhelp", "jfdesktop"});
   }//GEN-LAST:event_HelpActionPerformed
 
   private void RunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RunActionPerformed
@@ -460,7 +444,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }//GEN-LAST:event_RunActionPerformed
 
   private void UpgradesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpgradesActionPerformed
-    try { Runtime.getRuntime().exec(new String[] {"jfupgrade"}); } catch (Exception e) {JFLog.log(e);}
+    execute(new String[] {"jfupgrade"});
   }//GEN-LAST:event_UpgradesActionPerformed
 
   private void BatterySettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BatterySettingsActionPerformed
@@ -478,11 +462,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }//GEN-LAST:event_MinimizeAllActionPerformed
 
   private void TaskMgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskMgrActionPerformed
-    try {
-      Runtime.getRuntime().exec(new String[] {"jftaskmgr"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(new String[] {"jftaskmgr"});
   }//GEN-LAST:event_TaskMgrActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1536,11 +1516,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         return;
       }
       if (action.equals("#vpn-configure")) {
-        try {
-          Runtime.getRuntime().exec(new String[] {"jfconfig", "vpn"});
-        } catch (Exception e) {
-          JFLog.log(e);
-        }
+        execute(new String[] {"jfconfig", "vpn"});
         return;
       }
       if (action.startsWith("#bt#")) {
@@ -1582,9 +1558,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         return;
       }
       if (action.equals("#trash")) {
-        try {
-          Runtime.getRuntime().exec(new String[] {"jffile", JF.getUserPath() + "/.local/share/Trash"});
-        } catch (Exception e) {}
+        execute(new String[] {"jffile", JF.getUserPath() + "/.local/share/Trash"});
         return;
       }
       if (action.equals("#keyboard")) {
@@ -1634,17 +1608,17 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       File file = new File(action);
       if (file.isDirectory()) {
         //open with jffile
-        Runtime.getRuntime().exec(new String[] {"jffile", action});
+        execute(new String[] {"jffile", action});
         return;
       }
       if (action.endsWith(".lnk")) {
         //open with Wine (if installed)
-        Runtime.getRuntime().exec(new String[] {"wine", action});
+        execute(new String[] {"wine", action});
         return;
       }
       if (!action.endsWith(".desktop")) {
         //regular file, open with jfopen
-        Runtime.getRuntime().exec(new String[] {"jfopen", action});
+        execute(new String[] {"jfopen", action});
         return;
       }
       //.desktop file, get Exec= line and execute it
@@ -1823,11 +1797,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     for(int a=0;a<files.length;a++) {
       cmd.add(files[a].getAbsolutePath());
     }
-    try {
-      Runtime.getRuntime().exec(cmd.toArray(new String[0]));
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(cmd.toArray(new String[0]));
   }
 
   private static String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
@@ -2574,11 +2544,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }
 
   private void showWelcome() {
-    try {
-      Runtime.getRuntime().exec(new String[] {"jfwelcome"});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    execute(new String[] {"jfwelcome"});
   }
 
   private void mkdirs() {
@@ -3078,7 +3044,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       new Thread() {
         public void run() {
           try {
-            Process p = Runtime.getRuntime().exec(new String[] {"gnome-disk-image-mounter", _uri});
+            Process p = execute(new String[] {"gnome-disk-image-mounter", _uri});
             p.waitFor();
             int result = p.exitValue();
             if (_callback != null) {
@@ -3101,6 +3067,23 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       vpnList = list;
       showNetworkPopup();
       return true;
+    }
+  }
+
+  //execute command
+  public static Process execute(String[] cmd) {
+    ProcessBuilder pb = new ProcessBuilder();
+    try {
+      pb.command(cmd);
+      if (Session.is_wayland) {
+        //do not use wayland proxy
+        pb.environment().put("WAYLAND_DISPLAY", "wayland-0");
+      }
+      Process process = pb.start();
+      return process;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
     }
   }
 }
