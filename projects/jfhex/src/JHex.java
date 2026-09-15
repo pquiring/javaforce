@@ -264,7 +264,7 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   public static String args[];
   public static void main(String args[]) {
     JHex.args = args;
-    if (JF.isUnix() && System.getenv("DISPLAY") == null) {
+    if (JF.isUnix() && System.getenv("DISPLAY") == null && System.getenv("WAYLAND_DISPLAY") == null) {
       THex.main(args);
     } else {
       java.awt.EventQueue.invokeLater(new Runnable() {

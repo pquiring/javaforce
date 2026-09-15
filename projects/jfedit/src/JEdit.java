@@ -226,11 +226,9 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
    */
   public static String args[];
   public static void main(String args[]) {
-    if (!JF.isWindows()) {
-      if (System.getenv("DISPLAY") == null) {
-        TEdit.main(args);
-        return;
-      }
+    if (JF.isUnix() && System.getenv("DISPLAY") == null && System.getenv("WAYLAND_DISPLAY") == null) {
+      TEdit.main(args);
+      return;
     }
     JEdit.args = args;
     java.awt.EventQueue.invokeLater(new Runnable() {

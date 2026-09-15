@@ -379,7 +379,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
    */
   public static String args[];
   public static void main(String args[]) {
-    if (JF.isUnix() && System.getenv("DISPLAY") == null) {
+    if (JF.isUnix() && System.getenv("DISPLAY") == null && System.getenv("WAYLAND_DISPLAY") == null) {
       THexBig.main(args);
     } else {
       JHexBig.args = args;
