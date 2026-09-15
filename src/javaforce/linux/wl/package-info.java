@@ -1,5 +1,7 @@
 /**
- * These classes provide Wayland functions.
+ * These classes provide pure-java Wayland API.
+ *
+ * Communication is directly over a UnixSocket.
  *
  */
 package javaforce.linux.wl;

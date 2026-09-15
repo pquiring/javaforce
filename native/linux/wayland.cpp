@@ -1,6 +1,8 @@
-struct WLToolkit {
+struct WLSurfaceDescr {
+  //see src/java.desktop/unix/native/libawt_wlawt/WLSurface.c
   void* wl_surface;
   void* wl_view;
+  //...
 };
 
 static jlong getWaylandID(JNIEnv *e, jobject c) {
@@ -23,10 +25,11 @@ static jlong getWaylandID(JNIEnv *e, jobject c) {
     printf("JAWT.GetDrawingSurface() failed\n");
     return 0;
   }
+  printf("ds=%p\n", ds);
   lock = ds->Lock(ds);
   if ((lock & JAWT_LOCK_ERROR) != 0) {
     awt.FreeDrawingSurface(ds);
-    printf("JAWT.Lock() failed\n");
+    printf("JAWT.Lock() failed:0x%x\n", lock);
     return 0;
   }
   dsi = ds->GetDrawingSurfaceInfo(ds);
@@ -34,13 +37,14 @@ static jlong getWaylandID(JNIEnv *e, jobject c) {
     printf("JAWT.GetDrawingSurfaceInfo() failed\n");
     return 0;
   }
-  WLToolkit* xdsi = (WLToolkit*)dsi->platformInfo;
-  printf("xdsi=%p\n", xdsi);
-  if (xdsi == NULL) {
+  printf("dsi=%p\n", dsi);
+  WLSurfaceDescr * wldsi = (WLSurfaceDescr*)dsi->platformInfo;
+  printf("dsi.pi=%p\n", wldsi);
+  if (wldsi == NULL) {
     printf("JAWT.platformInfo == NULL\n");
     return 0;
   }
-  jlong handle = (jlong)xdsi->wl_surface;
+  jlong handle = (jlong)wldsi->wl_surface;
   ds->FreeDrawingSurfaceInfo(dsi);
   ds->Unlock(ds);
   awt.FreeDrawingSurface(ds);
@@ -48,11 +52,17 @@ static jlong getWaylandID(JNIEnv *e, jobject c) {
   return handle;
 }
 
+jlong wl_get_id(jobject window) {
+  return getWaylandID(get_jnienv(), window);
+}
+
 void* wl_server = NULL;
 void* wl_client = NULL;
 void* wl_roots = NULL;
 
 extern "C" {
+  JNIEXPORT jlong (*_wl_get_id)(jobject window);
+
   JNIEXPORT void* _wl_display_create;
   JNIEXPORT void* _wl_event_loop_create;
   JNIEXPORT void* _wl_event_loop_add_signal;
@@ -60,6 +70,9 @@ extern "C" {
   JNIEXPORT void* _wl_display_add_socket_auto;
   JNIEXPORT void* _wl_display_run;
   JNIEXPORT void* _wl_display_destroy;
+
+  JNIEXPORT void* _wl_display_connect;
+  JNIEXPORT void* _wl_display_connect_to_fd;
 
   JNIEXPORT void* _wlr_session_create;
   JNIEXPORT void* _wlr_fixes_create;
@@ -72,6 +85,8 @@ extern "C" {
   JNIEXPORT void* _wlr_backend_destroy;
 
   JNIEXPORT bool JNICALL WaylandAPIinit(const char* libwayland_server, const char* libwayland_client, const char* libwlroots) {
+    _wl_get_id = &wl_get_id;
+
     if (wl_server == NULL && libwayland_server != NULL) {
       wl_server = dlopen(libwayland_server, RTLD_LAZY | RTLD_GLOBAL);
       if (wl_server == NULL) {
@@ -92,7 +107,8 @@ extern "C" {
       if (wl_client == NULL) {
         printf("Warning:dlopen(wayland_client.so) unsuccessful\n");
       } else {
-        //TODO
+        getFunction(wl_client, (void**)&_wl_display_connect, "wl_display_connect");
+        getFunction(wl_client, (void**)&_wl_display_connect_to_fd, "wl_display_connect_to_fd");
       }
     }
     if (wl_roots == NULL && libwlroots != NULL) {

@@ -3,9 +3,14 @@ package javaforce.tests;
 import java.awt.*;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
+import java.awt.event.KeyEvent;
 
 import javaforce.*;
+import javaforce.api.*;
+import javaforce.api.linux.*;
 import javaforce.awt.*;
+import javaforce.linux.*;
+import javaforce.linux.wl.*;
 
 /**
  * TestAWT
@@ -54,7 +59,7 @@ public class TestAWT extends java.awt.Frame {
   private void initComponents() {
 
     button1 = new java.awt.Button();
-    textField = new java.awt.TextField();
+    text_field = new java.awt.TextField();
     drag_me = new javax.swing.JLabel();
     jScrollPane1 = new javax.swing.JScrollPane();
     text_area = new javax.swing.JTextArea();
@@ -99,7 +104,7 @@ public class TestAWT extends java.awt.Frame {
             .addComponent(drag_me)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1))
-          .addComponent(textField, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+          .addComponent(text_field, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(copy, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -113,7 +118,7 @@ public class TestAWT extends java.awt.Frame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(textField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(text_field, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -139,7 +144,7 @@ public class TestAWT extends java.awt.Frame {
   }//GEN-LAST:event_exitForm
 
   private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
-    test();
+    onButtonClick(evt.getModifiers());
   }//GEN-LAST:event_button1ActionPerformed
 
   private void copyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyActionPerformed
@@ -165,7 +170,6 @@ public class TestAWT extends java.awt.Frame {
     });
   }
 
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private java.awt.Button button1;
   private javax.swing.JButton copy;
@@ -173,16 +177,31 @@ public class TestAWT extends java.awt.Frame {
   private javax.swing.JLabel drag_me;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton paste;
-  private java.awt.TextField textField;
   private javax.swing.JTextArea text_area;
+  private java.awt.TextField text_field;
   // End of variables declaration//GEN-END:variables
 
-  private void test() {
-    System.out.println("Button clicked!");
-    textField.setText("Button clicked!");
+  private void onButtonClick(int mods) {
+    System.out.println("Button clicked!:mods=" + mods);
+    if (mods == 18) {
+      //ctrl click
+      new TestAWT().setVisible(true);
+      return;
+    }
+    text_field.setText("Button clicked!");
+    if (JF.isLinux()) {
+      if (System.getenv("DISPLAY") != null) {
+        //get X11 id
+        long xid = Linux.x11_get_id(this);
+        text_area.setText("xid=" + Long.toHexString(xid));
+      }
+      if (System.getenv("WAYLAND_DISPLAY") != null) {
+        //get wayland id
+        long wid = WaylandAPI.getInstance().wl_get_id(TestAWT.this);
+        text_area.setText("wid=" + Long.toHexString(wid));
+      }
+    }
   }
-
-  JFClipboard cb = new JFClipboard();
 
   private void cb_copy() {
     JFClipboard.writeString(text_area.getText());
@@ -198,6 +217,4 @@ public class TestAWT extends java.awt.Frame {
     if (str == null) return;
     text_area.setText(str);
   }
-
-
 }

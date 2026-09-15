@@ -28,6 +28,22 @@ public class WLDisplay extends WLObject {
     return "wl_display";
   }
 
+  public long get_wl_display() {
+    //use reflection to get sun.awt.wl.WLDisplay.displayPtr
+    //see src/java.desktop/unix/native/libawt_wlawt/WLComponentPeer.c
+    try {
+      Class<?> wl_display_class = Class.forName("sun.awt.wl.WLDisplay");
+      Method getInstance = wl_display_class.getMethod("getInstance");
+      Method getDisplayPtr = wl_display_class.getMethod("getDisplayPtr");
+      Object wl_display = getInstance.invoke(null);
+      long ptr = (long)getDisplayPtr.invoke(wl_display);
+      return ptr;
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return 0;
+  }
+
   //requests
 
   public void sync() {

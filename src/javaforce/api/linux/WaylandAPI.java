@@ -1,5 +1,7 @@
 package javaforce.api.linux;
 
+import java.awt.*;
+
 import javaforce.ffm.*;
 
 /** EXPERIMENTAL Wayland native API
@@ -14,7 +16,11 @@ public interface WaylandAPI {
     return WaylandFFM.getInstance();
   }
 
-  //wayland
+  //internal
+
+  public long wl_get_id(Window window);
+
+  //wayland (server)
 
   public long wl_display_create();
   public long wl_event_loop_create();
@@ -24,6 +30,11 @@ public interface WaylandAPI {
   public void wl_display_run(long display);
 
   public boolean wl_display_destroy(long display);
+
+  //wayland (client)
+
+  public long wl_display_connect(String name);
+  public long wl_display_connect_to_fd(int fd);
 
   //wlroots
 

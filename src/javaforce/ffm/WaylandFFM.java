@@ -37,6 +37,12 @@ public class WaylandFFM implements WaylandAPI {
   private MethodHandle wl_display_add_socket_auto;
   public java.lang.String wl_display_add_socket_auto(long a1) { try { String _ret_value_ = FFM.getString((MemorySegment)wl_display_add_socket_auto.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
+  private MethodHandle wl_display_connect;
+  public long wl_display_connect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)wl_display_connect.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle wl_display_connect_to_fd;
+  public long wl_display_connect_to_fd(int a1) { try { long _ret_value_ = (long)wl_display_connect_to_fd.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle wl_display_create;
   public long wl_display_create() { try { long _ret_value_ = (long)wl_display_create.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -48,6 +54,9 @@ public class WaylandFFM implements WaylandAPI {
 
   private MethodHandle wl_event_loop_create;
   public long wl_event_loop_create() { try { long _ret_value_ = (long)wl_event_loop_create.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle wl_get_id;
+  public long wl_get_id(java.awt.Window a1) { try { long _ret_value_ = (long)wl_get_id.invokeExact(FFM.ref_object(a1));FFM.unref_object(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle wlr_backend_autocreate;
   public long wlr_backend_autocreate(long a1,long a2) { try { long _ret_value_ = (long)wlr_backend_autocreate.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -93,10 +102,13 @@ public class WaylandFFM implements WaylandAPI {
 
     wl_display_destroy = ffm.getFunctionPtr("_wl_display_destroy", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     wl_display_add_socket_auto = ffm.getFunctionPtr("_wl_display_add_socket_auto", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG));
+    wl_display_connect = ffm.getFunctionPtr("_wl_display_connect", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    wl_display_connect_to_fd = ffm.getFunctionPtr("_wl_display_connect_to_fd", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT));
     wl_display_create = ffm.getFunctionPtr("_wl_display_create", ffm.getFunctionDesciptor(JAVA_LONG));
     wl_display_get_event_loop = ffm.getFunctionPtr("_wl_display_get_event_loop", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));
     wl_event_loop_add_signal = ffm.getFunctionPtr("_wl_event_loop_add_signal", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_LONG,JAVA_LONG));
     wl_event_loop_create = ffm.getFunctionPtr("_wl_event_loop_create", ffm.getFunctionDesciptor(JAVA_LONG));
+    wl_get_id = ffm.getFunctionPtr("_wl_get_id", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));
     wlr_backend_autocreate = ffm.getFunctionPtr("_wlr_backend_autocreate", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_LONG));
     wlr_compositor_create = ffm.getFunctionPtr("_wlr_compositor_create", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_LONG));
     wlr_fixes_create = ffm.getFunctionPtr("_wlr_fixes_create", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_INT));
