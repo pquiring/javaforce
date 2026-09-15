@@ -25,6 +25,7 @@ public class WLWindowMonitor implements WLNotify, WLWindowEvents {
   public void start() {
     client = new WLClient();
     if (!client.connect()) {
+      JFLog.log("WLWindowMonitor:start() failed");
       return;
     }
     display = client.get_display();

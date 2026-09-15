@@ -16,6 +16,8 @@ public class WLSeat extends WLObject {
     Class cls = getClass();
     try {
       events = new Method[] {
+        cls.getMethod("capabilities", new Class[] {int.class}),
+        cls.getMethod("name", new Class[] {String.class}),
       };
     } catch (Exception e) {
       JFLog.log(e);
@@ -23,6 +25,7 @@ public class WLSeat extends WLObject {
   }
 
   private String name;
+  private int caps;
 
   public String get_wl_name() {
     return "wl_seat";
@@ -30,6 +33,10 @@ public class WLSeat extends WLObject {
 
   public String getName() {
     return name;
+  }
+
+  public int getCapabilities() {
+    return caps;
   }
 
   //requests
@@ -53,7 +60,7 @@ public class WLSeat extends WLObject {
   //events
 
   public void capabilities(int caps) {
-
+    this.caps = caps;
   }
 
   public void name(String name) {
