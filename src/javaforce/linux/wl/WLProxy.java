@@ -3,6 +3,7 @@ package javaforce.linux.wl;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -15,10 +16,9 @@ import javaforce.*;
 
 public class WLProxy {
   private SocketChannel real_socket;  //wayland-0
-  private SocketChannel proxy_socket;  //wayland-99
-  private Reader real_proxy;
-  private Reader proxy_real;
+  private ServerSocketChannel proxy_socket;  //wayland-99
   private boolean active;
+  private Server server;
 
   public boolean start(String real_wayland_display) {
     String real_path = System.getenv("XDG_RUNTIME_DIR");
@@ -59,7 +59,7 @@ public class WLProxy {
 
     try {
       UnixDomainSocketAddress proxy_addr = UnixDomainSocketAddress.of(proxy_path);
-      proxy_socket = SocketChannel.open(StandardProtocolFamily.UNIX);
+      proxy_socket = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
       proxy_socket.bind(proxy_addr);
     } catch (Exception e) {
       JFLog.log(e);
@@ -72,12 +72,8 @@ public class WLProxy {
 
     active = true;
 
-    //forward traffic
-    proxy_real = new Reader(proxy_socket, real_socket, true);
-    proxy_real.start();
-
-    real_proxy = new Reader(real_socket, proxy_socket, false);
-    real_proxy.start();
+    server = new Server();
+    server.start();
 
     return true;
   }
@@ -91,6 +87,33 @@ public class WLProxy {
     if (proxy_socket != null) {
       try { proxy_socket.close(); } catch (Exception e) {}
       proxy_socket = null;
+    }
+  }
+
+  private ArrayList<Session> sessions = new ArrayList<>();
+
+  private class Session {
+    SocketChannel client;
+    Reader client_proxy;
+    Reader proxy_client;
+  }
+
+  public class Server extends Thread {
+    public void run() {
+      while (active) {
+        try {
+          SocketChannel client = proxy_socket.accept();
+          Session session = new Session();
+          session.client = client;
+          session.client_proxy = new Reader(client, real_socket, true);
+          session.client_proxy.start();
+          session.proxy_client = new Reader(real_socket, client, true);
+          session.proxy_client.start();
+          sessions.add(session);
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+      }
     }
   }
 
