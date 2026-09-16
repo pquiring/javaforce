@@ -156,16 +156,28 @@ public class WLProxy {
         try {
           data_len[0] = data.length;
           fds_len[0] = fds.length;
-          src.read(data_len, data, fds_len, fds);
+          boolean read = src.read(data_len, data, fds_len, fds);
           if (debug) {
             JFLog.log(log, (monitor ? ">" : "<") + ": read:" + data_len[0] + "," + fds_len[0]);
+          }
+          if (!read) {
+            JFLog.log(log, "WLProxy:read() failed");
+            JF.sleep(100);
+            continue;
+          }
+          if (data_len[0] == 0) {
+            JF.sleep(100);
+            continue;
           }
           if (monitor) {
             //TODO
           }
-          dst.write(data_len, data, fds_len, fds);
+          boolean write = dst.write(data_len, data, fds_len, fds);
           if (debug) {
             JFLog.log(log, (monitor ? ">" : "<") + ":write:" + data_len[0] + "," + fds_len[0]);
+          }
+          if (!write) {
+            JFLog.log(log, "WLProxy:write() failed");
           }
           if (fds_len[0] > 0) {
             //close fds received after they have been transferred
