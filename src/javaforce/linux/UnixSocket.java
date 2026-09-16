@@ -19,6 +19,11 @@ public class UnixSocket {
     this.fd = fd;
   }
 
+  /** Return native unix socket file descriptor. */
+  public int get_fd() {
+    return fd;
+  }
+
   /** Creates a new unbound Unix Socket. */
   public boolean open() {
     if (fd != 0) return false;
@@ -76,7 +81,9 @@ public class UnixSocket {
   /** Close unix socket. */
   public boolean close() {
     if (fd == 0) return false;
-    return api.usClose(fd);
+    boolean res = api.usClose(fd);
+    fd = 0;
+    return res;
   }
 
   /** Close file descriptors. */
