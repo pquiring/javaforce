@@ -3075,8 +3075,8 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     ProcessBuilder pb = new ProcessBuilder();
     try {
       pb.command(cmd);
-      if (Session.is_wayland) {
-        //do not use wayland proxy
+      if (Session.is_wayland && Startup.use_proxy) {
+        //do not use wayland proxy in child processes
         pb.environment().put("WAYLAND_DISPLAY", "wayland-0");
       }
       Process process = pb.start();

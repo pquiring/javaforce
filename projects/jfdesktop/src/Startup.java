@@ -17,6 +17,8 @@ import static javaforce.linux.Linux.*;
 public class Startup implements ShellProcessListener {
   public static Startup instance;
 
+  public static boolean use_proxy = true;
+
   private Properties props;
   private boolean is_wayland = false;
   private boolean is_nested = false;
@@ -80,7 +82,7 @@ public class Startup implements ShellProcessListener {
       JFLog.log(e);
       System.exit(0);
     }
-    if (is_wayland && false) {
+    if (is_wayland && use_proxy) {
       //create wayland proxy server
       proxy = new WLProxy();
       proxy.start("wayland-0");
@@ -106,7 +108,7 @@ public class Startup implements ShellProcessListener {
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/" + uid,
             "XDG_SESSION_TYPE=wayland",
-            "WAYLAND_DISPLAY=wayland-0",
+            "WAYLAND_DISPLAY=wayland-" + (use_proxy ? "99" : "0"),
             "WAYLAND_PID=" + window_mgr_process.getProcess().pid(),
           }
         );
