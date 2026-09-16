@@ -126,9 +126,9 @@ public class WLProxy {
           }
           Session session = new Session();
           session.client = client;
-          session.client_proxy = new Reader(client, real_socket, true);
+          session.client_proxy = new Reader('>', client, real_socket);
           session.client_proxy.start();
-          session.proxy_client = new Reader(real_socket, client, true);
+          session.proxy_client = new Reader('<', real_socket, client);
           session.proxy_client.start();
           sessions.add(session);
         } catch (Exception e) {
@@ -141,15 +141,15 @@ public class WLProxy {
   public class Reader extends Thread {
     private UnixSocket src;
     private UnixSocket dst;
-    private boolean monitor;
     private int[] data_len = new int[1];
     private byte[] data = new byte[128 * 1024];  //max unix socket packet size
     private int[] fds_len = new int[1];
     private int[] fds = new int[128];
-    public Reader(UnixSocket src, UnixSocket dst, boolean monitor) {
+    private char dir;
+    public Reader(char dir, UnixSocket src, UnixSocket dst) {
+      this.dir = dir;
       this.src = src;
       this.dst = dst;
-      this.monitor = monitor;
     }
     public void run() {
       while (active) {
@@ -158,7 +158,7 @@ public class WLProxy {
           fds_len[0] = fds.length;
           boolean read = src.read(data_len, data, fds_len, fds);
           if (debug) {
-            JFLog.log(log, (monitor ? ">" : "<") + ": read:" + data_len[0] + "," + fds_len[0]);
+            JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
           }
           if (!read) {
             JFLog.log(log, "WLProxy:read() failed");
@@ -169,12 +169,9 @@ public class WLProxy {
             JF.sleep(100);
             continue;
           }
-          if (monitor) {
-            //TODO
-          }
           boolean write = dst.write(data_len, data, fds_len, fds);
           if (debug) {
-            JFLog.log(log, (monitor ? ">" : "<") + ":write:" + data_len[0] + "," + fds_len[0]);
+            JFLog.log(log, dir + ":write:" + data_len[0] + "," + fds_len[0]);
           }
           if (!write) {
             JFLog.log(log, "WLProxy:write() failed");
