@@ -369,6 +369,13 @@
       <arg value="implements"/>
       <arg value="WaylandAPI"/>
     </java>
+    <java classpath="${home}/utils.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="javaforce.api.linux.UnixSocketAPI"/>
+      <arg value="src/javaforce/ffm/UnixSocketFFM.java"/>
+      <arg value="api.linux,linux"/>
+      <arg value="implements"/>
+      <arg value="UnixSocketAPI"/>
+    </java>
 
     <!-- Windows APIs -->
 

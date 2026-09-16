@@ -9,6 +9,8 @@
 #endif
 #include <sys/ioctl.h>  //ioctl
 #include <sys/mman.h>  //mmap
+#include <sys/uio.h>
+#include <sys/un.h>
 #ifndef __FreeBSD__
 #include <sys/inotify.h>
 #endif  //__FreeBSD__
@@ -174,6 +176,8 @@ extern "C" {
 #include "file.cpp"
 
 #include "console.cpp"
+
+#include "unix-sockets.cpp"
 
 #include "../common/ffmpeg.cpp"
 
