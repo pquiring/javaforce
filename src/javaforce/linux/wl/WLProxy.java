@@ -1,12 +1,10 @@
 package javaforce.linux.wl;
 
 import java.io.*;
-import java.net.*;
-import java.nio.*;
-import java.nio.channels.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.linux.*;
 
 /** WLProxy.
  *
@@ -17,9 +15,9 @@ import javaforce.*;
 
 public class WLProxy {
   private String real_socket_addr;
-  private SocketChannel real_socket;  //wayland-0
+  private UnixSocket real_socket;  //wayland-0
   private String proxy_socket_addr;
-  private ServerSocketChannel proxy_socket;  //wayland-99
+  private UnixSocket proxy_socket;  //wayland-99
   private boolean active;
   private Server server;
 
@@ -32,14 +30,16 @@ public class WLProxy {
     if (!real_path.endsWith("/")) {
       real_path += "/";
     }
+    String temp_path = real_path + "wayland-90";
     real_path += real_wayland_display;
     JFLog.log("WLProxy:server.socket=" + real_path);
 
     try {
       real_socket_addr = real_path;
-      UnixDomainSocketAddress real_addr = UnixDomainSocketAddress.of(real_path);
-      real_socket = SocketChannel.open(StandardProtocolFamily.UNIX);
-      real_socket.connect(real_addr);
+      real_socket = new UnixSocket();
+      if (!real_socket.open()) throw new Exception("Unable to alloc unix socket");
+      real_socket.bind(temp_path);  //maybe not be necessary
+      real_socket.connect(real_path);
     } catch (Exception e) {
       JFLog.log(e);
       if (real_socket != null) {
@@ -63,9 +63,9 @@ public class WLProxy {
 
     try {
       proxy_socket_addr = proxy_path;
-      UnixDomainSocketAddress proxy_addr = UnixDomainSocketAddress.of(proxy_path);
-      proxy_socket = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
-      proxy_socket.bind(proxy_addr);
+      proxy_socket = new UnixSocket();
+      if (!proxy_socket.open()) throw new Exception("Unable to alloc unix socket");
+      proxy_socket.bind(proxy_path);
     } catch (Exception e) {
       JFLog.log(e);
       if (proxy_socket != null) {
@@ -99,7 +99,7 @@ public class WLProxy {
   private ArrayList<Session> sessions = new ArrayList<>();
 
   private class Session {
-    SocketChannel client;
+    UnixSocket client;
     Reader client_proxy;
     Reader proxy_client;
   }
@@ -108,7 +108,7 @@ public class WLProxy {
     public void run() {
       while (active) {
         try {
-          SocketChannel client = proxy_socket.accept();
+          UnixSocket client = proxy_socket.accept();
           Session session = new Session();
           session.client = client;
           session.client_proxy = new Reader(client, real_socket, true);
@@ -124,26 +124,32 @@ public class WLProxy {
   }
 
   public class Reader extends Thread {
-    private SocketChannel src;
-    private SocketChannel dst;
+    private UnixSocket src;
+    private UnixSocket dst;
     private boolean monitor;
-    private byte[] packet = new byte[128 * 1024];  //max unix socket packet size
-    public Reader(SocketChannel src, SocketChannel dst, boolean monitor) {
+    private int[] data_len = new int[1];
+    private byte[] data = new byte[128 * 1024];  //max unix socket packet size
+    private int[] fds_len = new int[1];
+    private int[] fds = new int[128];
+    public Reader(UnixSocket src, UnixSocket dst, boolean monitor) {
       this.src = src;
       this.dst = dst;
       this.monitor = monitor;
     }
     public void run() {
-      ByteBuffer bb = ByteBuffer.wrap(packet);
       while (active) {
         try {
-          bb.clear();
-          src.read(bb);
+          data_len[0] = data.length;
+          fds_len[0] = fds.length;
+          src.read(data_len, data, fds_len, fds);
           if (monitor) {
             //TODO
           }
-          bb.rewind();
-          dst.write(bb);
+          dst.write(data_len, data, fds_len, fds);
+          if (fds_len[0] > 0) {
+            //close fds received after they have been transferred
+            src.close(fds_len[0], fds);
+          }
         } catch (Exception e) {
           JFLog.log(e);
           return;

@@ -11,29 +11,40 @@ import javaforce.api.linux.*;
 
 public class UnixSocket {
   private UnixSocketAPI api = UnixSocketAPI.getInstance();
+  private int fd;
+
+  public UnixSocket() {}
+
+  private UnixSocket(int fd) {
+    this.fd = fd;
+  }
 
   /** Creates a new unbound Unix Socket. */
-  public int open() {
-    return api.usOpen();
+  public boolean open() {
+    if (fd != 0) return false;
+    fd = api.usOpen();
+    return fd >= 0;
   }
 
   /** Binds Socket to a path (max 108 chars). */
-  public boolean bind(int fd, String name) {
+  public boolean bind(String name) {
     return api.usBind(fd, name);
   }
 
   /** Starts listening for client connections. */
-  public boolean listen(int fd) {
+  public boolean listen() {
     return api.usListen(fd);
   }
 
   /** Accepts a client connection. */
-  public int accept(int fd) {
-    return api.usAccept(fd);
+  public UnixSocket accept() {
+    int client = api.usAccept(fd);
+    if (client <= 0) return null;
+    return new UnixSocket(client);
   }
 
   /** Connects to another Socket. */
-  public boolean connect(int fd, String name) {
+  public boolean connect(String name) {
     return api.usConnect(fd, name);
   }
 
@@ -47,7 +58,7 @@ public class UnixSocket {
    * @param len_fd = [0] = # of fds to read (on success returns # of fds read)
    * @param fds = buffer to receive file descriptors
    */
-  public boolean read(int fd, int[] len_data, byte[] data, int[] len_fd, int[] fds) {
+  public boolean read(int[] len_data, byte[] data, int[] len_fd, int[] fds) {
     return api.usRead(fd, len_data, data, len_fd, fds);
   }
 
@@ -58,13 +69,22 @@ public class UnixSocket {
    * @param len_fd = [0] = # of fds to write (on success returns # of fds written)
    * @param fds = buffer of file descriptors to send
    */
-  public boolean write(int fd, int[] len_data, byte[] data, int[] len_fd, int[] fds) {
+  public boolean write(int[] len_data, byte[] data, int[] len_fd, int[] fds) {
     return api.usWrite(fd, len_data, data, len_fd, fds);
   }
 
-  /** Close unix socket or file descriptor. */
-  public boolean close(int fd) {
+  /** Close unix socket. */
+  public boolean close() {
+    if (fd == 0) return false;
     return api.usClose(fd);
+  }
+
+  /** Close file descriptors. */
+  public boolean close(int len_fd, int[] fds) {
+    for(int a=0;a<len_fd;a++) {
+      api.usClose(fds[a]);
+    }
+    return true;
   }
 
 }
