@@ -39,7 +39,7 @@ public class WLProxy {
       real_socket = new UnixSocket();
       if (!real_socket.open()) throw new Exception("Unable to alloc unix socket");
       real_socket.bind(temp_path);  //maybe not be necessary
-      real_socket.connect(real_path);
+      if (!real_socket.connect(real_path)) throw new Exception("Unable to connect to real wayland socket");
     } catch (Exception e) {
       JFLog.log(e);
       if (real_socket != null) {
@@ -65,7 +65,8 @@ public class WLProxy {
       proxy_socket_addr = proxy_path;
       proxy_socket = new UnixSocket();
       if (!proxy_socket.open()) throw new Exception("Unable to alloc unix socket");
-      proxy_socket.bind(proxy_path);
+      if (!proxy_socket.bind(proxy_path)) throw new Exception("Unable to bind to socket:" + proxy_path);
+      if (!proxy_socket.listen()) throw new Exception("Unable to listen on unix socket");
     } catch (Exception e) {
       JFLog.log(e);
       if (proxy_socket != null) {
@@ -109,6 +110,9 @@ public class WLProxy {
       while (active) {
         try {
           UnixSocket client = proxy_socket.accept();
+          if (client == null) {
+            continue;
+          }
           Session session = new Session();
           session.client = client;
           session.client_proxy = new Reader(client, real_socket, true);
