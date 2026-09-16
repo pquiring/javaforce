@@ -104,6 +104,10 @@ public class WLProxy {
     new File(proxy_socket_addr).delete();
   }
 
+  public void setLog(int log) {
+    this.log = log;
+  }
+
   private ArrayList<Session> sessions = new ArrayList<>();
 
   private class Session {
@@ -154,14 +158,14 @@ public class WLProxy {
           fds_len[0] = fds.length;
           src.read(data_len, data, fds_len, fds);
           if (debug) {
-            JFLog.log((monitor ? ">" : "<") + ": read:" + data_len[0] + "," + fds_len[0]);
+            JFLog.log(log, (monitor ? ">" : "<") + ": read:" + data_len[0] + "," + fds_len[0]);
           }
           if (monitor) {
             //TODO
           }
           dst.write(data_len, data, fds_len, fds);
           if (debug) {
-            JFLog.log((monitor ? ">" : "<") + ":write:" + data_len[0] + "," + fds_len[0]);
+            JFLog.log(log, (monitor ? ">" : "<") + ":write:" + data_len[0] + "," + fds_len[0]);
           }
           if (fds_len[0] > 0) {
             //close fds received after they have been transferred
