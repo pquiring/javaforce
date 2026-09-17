@@ -150,9 +150,8 @@ public class WLClient {
     globals.remove(name);
   }
 
-  /** Simulate invoking a method.
-   */
-  public boolean invoke(int id, int opcode, int size, byte[] pkt) {
+  /** Dispatch a request to Wayland server. */
+  public boolean dispatchRequest(int id, int opcode, int size, byte[] pkt) {
     WLObject obj = objects.get(id);
     if (obj == null) return false;
     try {
@@ -163,8 +162,8 @@ public class WLClient {
     return true;
   }
 
-  /** Dispatches inbound packet from wayland server. */
-  public boolean dispatch(int id, int opcode, int size, byte[] pkt) {
+  /** Dispatches inbound event from Wayland server. */
+  public boolean dispatchEvent(int id, int opcode, int size, byte[] pkt) {
     WLObject object = objects.get(id);
     if (object == null) {
       return false;
@@ -208,7 +207,7 @@ public class WLClient {
               }
             }
             if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
-            if (!dispatch(id, opcode, size, pkt)) {
+            if (!dispatchEvent(id, opcode, size, pkt)) {
               JFLog.log("Wayland.Client:Error:id not registered:" + id);
             }
             pktpos = 0;

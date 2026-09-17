@@ -294,14 +294,14 @@ public class WLProxy {
             case '>':
               //client to real wayland
               if (debug) JFLog.log(log, "request:" + id + "." + opcode);
-              if (!session.client.invoke(id, opcode, pktlen, data)) {
+              if (!session.client.dispatchRequest(id, opcode, pktlen, data)) {
                 JFLog.log(log, "Wayland.Client:Error:failed to invoke method:" + id + "." + opcode);
               }
               break;
             case '<':
               //real wayland to client
               if (debug) JFLog.log(log, "event:" + id + "." + opcode);
-              if (!session.client.dispatch(id, opcode, pktlen, data)) {
+              if (!session.client.dispatchEvent(id, opcode, pktlen, data)) {
                 JFLog.log(log, "Wayland.Client:Error:id not registered:" + id);
               }
               break;
