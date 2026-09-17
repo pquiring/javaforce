@@ -185,7 +185,11 @@ public class WLProxy {
             int opcode = LE.getuint16(data, 4);
           }
           toread = LE.getuint16(data, 6);  //packet size including header
+          if (debug) {
+            JFLog.log(log, dir + ":packet.length=" + toread);
+          }
           //read full packet
+          data_len[0] = toread - actread;
           while (actread < toread) {
             boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
             if (debug) {
