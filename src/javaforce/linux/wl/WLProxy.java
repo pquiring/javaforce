@@ -270,6 +270,7 @@ public class WLProxy {
           }
         } catch (Exception e) {
           JFLog.log(log, e);
+          break;
         }
       }
       active = false;
