@@ -34,11 +34,6 @@ public class WLDisplay extends WLObject {
     return "wl_display";
   }
 
-  /** Returns WLRegistry if it has been requested. */
-  public WLRegistry getRegistry() {
-    return registry;
-  }
-
   //requests
 
   public void sync() {
@@ -48,6 +43,9 @@ public class WLDisplay extends WLObject {
   }
 
   public WLRegistry get_registry() {
+    if (registry != null) {
+      return registry;
+    }
     if (debug) JFLog.log("get_registry");
     int new_id = client.get_next_id();
     registry = new WLRegistry(client, new_id);
