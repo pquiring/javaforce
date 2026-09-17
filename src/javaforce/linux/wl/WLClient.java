@@ -155,7 +155,11 @@ public class WLClient {
   public boolean invoke(int id, int opcode, int size, byte[] pkt) {
     WLObject obj = objects.get(id);
     if (obj == null) return false;
-    obj.dispatchRequest(id, opcode, size, pkt, 0, size);
+    try {
+      obj.dispatchRequest(id, opcode, size, pkt, 0, size);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     return true;
   }
 
@@ -165,8 +169,11 @@ public class WLClient {
     if (object == null) {
       return false;
     }
-    if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
-    object.dispatchEvent(opcode, pkt, 8, size);
+    try {
+      object.dispatchEvent(opcode, pkt, 8, size);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     return true;
   }
 
@@ -200,6 +207,7 @@ public class WLClient {
                 pktlen += read;
               }
             }
+            if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
             if (!dispatch(id, opcode, size, pkt)) {
               JFLog.log("Wayland.Client:Error:id not registered:" + id);
             }
