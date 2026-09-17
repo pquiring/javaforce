@@ -149,14 +149,14 @@ public class WLClient {
   }
 
   /** Dispatches inbound packet from wayland server. */
-  public void dispatch(int id, int opcode, int size, byte[] pkt) {
+  public boolean dispatch(int id, int opcode, int size, byte[] pkt) {
     WLObject object = objects.get(id);
     if (object == null) {
-      JFLog.log("Wayland.Client:Error:id not registered:" + id);
-      return;
+      return false;
     }
     if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
     object.dispatchEvent(opcode, pkt, 8, size);
+    return true;
   }
 
   private class Reader extends Thread {
@@ -189,7 +189,9 @@ public class WLClient {
                 pktlen += read;
               }
             }
-            dispatch(id, opcode, size, pkt);
+            if (!dispatch(id, opcode, size, pkt)) {
+              JFLog.log("Wayland.Client:Error:id not registered:" + id);
+            }
             pktpos = 0;
             pktlen = 0;
           }

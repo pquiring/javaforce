@@ -250,7 +250,9 @@ public class WLProxy {
               break;
             case '<':
               //real wayland to client
-              client.dispatch(id, opcode, toread, data);
+              if (!client.dispatch(id, opcode, toread, data)) {
+                JFLog.log(log, "Wayland.Client:Error:id not registered:" + id);
+              }
               break;
           }
           //write full packet (with any fds read)
