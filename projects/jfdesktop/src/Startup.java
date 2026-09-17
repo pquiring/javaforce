@@ -146,6 +146,7 @@ public class Startup implements ShellProcessListener {
     }
     JF.sleep(1000);
     JFLog.log("exit");
+    System.exit(0);
   }
 
   private void startUI(String[] cmds, String[] envs) throws Exception {
