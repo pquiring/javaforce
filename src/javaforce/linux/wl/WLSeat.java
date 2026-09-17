@@ -15,6 +15,12 @@ public class WLSeat extends WLObject {
     super(client, id);
     Class cls = getClass();
     try {
+      requests = new Method[] {
+        cls.getMethod("get_pointer", new Class[] {int.class}),
+        cls.getMethod("get_keyboard", new Class[] {int.class}),
+        cls.getMethod("get_touch", new Class[] {int.class}),
+        cls.getMethod("release", new Class[] {}),
+      };
       events = new Method[] {
         cls.getMethod("capabilities", new Class[] {int.class}),
         cls.getMethod("name", new Class[] {String.class}),

@@ -15,6 +15,9 @@ public class WLBuffer extends WLObject {
     super(client, id);
     Class cls = getClass();
     try {
+      requests = new Method[] {
+        cls.getMethod("destroy", new Class[] {}),
+      };
       events = new Method[] {
         cls.getMethod("release", new Class[] {}),
       };

@@ -90,15 +90,21 @@ public class WLProxy {
   private ArrayList<Session> sessions = new ArrayList<>();
   private Object lock = new Object();
 
-  private class Session extends Thread {
+  public Session getSession() {
+    return sessions.get(0);
+  }
+
+  private class Session extends Thread implements WLNotify {
 
     public String real_socket_addr;
     public UnixSocket real_socket;  //wayland-0
 
-    public UnixSocket client;
+    public UnixSocket client_socket;
 
     public Reader client_proxy;
     public Reader proxy_client;
+
+    private WLClient client = new WLClient(this);
 
     public void run() {
       try { client_proxy.join(); } catch (Exception e) {}
@@ -109,15 +115,54 @@ public class WLProxy {
     }
 
     public void cancel() {
-      if (client != null) {
-        try { client.close(); } catch (Exception e) {}
-        client = null;
+      if (client_socket != null) {
+        try { client_socket.close(); } catch (Exception e) {}
+        client_socket = null;
       }
       if (real_socket != null) {
         try { real_socket.close(); } catch (Exception e) {}
         real_socket = null;
       }
     }
+
+    public WLDisplay get_display() {
+      return client.get_display();
+    }
+
+    public void onRequest(String cls, String method, Object[] args) {
+      JFLog.log(log, "onRequest:" + cls + "." + method);
+    }
+    public void onEvent(String cls, String method, Object[] args) {
+      JFLog.log(log, "onEvent:" + cls + "." + method);
+      switch (cls) {
+        case "wl_registry": {
+          switch (method) {
+            case "global": {
+              int name = (Integer)args[0];
+              String iface = (String)args[1];
+              int ver = (Integer)args[2];
+              switch (iface) {
+                case "zwlr_foreign_toplevel_manager_v1": {
+                  break;
+                }
+                case "wl_seat": {
+                  break;
+                }
+              }
+              break;
+            }
+          }
+          break;
+        }
+        case "zwlr_foreign_toplevel_manager_v1": {
+          break;
+        }
+        case "zwlr_foreign_toplevel_handle_v1": {
+          break;
+        }
+      }
+    }
+
   }
 
   public class Server extends Thread {
@@ -159,10 +204,10 @@ public class WLProxy {
             continue;
           }
 
-          session.client = client;
-          session.client_proxy = new Reader('>', session.client, session.real_socket);
+          session.client_socket = client;
+          session.client_proxy = new Reader('>', session, session.client_socket, session.real_socket);
           session.client_proxy.start();
-          session.proxy_client = new Reader('<', session.real_socket, session.client);
+          session.proxy_client = new Reader('<', session, session.real_socket, session.client_socket);
           session.proxy_client.start();
           synchronized (lock) {
             sessions.add(session);
@@ -175,7 +220,8 @@ public class WLProxy {
     }
   }
 
-  public class Reader extends Thread implements WLNotify {
+  public class Reader extends Thread {
+    private Session session;
     private UnixSocket src;
     private UnixSocket dst;
     private byte[] data = new byte[64 * 1024];  //max wayland packet size
@@ -185,9 +231,9 @@ public class WLProxy {
     private int fds_offset;
     private int[] fds_len = new int[1];
     private char dir;
-    private WLClient client = new WLClient(this);
-    public Reader(char dir, UnixSocket src, UnixSocket dst) {
+    public Reader(char dir, Session session, UnixSocket src, UnixSocket dst) {
       this.dir = dir;
+      this.session = session;
       this.src = src;
       this.dst = dst;
     }
@@ -199,9 +245,9 @@ public class WLProxy {
           fds_offset = 0;
           fds_len[0] = fds.length;
           //read header (8 bytes)
-          int toread = 8;
+          int pktlen = 8;
           int actread = 0;
-          while (actread < toread) {
+          while (actread < pktlen) {
             boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
             if (debug_rw) {
               JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
@@ -214,19 +260,19 @@ public class WLProxy {
             }
             actread += data_len[0];
             data_offset += data_len[0];
-            data_len[0] = toread - actread;
+            data_len[0] = pktlen - actread;
             fds_offset += fds_len[0];
             fds_len[0] = fds.length - fds_offset;
           }
           int id = LE.getuint32(data, 0);
           int opcode = LE.getuint16(data, 4);
-          toread = LE.getuint16(data, 6);  //packet size including header
+          pktlen = LE.getuint16(data, 6);  //packet size including header
           if (debug_rw) {
-            JFLog.log(log, dir + ":packet.length=" + toread);
+            JFLog.log(log, dir + ":packet.length=" + pktlen);
           }
           //read full packet
-          data_len[0] = toread - actread;
-          while (actread < toread) {
+          data_len[0] = pktlen - actread;
+          while (actread < pktlen) {
             boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
             if (debug_rw) {
               JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
@@ -239,7 +285,7 @@ public class WLProxy {
             }
             actread += data_len[0];
             data_offset += data_len[0];
-            data_len[0] = toread - actread;
+            data_len[0] = pktlen - actread;
             fds_offset += fds_len[0];
             fds_len[0] = fds.length - fds_offset;
           }
@@ -247,17 +293,22 @@ public class WLProxy {
           switch (dir) {
             case '>':
               //client to real wayland
+              if (debug) JFLog.log(log, "request:" + id + "." + opcode);
+              if (!session.client.invoke(id, opcode, pktlen, data)) {
+                JFLog.log(log, "Wayland.Client:Error:failed to invoke method:" + id + "." + opcode);
+              }
               break;
             case '<':
               //real wayland to client
-              if (!client.dispatch(id, opcode, toread, data)) {
+              if (debug) JFLog.log(log, "event:" + id + "." + opcode);
+              if (!session.client.dispatch(id, opcode, pktlen, data)) {
                 JFLog.log(log, "Wayland.Client:Error:id not registered:" + id);
               }
               break;
           }
           //write full packet (with any fds read)
           data_offset = 0;
-          data_len[0] = toread;
+          data_len[0] = pktlen;
           fds_len[0] = fds_offset;
           fds_offset = 0;
           boolean write = dst.write(data, data_offset, data_len, fds, fds_offset, fds_len);
@@ -279,37 +330,6 @@ public class WLProxy {
       active = false;
       src.close();
       dst.close();
-    }
-
-    public void onEvent(String cls, String method, Object[] args) {
-      JFLog.log(log, "onEvent:" + cls + "." + method);
-      switch (cls) {
-        case "wl_registry": {
-          switch (method) {
-            case "global": {
-              int name = (Integer)args[0];
-              String iface = (String)args[1];
-              int ver = (Integer)args[2];
-              switch (iface) {
-                case "zwlr_foreign_toplevel_manager_v1": {
-                  break;
-                }
-                case "wl_seat": {
-                  break;
-                }
-              }
-              break;
-            }
-          }
-          break;
-        }
-        case "zwlr_foreign_toplevel_manager_v1": {
-          break;
-        }
-        case "zwlr_foreign_toplevel_handle_v1": {
-          break;
-        }
-      }
     }
   }
 }

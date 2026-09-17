@@ -15,6 +15,8 @@ public class WLCallback extends WLObject {
     super(client, id);
     Class cls = getClass();
     try {
+      requests = new Method[] {
+      };
       events = new Method[] {
         cls.getMethod("done", new Class[] {int.class}),
       };

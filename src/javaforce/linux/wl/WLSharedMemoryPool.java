@@ -15,6 +15,11 @@ public class WLSharedMemoryPool extends WLObject {
     super(client, id);
     Class cls = getClass();
     try {
+      requests = new Method[] {
+        cls.getMethod("create_buffer", new Class[] {int.class, int.class, int.class, int.class, int.class, int.class}),
+        cls.getMethod("destroy", new Class[] {}),
+        cls.getMethod("resize", new Class[] {int.class}),
+      };
       events = new Method[] {
       };
     } catch (Exception e) {

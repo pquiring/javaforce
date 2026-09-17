@@ -16,6 +16,18 @@ public class WLRForeignToplevelHandle extends WLObject {
     this.manager = manager;
     Class cls = getClass();
     try {
+      requests = new Method[] {
+        cls.getMethod("set_maximized", new Class[] {}),
+        cls.getMethod("unset_maximized", new Class[] {}),
+        cls.getMethod("set_minimized", new Class[] {}),
+        cls.getMethod("unset_minimized", new Class[] {}),
+        cls.getMethod("activate", new Class[] {int.class}),
+        cls.getMethod("close", new Class[] {}),
+        cls.getMethod("set_rectangle", new Class[] {int.class, int.class, int.class, int.class, int.class}),
+        cls.getMethod("destroy", new Class[] {}),
+        cls.getMethod("set_fullscreen", new Class[] {int.class}),
+        cls.getMethod("unset_fullscreen", new Class[] {}),
+      };
       events = new Method[] {
         cls.getMethod("title", new Class[] {String.class}),
         cls.getMethod("app_id", new Class[] {String.class}),
@@ -71,8 +83,8 @@ public class WLRForeignToplevelHandle extends WLObject {
     invokeRequest(id, 3);
   }
 
-  public void activate(WLSeat wl_seat) {
-    invokeRequest(id, 4, wl_seat.id);
+  public void activate(int wl_seat) {
+    invokeRequest(id, 4, wl_seat);
   }
 
   public void close() {

@@ -15,6 +15,11 @@ public class WLCompositor extends WLObject {
     super(client, id);
     Class cls = getClass();
     try {
+      requests = new Method[] {
+        cls.getMethod("create_surface", new Class[] {int.class}),
+        cls.getMethod("create_region", new Class[] {int.class}),
+        cls.getMethod("release", new Class[] {}),
+      };
       events = new Method[] {
       };
     } catch (Exception e) {

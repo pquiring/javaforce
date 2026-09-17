@@ -45,6 +45,9 @@ public class WLWindowMonitor implements WLNotify, WLWindowEvents {
     return seat;
   }
 
+  public void onRequest(String cls, String method, Object[] args) {
+
+  }
   public void onEvent(String cls, String method, Object[] args) {
     switch (cls) {
       case "wl_registry": {

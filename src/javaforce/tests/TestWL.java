@@ -37,6 +37,10 @@ public class TestWL implements WLNotify, WLWindowEvents {
     client.disconnect();
   }
 
+  public void onRequest(String cls, String method, Object[] args) {
+    JFLog.log("onRequest:" + cls + "," + method);
+  }
+
   public void onEvent(String cls, String method, Object[] args) {
     JFLog.log("onEvent:" + cls + "," + method);
     switch (cls) {

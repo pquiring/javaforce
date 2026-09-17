@@ -23,6 +23,9 @@ public class WLRForeignToplevelManager extends WLObject {
     setVersion(3);
     Class cls = getClass();
     try {
+      requests = new Method[] {
+        cls.getMethod("stop", new Class[] {}),
+      };
       events = new Method[] {
         cls.getMethod("toplevel", new Class[] {int.class}),
         cls.getMethod("finished", new Class[] {}),

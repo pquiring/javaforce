@@ -83,6 +83,7 @@ public class WLClient {
   }
 
   public int read(byte[] data, int offset, int length) {
+    if (socket == null) return -1;
     try {
       int read = socket.read(ByteBuffer.wrap(data, offset, length));
       if (debug_io) JFLog.log("read=" + read);
@@ -94,6 +95,7 @@ public class WLClient {
   }
 
   public boolean write(byte[] data, int offset, int length) {
+    if (socket == null) return false;
     if (debug_packet) JFLog.log("write.packet=", data, offset, length);
     try {
       int write = socket.write(ByteBuffer.wrap(data, offset, length));
@@ -146,6 +148,15 @@ public class WLClient {
   /** Remove server side Object name. */
   public void removeGlobal(int name) {
     globals.remove(name);
+  }
+
+  /** Simulate invoking a method.
+   */
+  public boolean invoke(int id, int opcode, int size, byte[] pkt) {
+    WLObject obj = objects.get(id);
+    if (obj == null) return false;
+    obj.dispatchRequest(id, opcode, size, pkt, 0, size);
+    return true;
   }
 
   /** Dispatches inbound packet from wayland server. */

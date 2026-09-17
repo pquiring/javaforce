@@ -15,8 +15,8 @@ public abstract class WLObject {
   public WLClient client;
   public int id;
   public int ver = 1;
+  public Method[] requests;
   public Method[] events;
-//  public Method[] requests;
   protected WLNotify notify;
 
   public WLObject(WLClient client, int id) {
@@ -42,7 +42,7 @@ public abstract class WLObject {
     return offset + pad;
   }
   public boolean dispatchEvent(int opcode, byte[] pkt, int offset, int length) {
-    if (opcode >= events.length) {
+    if (events == null || opcode >= events.length) {
       if (debug) JFLog.log("ERROR:WLObject.dispatchEvent:opcode >= events:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
@@ -149,5 +149,51 @@ public abstract class WLObject {
   }
   public void setNotify(WLNotify notify) {
     this.notify = notify;
+  }
+  public boolean dispatchRequest(int id, int opcode, int size, byte[] pkt, int offset, int length) {
+    if (requests == null || opcode >= requests.length) {
+      if (debug) JFLog.log("ERROR:WLObject.dispatchRequest:opcode >= requests:this=" + getClass().getName() + ":opcode=" + opcode);
+      return false;
+    }
+    Method method = requests[opcode];
+    if (method == null) {
+      if (debug) JFLog.log("ERROR:WLObject.dispatchRequest:method==null:this=" + getClass().getName() + ":opcode=" + opcode);
+      return false;
+    }
+    if (debug) JFLog.log("WLObject.dispatchRequest:this=" + getClass().getName() + ":opcode=" + opcode + ":method=" + method.getName());
+    Class[] types = method.getParameterTypes();
+    Object[] args = new Object[types.length];
+    //unmarshal args from byte[]
+    for(int a=0;a<types.length;a++) {
+      Class cls = types[a];
+      String type = cls.getName();
+      switch (type) {
+        case "java.lang.Integer":
+        case "int":
+          args[a] = LE.getuint32(pkt, offset);
+          offset += 4;
+          break;
+        case "java.lang.String":
+          int strlen = LE.getuint32(pkt, offset);  //includes null
+          offset += 4;
+          args[a] = new String(pkt, offset, strlen - 1);
+          offset += strlen;
+          break;
+        default:
+          JFLog.log("WLObject:unknown arg type:" + type);
+          return false;
+      }
+      //each arg is aligned to 32bits (padding as needed)
+      offset = align32(offset);
+    }
+    try {
+      method.invoke(this, args);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    if (notify != null) {
+      notify.onRequest(get_wl_name(), method.getName(), args);
+    }
+    return true;
   }
 }
