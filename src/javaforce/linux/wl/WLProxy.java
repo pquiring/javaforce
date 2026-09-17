@@ -15,6 +15,7 @@ import javaforce.linux.*;
 
 public class WLProxy {
   public static boolean debug = false;
+  public static boolean debug_rw = false;
 
   private String proxy_socket_addr;
   private UnixSocket proxy_socket;  //wayland-99
@@ -202,7 +203,7 @@ public class WLProxy {
           int actread = 0;
           while (actread < toread) {
             boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
-            if (debug) {
+            if (debug_rw) {
               JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
             }
             if (!read) {
@@ -220,14 +221,14 @@ public class WLProxy {
           int id = LE.getuint32(data, 0);
           int opcode = LE.getuint16(data, 4);
           toread = LE.getuint16(data, 6);  //packet size including header
-          if (debug) {
+          if (debug_rw) {
             JFLog.log(log, dir + ":packet.length=" + toread);
           }
           //read full packet
           data_len[0] = toread - actread;
           while (actread < toread) {
             boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
-            if (debug) {
+            if (debug_rw) {
               JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
             }
             if (!read) {
@@ -258,7 +259,7 @@ public class WLProxy {
           fds_len[0] = fds_offset;
           fds_offset = 0;
           boolean write = dst.write(data, data_offset, data_len, fds, fds_offset, fds_len);
-          if (debug) {
+          if (debug_rw) {
             JFLog.log(log, dir + ":write:" + data_len[0] + "," + fds_len[0]);
           }
           if (!write) {
