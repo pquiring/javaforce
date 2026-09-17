@@ -27,5 +27,7 @@ public interface UnixSocketAPI {
 
   public boolean usWrite(int fd, byte[] data, int offset_data, int[] len_data, int[] fds, int offset_fd, int[] len_fd);
 
+  public boolean usShutdown(int fd);
+
   public boolean usClose(int fd);
 }

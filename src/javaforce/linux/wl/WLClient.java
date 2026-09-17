@@ -31,9 +31,12 @@ public class WLClient {
   /** Next client side id. */
   private int next_id = 2;  //1 = reserved for wl_display
   private WLDisplay display;
+  private WLNotify notify;
 
-  public WLClient() {
+  public WLClient(WLNotify notify) {
     display = new WLDisplay(this, 1);
+    display.setNotify(notify);
+    this.notify = notify;
   }
 
   public boolean connect() {
@@ -147,6 +150,17 @@ public class WLClient {
     globals.remove(name);
   }
 
+  /** Dispatches inbound packet from wayland server. */
+  public void dispatch(int id, int opcode, int size, byte[] pkt) {
+    WLObject object = objects.get(id);
+    if (object == null) {
+      JFLog.log("Wayland.Client:Error:id not registered:" + id);
+      return;
+    }
+    if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
+    object.dispatchEvent(opcode, pkt, 8, size);
+  }
+
   private class Reader extends Thread {
     private byte[] pkt = new byte[1024];
     public void run() {
@@ -177,13 +191,7 @@ public class WLClient {
                 pktlen += read;
               }
             }
-            WLObject object = objects.get(id);
-            if (object == null) {
-              JFLog.log("Wayland.Client:Error:id not registered:" + id);
-              continue;
-            }
-            if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
-            object.dispatchEvent(opcode, pkt, 8, size);
+            dispatch(id, opcode, size, pkt);
             pktpos = 0;
             pktlen = 0;
           }

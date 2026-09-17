@@ -46,6 +46,9 @@ public class UnixSocketFFM implements UnixSocketAPI {
   private MethodHandle usRead;
   public boolean usRead(int a1,byte[] a2,int a3,int[] a4,int[] a5,int a6,int[] a7) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);MemorySegment _array_a7 = FFM.toMemory(arena, a7);boolean _ret_value_ = (boolean)usRead.invokeExact(a1,_array_a2,a3,_array_a4,_array_a5,a6,_array_a7);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);FFM.copyBack(_array_a7,a7);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle usShutdown;
+  public boolean usShutdown(int a1) { try { boolean _ret_value_ = (boolean)usShutdown.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle usWrite;
   public boolean usWrite(int a1,byte[] a2,int a3,int[] a4,int[] a5,int a6,int[] a7) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);MemorySegment _array_a7 = FFM.toMemory(arena, a7);boolean _ret_value_ = (boolean)usWrite.invokeExact(a1,_array_a2,a3,_array_a4,_array_a5,a6,_array_a7);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);FFM.copyBack(_array_a7,a7);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
@@ -69,6 +72,7 @@ public class UnixSocketFFM implements UnixSocketAPI {
     usConnect = ffm.getFunctionPtr("_usConnect", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS));
     usListen = ffm.getFunctionPtr("_usListen", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     usRead = ffm.getFunctionPtr("_usRead", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,JAVA_INT,ADDRESS));
+    usShutdown = ffm.getFunctionPtr("_usShutdown", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     usWrite = ffm.getFunctionPtr("_usWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,JAVA_INT,ADDRESS));
     usAccept = ffm.getFunctionPtr("_usAccept", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
     usOpen = ffm.getFunctionPtr("_usOpen", ffm.getFunctionDesciptor(JAVA_INT));

@@ -98,6 +98,11 @@ jboolean usWrite(int fd, char* data, int offset_data, int* len_data, int* fds, i
   return JNI_TRUE;
 }
 
+jboolean usShutdown(int fd) {
+  shutdown(fd, SHUT_RDWR);
+  return JNI_TRUE;
+}
+
 jboolean usClose(int fd) {
   close(fd);
   return JNI_TRUE;
@@ -111,8 +116,8 @@ extern "C" {
   JNIEXPORT jboolean (*_usConnect)(int, const char*) = &usConnect;
   JNIEXPORT jboolean (*_usRead)(int, char*, int, int*, int*, int, int*) = &usRead;
   JNIEXPORT jboolean (*_usWrite)(int, char*, int, int*, int*, int, int*) = &usWrite;
+  JNIEXPORT jboolean (*_usShutdown)(int) = &usShutdown;
   JNIEXPORT jboolean (*_usClose)(int) = &usClose;
-
 
   JNIEXPORT jboolean JNICALL UnixSocketAPIinit() {return JNI_TRUE;}
 }

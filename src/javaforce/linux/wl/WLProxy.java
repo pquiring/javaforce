@@ -129,7 +129,7 @@ public class WLProxy {
             session.real_socket_addr = real_path;
             session.real_socket = new UnixSocket();
             if (!session.real_socket.open()) throw new Exception("Unable to alloc unix socket");
-            session.real_socket.bind(temp_path);  //maybe not be necessary
+            session.real_socket.bind(temp_path);  //may not be necessary
             if (!session.real_socket.connect(real_path)) throw new Exception("Unable to connect to real wayland socket");
           } catch (Exception e) {
             JFLog.log(log, e);
@@ -156,7 +156,7 @@ public class WLProxy {
     }
   }
 
-  public class Reader extends Thread {
+  public class Reader extends Thread implements WLNotify {
     private UnixSocket src;
     private UnixSocket dst;
     private byte[] data = new byte[64 * 1024];  //max wayland packet size
@@ -166,6 +166,7 @@ public class WLProxy {
     private int fds_offset;
     private int[] fds_len = new int[1];
     private char dir;
+    private WLClient client = new WLClient(this);
     public Reader(char dir, UnixSocket src, UnixSocket dst) {
       this.dir = dir;
       this.src = src;
@@ -198,10 +199,8 @@ public class WLProxy {
             fds_offset += fds_len[0];
             fds_len[0] = fds.length - fds_offset;
           }
-          if (false) {
-            int obj_id = LE.getuint32(data, 0);
-            int opcode = LE.getuint16(data, 4);
-          }
+          int id = LE.getuint32(data, 0);
+          int opcode = LE.getuint16(data, 4);
           toread = LE.getuint16(data, 6);  //packet size including header
           if (debug) {
             JFLog.log(log, dir + ":packet.length=" + toread);
@@ -224,6 +223,16 @@ public class WLProxy {
             data_len[0] = toread - actread;
             fds_offset += fds_len[0];
             fds_len[0] = fds.length - fds_offset;
+          }
+          //process packet
+          switch (dir) {
+            case '>':
+              //client to real wayland
+              break;
+            case '<':
+              //real wayland to client
+              client.dispatch(id, opcode, toread, data);
+              break;
           }
           //write full packet (with any fds read)
           data_offset = 0;
@@ -248,6 +257,10 @@ public class WLProxy {
       active = false;
       src.close();
       dst.close();
+    }
+
+    public void onEvent(String cls, String method, Object[] args) {
+      //TODO
     }
   }
 }

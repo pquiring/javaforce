@@ -25,12 +25,12 @@ public class TestWL implements WLNotify, WLWindowEvents {
 
   public void run() {
     active = true;
-    client = new WLClient();
+    client = new WLClient(this);
     if (!client.connect()) {
       return;
     }
     display = client.get_display();
-    registry = display.get_registry(this);
+    registry = display.get_registry();
     while (active) {
       JF.sleep(1000);
     }
