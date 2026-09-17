@@ -11,6 +11,7 @@ import javaforce.api.linux.*;
 
 public class UnixSocket {
   private UnixSocketAPI api = UnixSocketAPI.getInstance();
+  private Object lock = new Object();
   private int fd;
 
   public UnixSocket() {}
@@ -26,9 +27,11 @@ public class UnixSocket {
 
   /** Creates a new unbound Unix Socket. */
   public boolean open() {
-    if (fd != 0) return false;
-    fd = api.usOpen();
-    return fd >= 0;
+    synchronized (lock) {
+      if (fd != 0) return false;
+      fd = api.usOpen();
+      return fd >= 0;
+    }
   }
 
   /** Binds Socket to a path (max 108 chars). */
@@ -84,9 +87,12 @@ public class UnixSocket {
 
   /** Close unix socket. */
   public boolean close() {
-    if (fd == 0) return false;
-    boolean res = api.usClose(fd);
-    fd = 0;
+    boolean res;
+    synchronized (lock) {
+      if (fd == 0) return false;
+      res = api.usClose(fd);
+      fd = 0;
+    }
     return res;
   }
 
@@ -98,5 +104,4 @@ public class UnixSocket {
     }
     return true;
   }
-
 }

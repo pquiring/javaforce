@@ -169,12 +169,10 @@ public class WLProxy {
               JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
             }
             if (!read) {
-              JFLog.log(log, dir + ":WLProxy:Error:read() failed");
-              break;
+              throw new Exception(dir + ":WLProxy:Error:read() failed");
             }
             if (data_len[0] == 0) {
-              JFLog.log(log, dir + ":WLProxy:Error:read==0:src disconnected");
-              break;
+              throw new Exception(dir + ":WLProxy:Error:read==0:src disconnected");
             }
             actread += data_len[0];
             data_offset += data_len[0];
@@ -194,12 +192,10 @@ public class WLProxy {
               JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
             }
             if (!read) {
-              JFLog.log(log, dir + ":WLProxy:Error:read() failed");
-              break;
+              throw new Exception(dir + ":WLProxy:Error:read() failed");
             }
             if (data_len[0] == 0) {
-              JFLog.log(log, dir + ":WLProxy:Error:read==0:src disconnected");
-              break;
+              throw new Exception(dir + ":WLProxy:Error:read==0:src disconnected");
             }
             actread += data_len[0];
             data_offset += data_len[0];
@@ -225,7 +221,6 @@ public class WLProxy {
           }
         } catch (Exception e) {
           JFLog.log(log, e);
-          return;
         }
       }
       active = false;
