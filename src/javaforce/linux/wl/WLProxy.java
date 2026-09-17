@@ -73,6 +73,13 @@ public class WLProxy {
       proxy_socket = null;
     }
     new File(proxy_socket_addr).delete();
+    stopSessions();
+  }
+
+  private void stopSessions() {
+    for(Session session : sessions) {
+      session.cancel();
+    }
   }
 
   public void setLog(int log) {
@@ -97,6 +104,17 @@ public class WLProxy {
       try { proxy_client.join(); } catch (Exception e) {}
       synchronized (lock) {
         sessions.remove(this);
+      }
+    }
+
+    public void cancel() {
+      if (client != null) {
+        try { client.close(); } catch (Exception e) {}
+        client = null;
+      }
+      if (real_socket != null) {
+        try { real_socket.close(); } catch (Exception e) {}
+        real_socket = null;
       }
     }
   }

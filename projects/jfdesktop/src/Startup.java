@@ -139,11 +139,13 @@ public class Startup implements ShellProcessListener {
     }
     if (is_wayland) {
       if (proxy != null) {
+        JFLog.log("Stopping WLProxy");
         proxy.stop();
         proxy = null;
       }
     }
     JF.sleep(1000);
+    JFLog.log("exit");
   }
 
   private void startUI(String[] cmds, String[] envs) throws Exception {
