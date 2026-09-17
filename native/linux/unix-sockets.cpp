@@ -28,11 +28,11 @@ jboolean usConnect(int fd, const char* name) {
   return connect(fd, (struct sockaddr *)&addr, sizeof(addr)) != -1;
 }
 
-jboolean usRead(int fd, int* len_data, char* data, int* len_fds, int* fds) {
+jboolean usRead(int fd, char* data, int offset_data, int* len_data, int* fds, int fds_offset, int* len_fds) {
   int max_fds = len_fds[0];
 
   struct iovec iov;
-  iov.iov_base = data;
+  iov.iov_base = data + offset_data;
   iov.iov_len = len_data[0];
 
   char cmsg_buf[CMSG_SPACE(sizeof(int) * max_fds)];
@@ -54,7 +54,7 @@ jboolean usRead(int fd, int* len_data, char* data, int* len_fds, int* fds) {
       int num_fds = (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int);
       int *cmsg_fds = (int *)CMSG_DATA(cmsg);
       for (int i = 0; i < num_fds && len_fds[0] < max_fds; i++) {
-        fds[len_fds[0]] = cmsg_fds[i];
+        fds[fds_offset + len_fds[0]] = cmsg_fds[i];
         len_fds[0]++;
       }
     }
@@ -63,11 +63,11 @@ jboolean usRead(int fd, int* len_data, char* data, int* len_fds, int* fds) {
   return JNI_TRUE;
 }
 
-jboolean usWrite(int fd, int* len_data, char* data, int* len_fds, int* fds) {
+jboolean usWrite(int fd, char* data, int offset_data, int* len_data, int* fds, int fds_offset, int* len_fds) {
   int max_fds = len_fds[0];
 
   struct iovec iov;
-  iov.iov_base = (void *)data;
+  iov.iov_base = (void *)(data + offset_data);
   iov.iov_len = len_data[0];
 
   char cmsg_buf[CMSG_SPACE(sizeof(int) * max_fds)];
@@ -86,7 +86,7 @@ jboolean usWrite(int fd, int* len_data, char* data, int* len_fds, int* fds) {
 
     int *cmsg_fds = (int *)CMSG_DATA(cmsg);
     for (int i = 0; i < len_fds[0]; i++) {
-      cmsg_fds[i] = fds[i];
+      cmsg_fds[i] = fds[i + fds_offset];
     }
   }
 
@@ -109,8 +109,8 @@ extern "C" {
   JNIEXPORT jboolean (*_usListen)(int) = &usListen;
   JNIEXPORT int (*_usAccept)(int) = &usAccept;
   JNIEXPORT jboolean (*_usConnect)(int, const char*) = &usConnect;
-  JNIEXPORT jboolean (*_usRead)(int, int*, char*, int*, int*) = &usRead;
-  JNIEXPORT jboolean (*_usWrite)(int, int*, char*, int*, int*) = &usWrite;
+  JNIEXPORT jboolean (*_usRead)(int, char*, int, int*, int*, int, int*) = &usRead;
+  JNIEXPORT jboolean (*_usWrite)(int, char*, int, int*, int*, int, int*) = &usWrite;
   JNIEXPORT jboolean (*_usClose)(int) = &usClose;
 
 

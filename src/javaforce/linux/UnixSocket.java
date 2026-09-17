@@ -58,24 +58,28 @@ public class UnixSocket {
    * Note : any fds received should be closed.
    *
    * @param fd = socket fd
-   * @param len_data = [0] = size of data (on success returns length read)
    * @param data = buffer to receive data
-   * @param len_fd = [0] = # of fds to read (on success returns # of fds read)
+   * @param offset_data = offset into data
+   * @param len_data = [0] = size of data (on success returns length read)
    * @param fds = buffer to receive file descriptors
+   * @param offset_fd = offset into fds
+   * @param len_fd = [0] = # of fds to read (on success returns # of fds read)
    */
-  public boolean read(int[] len_data, byte[] data, int[] len_fd, int[] fds) {
-    return api.usRead(fd, len_data, data, len_fd, fds);
+  public boolean read(byte[] data, int offset_data, int[] len_data, int[] fds, int offset_fd, int[] len_fd) {
+    return api.usRead(fd, data, offset_data, len_data, fds, offset_fd, len_fd);
   }
 
   /** Write data and file descriptors.
    * @param fd = socket fd
-   * @param len_data = [0] = size of data (on success returns length written)
    * @param data = buffer of data to send
-   * @param len_fd = [0] = # of fds to write (on success returns # of fds written)
+   * @param offset_data = offset into data
+   * @param len_data = [0] = size of data (on success returns length written)
    * @param fds = buffer of file descriptors to send
+   * @param offset_fd = offset into fds
+   * @param len_fd = [0] = # of fds to write (on success returns # of fds written)
    */
-  public boolean write(int[] len_data, byte[] data, int[] len_fd, int[] fds) {
-    return api.usWrite(fd, len_data, data, len_fd, fds);
+  public boolean write(byte[] data, int offset_data, int[] len_data, int[] fds, int offset_fd, int[] len_fd) {
+    return api.usWrite(fd, data, offset_data, len_data, fds, offset_fd, len_fd);
   }
 
   /** Close unix socket. */
@@ -87,8 +91,9 @@ public class UnixSocket {
   }
 
   /** Close file descriptors. */
-  public boolean close(int len_fd, int[] fds) {
-    for(int a=0;a<len_fd;a++) {
+  public boolean close(int[] fds, int offset, int len_fd) {
+    int end = len_fd + offset;
+    for(int a=offset;a<end;a++) {
       api.usClose(fds[a]);
     }
     return true;

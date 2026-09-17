@@ -44,10 +44,10 @@ public class UnixSocketFFM implements UnixSocketAPI {
   public boolean usListen(int a1) { try { boolean _ret_value_ = (boolean)usListen.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle usRead;
-  public boolean usRead(int a1,int[] a2,byte[] a3,int[] a4,int[] a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);boolean _ret_value_ = (boolean)usRead.invokeExact(a1,_array_a2,_array_a3,_array_a4,_array_a5);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean usRead(int a1,byte[] a2,int a3,int[] a4,int[] a5,int a6,int[] a7) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);MemorySegment _array_a7 = FFM.toMemory(arena, a7);boolean _ret_value_ = (boolean)usRead.invokeExact(a1,_array_a2,a3,_array_a4,_array_a5,a6,_array_a7);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);FFM.copyBack(_array_a7,a7);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle usWrite;
-  public boolean usWrite(int a1,int[] a2,byte[] a3,int[] a4,int[] a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);boolean _ret_value_ = (boolean)usWrite.invokeExact(a1,_array_a2,_array_a3,_array_a4,_array_a5);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean usWrite(int a1,byte[] a2,int a3,int[] a4,int[] a5,int a6,int[] a7) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);MemorySegment _array_a7 = FFM.toMemory(arena, a7);boolean _ret_value_ = (boolean)usWrite.invokeExact(a1,_array_a2,a3,_array_a4,_array_a5,a6,_array_a7);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);FFM.copyBack(_array_a7,a7);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle usAccept;
   public int usAccept(int a1) { try { int _ret_value_ = (int)usAccept.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -68,8 +68,8 @@ public class UnixSocketFFM implements UnixSocketAPI {
     usClose = ffm.getFunctionPtr("_usClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     usConnect = ffm.getFunctionPtr("_usConnect", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS));
     usListen = ffm.getFunctionPtr("_usListen", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
-    usRead = ffm.getFunctionPtr("_usRead", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS,ADDRESS,ADDRESS,ADDRESS));
-    usWrite = ffm.getFunctionPtr("_usWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS,ADDRESS,ADDRESS,ADDRESS));
+    usRead = ffm.getFunctionPtr("_usRead", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,JAVA_INT,ADDRESS));
+    usWrite = ffm.getFunctionPtr("_usWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,JAVA_INT,ADDRESS));
     usAccept = ffm.getFunctionPtr("_usAccept", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
     usOpen = ffm.getFunctionPtr("_usOpen", ffm.getFunctionDesciptor(JAVA_INT));
     if (FFM.debug) JFLog.log("UnixSocketFFM init complete");

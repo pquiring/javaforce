@@ -141,10 +141,12 @@ public class WLProxy {
   public class Reader extends Thread {
     private UnixSocket src;
     private UnixSocket dst;
+    private byte[] data = new byte[64 * 1024];  //max wayland packet size
+    private int data_offset;
     private int[] data_len = new int[1];
-    private byte[] data = new byte[128 * 1024];  //max unix socket packet size
-    private int[] fds_len = new int[1];
     private int[] fds = new int[128];
+    private int fds_offset;
+    private int[] fds_len = new int[1];
     private char dir;
     public Reader(char dir, UnixSocket src, UnixSocket dst) {
       this.dir = dir;
@@ -154,22 +156,63 @@ public class WLProxy {
     public void run() {
       while (active) {
         try {
-          data_len[0] = data.length;
+          data_offset = 0;
+          data_len[0] = 8;
+          fds_offset = 0;
           fds_len[0] = fds.length;
-          boolean read = src.read(data_len, data, fds_len, fds);
-          if (debug) {
-            JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
+          //read header (8 bytes)
+          int toread = 8;
+          int actread = 0;
+          while (actread < toread) {
+            boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
+            if (debug) {
+              JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
+            }
+            if (!read) {
+              JFLog.log(log, dir + ":WLProxy:Error:read() failed");
+              break;
+            }
+            if (data_len[0] == 0) {
+              JFLog.log(log, dir + ":WLProxy:Error:read==0:src disconnected");
+              break;
+            }
+            actread += data_len[0];
+            data_offset += data_len[0];
+            data_len[0] = toread - actread;
+            fds_offset += fds_len[0];
+            fds_len[0] = fds.length - fds_offset;
           }
-          if (!read) {
-            JFLog.log(log, "WLProxy:read() failed");
-            JF.sleep(100);
-            continue;
+          if (false) {
+            int obj_id = LE.getuint32(data, 0);
+            int opcode = LE.getuint16(data, 4);
           }
-          if (data_len[0] == 0) {
-            JF.sleep(100);
-            continue;
+          toread = LE.getuint16(data, 6);  //packet size including header
+          //read full packet
+          while (actread < toread) {
+            boolean read = src.read(data, data_offset, data_len, fds, fds_offset, fds_len);
+            if (debug) {
+              JFLog.log(log, dir + ": read:" + data_len[0] + "," + fds_len[0]);
+            }
+            if (!read) {
+              JFLog.log(log, dir + ":WLProxy:Error:read() failed");
+              break;
+            }
+            if (data_len[0] == 0) {
+              JFLog.log(log, dir + ":WLProxy:Error:read==0:src disconnected");
+              break;
+            }
+            actread += data_len[0];
+            data_offset += data_len[0];
+            data_len[0] = toread - actread;
+            fds_offset += fds_len[0];
+            fds_len[0] = fds.length - fds_offset;
           }
-          boolean write = dst.write(data_len, data, fds_len, fds);
+          //write full packet (with any fds read)
+          data_offset = 0;
+          data_len[0] = toread;
+          fds_len[0] = fds_offset;
+          fds_offset = 0;
+          boolean write = dst.write(data, data_offset, data_len, fds, fds_offset, fds_len);
           if (debug) {
             JFLog.log(log, dir + ":write:" + data_len[0] + "," + fds_len[0]);
           }
@@ -178,13 +221,16 @@ public class WLProxy {
           }
           if (fds_len[0] > 0) {
             //close fds received after they have been transferred
-            src.close(fds_len[0], fds);
+            src.close(fds, 0, fds_len[0]);
           }
         } catch (Exception e) {
           JFLog.log(log, e);
           return;
         }
       }
+      active = false;
+      src.close();
+      dst.close();
     }
   }
 }
