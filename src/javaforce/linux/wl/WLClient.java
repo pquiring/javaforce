@@ -195,7 +195,7 @@ public class WLClient {
     WLObject obj = objects.get(id);
     if (obj == null) return false;
     try {
-      obj.dispatchRequest(id, opcode, size, pkt, 0, size);
+      obj.dispatchRequest(id, opcode, size, pkt, 8, size);
     } catch (Exception e) {
       log(e);
     }
