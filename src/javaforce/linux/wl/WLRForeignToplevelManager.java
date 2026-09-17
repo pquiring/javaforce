@@ -17,9 +17,8 @@ public class WLRForeignToplevelManager extends WLObject {
   private WLWindowEvents win_events;
 
   @SuppressWarnings("unchecked")
-  public WLRForeignToplevelManager(WLClient client, int id, WLWindowEvents win_events) {
+  public WLRForeignToplevelManager(WLClient client, int id) {
     super(client, id);
-    this.win_events = win_events;
     setVersion(3);
     Class cls = getClass();
     try {
@@ -37,6 +36,10 @@ public class WLRForeignToplevelManager extends WLObject {
 
   public String get_wl_name() {
     return "zwlr_foreign_toplevel_manager_v1";
+  }
+
+  public void setWindowEvents(WLWindowEvents win_events) {
+    this.win_events = win_events;
   }
 
   public WLRForeignToplevelHandle[] getWindows() {
@@ -66,7 +69,9 @@ public class WLRForeignToplevelManager extends WLObject {
 
   public void toplevel(int handle) {
     synchronized (lock) {
-      handles.put(handle, new WLRForeignToplevelHandle(client, handle, this));
+      WLRForeignToplevelHandle window = new WLRForeignToplevelHandle(client, handle);
+      window.setManager(this);
+      handles.put(handle, window);
     }
     win_events.onWindowChange();
   }

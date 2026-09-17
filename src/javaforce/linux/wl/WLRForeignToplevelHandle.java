@@ -11,7 +11,7 @@ import javaforce.*;
 
 public class WLRForeignToplevelHandle extends WLObject {
   @SuppressWarnings("unchecked")
-  public WLRForeignToplevelHandle(WLClient client, int id, WLRForeignToplevelManager manager) {
+  public WLRForeignToplevelHandle(WLClient client, int id) {
     super(client, id);
     this.manager = manager;
     Class cls = getClass();
@@ -48,6 +48,10 @@ public class WLRForeignToplevelHandle extends WLObject {
   private String app_id;
 
   public String file;  //user defined
+
+  public void setManager(WLRForeignToplevelManager manager) {
+    this.manager = manager;
+  }
 
   public int getHandle() {
     return id;
