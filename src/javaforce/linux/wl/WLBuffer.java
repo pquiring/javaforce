@@ -22,7 +22,7 @@ public class WLBuffer extends WLObject {
         cls.getMethod("release", new Class[] {}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 

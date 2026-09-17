@@ -94,7 +94,7 @@ public class WLProxy {
     return sessions.get(0);
   }
 
-  private class Session extends Thread implements WLNotify {
+  public class Session extends Thread implements WLNotify {
 
     public String real_socket_addr;
     public UnixSocket real_socket;  //wayland-0
@@ -162,7 +162,6 @@ public class WLProxy {
         }
       }
     }
-
   }
 
   public class Server extends Thread {
@@ -176,6 +175,7 @@ public class WLProxy {
           }
 
           Session session = new Session();
+          session.client.setLog(log);
 
           String real_path = System.getenv("XDG_RUNTIME_DIR");
           if (real_path == null || real_wayland_display == null) {
@@ -294,15 +294,16 @@ public class WLProxy {
             case '>':
               //client to real wayland
               if (debug) JFLog.log(log, "request:" + id + "." + opcode);
+              //NOTE : the client does not have any open sockets so these requests are simulated just to track the session state
               if (!session.client.dispatchRequest(id, opcode, pktlen, data)) {
-                JFLog.log(log, "Wayland.Client:Error:failed to invoke method:" + id + "." + opcode);
+                JFLog.log(log, "WLProxy:Error:failed to dispatchRequest:" + id + "." + opcode);
               }
               break;
             case '<':
               //real wayland to client
               if (debug) JFLog.log(log, "event:" + id + "." + opcode);
               if (!session.client.dispatchEvent(id, opcode, pktlen, data)) {
-                JFLog.log(log, "Wayland.Client:Error:id not registered:" + id);
+                JFLog.log(log, "WLProxy:Error:failed to dispatchEvent:" + id + "." + opcode);
               }
               break;
           }

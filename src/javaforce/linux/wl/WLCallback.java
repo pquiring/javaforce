@@ -21,7 +21,7 @@ public class WLCallback extends WLObject {
         cls.getMethod("done", new Class[] {int.class}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 

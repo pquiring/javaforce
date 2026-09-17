@@ -26,7 +26,7 @@ public class WLSeat extends WLObject {
         cls.getMethod("name", new Class[] {String.class}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 

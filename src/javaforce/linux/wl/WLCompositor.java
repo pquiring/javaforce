@@ -23,7 +23,7 @@ public class WLCompositor extends WLObject {
       events = new Method[] {
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 

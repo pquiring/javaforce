@@ -23,7 +23,7 @@ public class WLRegistry extends WLObject {
         cls.getMethod("global_remove", new Class[] {int.class}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 
@@ -40,12 +40,12 @@ public class WLRegistry extends WLObject {
   //events
 
   public void global(int name, String iface, int ver) {
-    if (debug) JFLog.log("WLRegistry.global:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver));
+    if (debug) client.log("WLRegistry.global:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver));
     client.setGlobal(name, iface, ver);
   }
 
   public void global_remove(int name) {
-    if (debug) JFLog.log("WLRegistry.global_remove:name=" + name);
+    if (debug) client.log("WLRegistry.global_remove:name=" + name);
     client.removeGlobal(name);
   }
 }

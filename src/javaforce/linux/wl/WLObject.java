@@ -43,15 +43,15 @@ public abstract class WLObject {
   }
   public boolean dispatchEvent(int opcode, byte[] pkt, int offset, int length) {
     if (events == null || opcode >= events.length) {
-      if (debug) JFLog.log("ERROR:WLObject.dispatchEvent:opcode >= events:this=" + getClass().getName() + ":opcode=" + opcode);
+      if (debug) client.log("ERROR:WLObject.dispatchEvent:opcode >= events:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
     Method method = events[opcode];
     if (method == null) {
-      if (debug) JFLog.log("ERROR:WLObject.dispatchEvent:method==null:this=" + getClass().getName() + ":opcode=" + opcode);
+      if (debug) client.log("ERROR:WLObject.dispatchEvent:method==null:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
-    if (debug) JFLog.log("WLObject.dispatchEvent:this=" + getClass().getName() + ":opcode=" + opcode + ":method=" + method.getName());
+    if (debug) client.log("WLObject.dispatchEvent:this=" + getClass().getName() + ":opcode=" + opcode + ":method=" + method.getName());
     Class[] types = method.getParameterTypes();
     Object[] args = new Object[types.length];
     //unmarshal args from byte[]
@@ -71,7 +71,7 @@ public abstract class WLObject {
           offset += strlen;
           break;
         default:
-          JFLog.log("WLObject:unknown arg type:" + type);
+          client.log("WLObject:unknown arg type:" + type);
           return false;
       }
       //each arg is aligned to 32bits (padding as needed)
@@ -80,7 +80,7 @@ public abstract class WLObject {
     try {
       method.invoke(this, args);
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
     if (notify != null) {
       notify.onEvent(get_wl_name(), method.getName(), args);
@@ -106,13 +106,13 @@ public abstract class WLObject {
             pktlen++;  //null
             break;
           default:
-            JFLog.log("Error:Unknown type:" + type);
+            client.log("Error:Unknown type:" + type);
             break;
         }
         pktlen = align32(pktlen);
       }
     }
-    if (debug) JFLog.log("WL:invokeRequest(" + id + "," + opcode + "):length=" + pktlen);
+    if (debug) client.log("WL:invokeRequest(" + id + "," + opcode + "):length=" + pktlen);
     byte[] pkt = new byte[pktlen];
     LE.setuint32(pkt, 0, id);
     LE.setuint16(pkt, 4, opcode);
@@ -139,7 +139,7 @@ public abstract class WLObject {
             offset++;  //null
             break;
           default:
-            JFLog.log("Error:Unknown type:" + type);
+            client.log("Error:Unknown type:" + type);
             break;
         }
         offset = align32(offset);
@@ -152,15 +152,15 @@ public abstract class WLObject {
   }
   public boolean dispatchRequest(int id, int opcode, int size, byte[] pkt, int offset, int length) {
     if (requests == null || opcode >= requests.length) {
-      if (debug) JFLog.log("ERROR:WLObject.dispatchRequest:opcode >= requests:this=" + getClass().getName() + ":opcode=" + opcode);
+      if (debug) client.log("ERROR:WLObject.dispatchRequest:opcode >= requests:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
     Method method = requests[opcode];
     if (method == null) {
-      if (debug) JFLog.log("ERROR:WLObject.dispatchRequest:method==null:this=" + getClass().getName() + ":opcode=" + opcode);
+      if (debug) client.log("ERROR:WLObject.dispatchRequest:method==null:this=" + getClass().getName() + ":opcode=" + opcode);
       return false;
     }
-    if (debug) JFLog.log("WLObject.dispatchRequest:this=" + getClass().getName() + ":opcode=" + opcode + ":method=" + method.getName());
+    if (debug) client.log("WLObject.dispatchRequest:this=" + getClass().getName() + ":opcode=" + opcode + ":method=" + method.getName());
     Class[] types = method.getParameterTypes();
     Object[] args = new Object[types.length];
     //unmarshal args from byte[]
@@ -180,7 +180,7 @@ public abstract class WLObject {
           offset += strlen;
           break;
         default:
-          JFLog.log("WLObject:unknown arg type:" + type);
+          client.log("WLObject:unknown arg type:" + type);
           return false;
       }
       //each arg is aligned to 32bits (padding as needed)
@@ -189,7 +189,7 @@ public abstract class WLObject {
     try {
       method.invoke(this, args);
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
     if (notify != null) {
       notify.onRequest(get_wl_name(), method.getName(), args);

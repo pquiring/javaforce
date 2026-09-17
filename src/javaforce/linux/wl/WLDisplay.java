@@ -24,7 +24,7 @@ public class WLDisplay extends WLObject {
         cls.getMethod("delete_id", new Class[] {int.class}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 
@@ -37,7 +37,7 @@ public class WLDisplay extends WLObject {
   //requests
 
   public void sync() {
-    if (debug) JFLog.log("sync");
+    if (debug) client.log("sync");
     int new_id = client.get_next_id();
     invokeRequest(id, 0, new_id);
   }
@@ -46,7 +46,7 @@ public class WLDisplay extends WLObject {
     if (registry != null) {
       return registry;
     }
-    if (debug) JFLog.log("get_registry");
+    if (debug) client.log("get_registry");
     int new_id = client.get_next_id();
     registry = new WLRegistry(client, new_id);
     registry.setNotify(notify);
@@ -58,7 +58,7 @@ public class WLDisplay extends WLObject {
   //events
 
   public void error(int obj_id, int error_code, String msg) {
-    JFLog.log("Wayland Error:object=" + obj_id + ":error_code=" + error_code + ":" + msg);
+    client.log("Wayland Error:object=" + obj_id + ":error_code=" + error_code + ":" + msg);
   }
 
   public void delete_id(int old_id) {

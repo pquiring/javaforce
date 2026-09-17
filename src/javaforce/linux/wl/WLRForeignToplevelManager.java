@@ -31,7 +31,7 @@ public class WLRForeignToplevelManager extends WLObject {
         cls.getMethod("finished", new Class[] {}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 

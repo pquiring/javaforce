@@ -39,7 +39,7 @@ public class WLRForeignToplevelHandle extends WLObject {
         cls.getMethod("parent", new Class[] {int.class}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 

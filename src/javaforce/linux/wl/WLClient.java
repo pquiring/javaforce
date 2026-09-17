@@ -32,6 +32,8 @@ public class WLClient {
   private int next_id = 2;  //1 = reserved for wl_display
   private WLDisplay display;
 
+  private int log;
+
   public WLClient(WLNotify notify) {
     display = new WLDisplay(this, 1);
     display.setNotify(notify);
@@ -41,14 +43,14 @@ public class WLClient {
     String path = System.getenv("XDG_RUNTIME_DIR");
     String wayland_display = System.getenv("WAYLAND_DISPLAY");
     if (path == null || wayland_display == null) {
-      JFLog.log("Wayland Client:socket not found");
+      log("Wayland Client:socket not found");
       return false;
     }
     if (!path.endsWith("/")) {
       path += "/";
     }
     path += wayland_display;
-    JFLog.log("Client:socket=" + path);
+    log("Client:socket=" + path);
     try {
       UnixDomainSocketAddress addr = UnixDomainSocketAddress.of(path);
       socket = SocketChannel.open(StandardProtocolFamily.UNIX);
@@ -57,7 +59,7 @@ public class WLClient {
       reader.start();
       return true;
     } catch (Exception e) {
-      JFLog.log(e);
+      log(e);
       if (socket != null) {
         try {socket.close();} catch (Exception e2) {}
       }
@@ -73,9 +75,25 @@ public class WLClient {
       socket = null;
       return true;
     } catch (Exception e) {
-      JFLog.log(e);
+      log(e);
       return false;
     }
+  }
+
+  public void setLog(int log) {
+    this.log = log;
+  }
+
+  public void log(String msg) {
+    JFLog.log(log, msg);
+  }
+
+  public void log(String msg, byte[] data, int offset, int length) {
+    JFLog.log(log, msg, data, offset, length);
+  }
+
+  public void log(Exception e) {
+    JFLog.log(log, e);
   }
 
   public WLDisplay get_display() {
@@ -86,23 +104,23 @@ public class WLClient {
     if (socket == null) return -1;
     try {
       int read = socket.read(ByteBuffer.wrap(data, offset, length));
-      if (debug_io) JFLog.log("read=" + read);
+      if (debug_io) log("read=" + read);
       return read;
     } catch (Exception e) {
-      JFLog.log(e);
+      log(e);
       return -1;
     }
   }
 
   public boolean write(byte[] data, int offset, int length) {
     if (socket == null) return false;
-    if (debug_packet) JFLog.log("write.packet=", data, offset, length);
+    if (debug_packet) log("write.packet=", data, offset, length);
     try {
       int write = socket.write(ByteBuffer.wrap(data, offset, length));
-      if (debug_io) JFLog.log("write=" + write);
+      if (debug_io) log("write=" + write);
       return write == length;
     } catch (Exception e) {
-      JFLog.log(e);
+      log(e);
       return false;
     }
   }
@@ -157,7 +175,7 @@ public class WLClient {
     try {
       obj.dispatchRequest(id, opcode, size, pkt, 0, size);
     } catch (Exception e) {
-      JFLog.log(e);
+      log(e);
     }
     return true;
   }
@@ -171,7 +189,7 @@ public class WLClient {
     try {
       object.dispatchEvent(opcode, pkt, 8, size);
     } catch (Exception e) {
-      JFLog.log(e);
+      log(e);
     }
     return true;
   }
@@ -206,16 +224,16 @@ public class WLClient {
                 pktlen += read;
               }
             }
-            if (debug_packet) JFLog.log("read.packet=", pkt, 0, size);
+            if (debug_packet) log("read.packet=", pkt, 0, size);
             if (!dispatchEvent(id, opcode, size, pkt)) {
-              JFLog.log("Wayland.Client:Error:id not registered:" + id);
+              log("Wayland.Client:Error:id not registered:" + id);
             }
             pktpos = 0;
             pktlen = 0;
           }
         }
       } catch (Exception e) {
-        JFLog.log(e);
+        log(e);
       }
     }
   }

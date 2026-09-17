@@ -25,7 +25,7 @@ public class WLSharedMemory extends WLObject {
         cls.getMethod("format", new Class[] {int.class}),
       };
     } catch (Exception e) {
-      JFLog.log(e);
+      client.log(e);
     }
   }
 
