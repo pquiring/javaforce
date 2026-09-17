@@ -31,12 +31,10 @@ public class WLClient {
   /** Next client side id. */
   private int next_id = 2;  //1 = reserved for wl_display
   private WLDisplay display;
-  private WLNotify notify;
 
   public WLClient(WLNotify notify) {
     display = new WLDisplay(this, 1);
     display.setNotify(notify);
-    this.notify = notify;
   }
 
   public boolean connect() {

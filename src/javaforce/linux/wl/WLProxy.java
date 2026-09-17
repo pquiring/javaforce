@@ -279,7 +279,34 @@ public class WLProxy {
     }
 
     public void onEvent(String cls, String method, Object[] args) {
-      //TODO
+      JFLog.log(log, "onEvent:" + cls + "." + method);
+      switch (cls) {
+        case "wl_registry": {
+          switch (method) {
+            case "global": {
+              int name = (Integer)args[0];
+              String iface = (String)args[1];
+              int ver = (Integer)args[2];
+              switch (iface) {
+                case "zwlr_foreign_toplevel_manager_v1": {
+                  break;
+                }
+                case "wl_seat": {
+                  break;
+                }
+              }
+              break;
+            }
+          }
+          break;
+        }
+        case "zwlr_foreign_toplevel_manager_v1": {
+          break;
+        }
+        case "zwlr_foreign_toplevel_handle_v1": {
+          break;
+        }
+      }
     }
   }
 }
