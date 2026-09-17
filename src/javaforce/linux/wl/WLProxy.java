@@ -16,12 +16,11 @@ import javaforce.linux.*;
 public class WLProxy {
   public static boolean debug = false;
 
-  private String real_socket_addr;
-  private UnixSocket real_socket;  //wayland-0
   private String proxy_socket_addr;
   private UnixSocket proxy_socket;  //wayland-99
   private boolean active;
   private Server server;
+  private String real_wayland_display;
 
   private static int log = 99;
 
@@ -29,32 +28,8 @@ public class WLProxy {
     if (debug) {
       JFLog.init(log, System.getenv("HOME") + "/wlproxy.log", true);
     }
-    String real_path = System.getenv("XDG_RUNTIME_DIR");
-    if (real_path == null || real_wayland_display == null) {
-      JFLog.log(log, "WLProxy:socket not found");
-      return false;
-    }
-    if (!real_path.endsWith("/")) {
-      real_path += "/";
-    }
-    String temp_path = real_path + "wayland-90";
-    real_path += real_wayland_display;
-    JFLog.log(log, "WLProxy:server.socket=" + real_path);
 
-    try {
-      real_socket_addr = real_path;
-      real_socket = new UnixSocket();
-      if (!real_socket.open()) throw new Exception("Unable to alloc unix socket");
-      real_socket.bind(temp_path);  //maybe not be necessary
-      if (!real_socket.connect(real_path)) throw new Exception("Unable to connect to real wayland socket");
-    } catch (Exception e) {
-      JFLog.log(log, e);
-      if (real_socket != null) {
-        try {real_socket.close();} catch (Exception e2) {}
-      }
-      real_socket = null;
-      return false;
-    }
+    this.real_wayland_display = real_wayland_display;
 
     String proxy_path = System.getenv("XDG_RUNTIME_DIR");
     String proxy_wayland_display = "wayland-99";
@@ -93,10 +68,6 @@ public class WLProxy {
 
   public void stop() {
     active = false;
-    if (real_socket != null) {
-      try { real_socket.close(); } catch (Exception e) {}
-      real_socket = null;
-    }
     if (proxy_socket != null) {
       try { proxy_socket.close(); } catch (Exception e) {}
       proxy_socket = null;
@@ -109,28 +80,75 @@ public class WLProxy {
   }
 
   private ArrayList<Session> sessions = new ArrayList<>();
+  private Object lock = new Object();
 
-  private class Session {
-    UnixSocket client;
-    Reader client_proxy;
-    Reader proxy_client;
+  private class Session extends Thread {
+
+    public String real_socket_addr;
+    public UnixSocket real_socket;  //wayland-0
+
+    public UnixSocket client;
+
+    public Reader client_proxy;
+    public Reader proxy_client;
+
+    public void run() {
+      try { client_proxy.join(); } catch (Exception e) {}
+      try { proxy_client.join(); } catch (Exception e) {}
+      synchronized (lock) {
+        sessions.remove(this);
+      }
+    }
   }
 
   public class Server extends Thread {
     public void run() {
+      int session_counter = 100;
       while (active) {
         try {
           UnixSocket client = proxy_socket.accept();
           if (client == null) {
             continue;
           }
+
           Session session = new Session();
+
+          String real_path = System.getenv("XDG_RUNTIME_DIR");
+          if (real_path == null || real_wayland_display == null) {
+            JFLog.log(log, "WLProxy:socket not found");
+            continue;
+          }
+          if (!real_path.endsWith("/")) {
+            real_path += "/";
+          }
+          String temp_path = real_path + "wayland-" + (session_counter++);
+          real_path += real_wayland_display;
+          JFLog.log(log, "WLProxy:server.socket=" + real_path);
+
+          try {
+            session.real_socket_addr = real_path;
+            session.real_socket = new UnixSocket();
+            if (!session.real_socket.open()) throw new Exception("Unable to alloc unix socket");
+            session.real_socket.bind(temp_path);  //maybe not be necessary
+            if (!session.real_socket.connect(real_path)) throw new Exception("Unable to connect to real wayland socket");
+          } catch (Exception e) {
+            JFLog.log(log, e);
+            if (session.real_socket != null) {
+              try {session.real_socket.close();} catch (Exception e2) {}
+            }
+            session.real_socket = null;
+            continue;
+          }
+
           session.client = client;
-          session.client_proxy = new Reader('>', client, real_socket);
+          session.client_proxy = new Reader('>', session.client, session.real_socket);
           session.client_proxy.start();
-          session.proxy_client = new Reader('<', real_socket, client);
+          session.proxy_client = new Reader('<', session.real_socket, session.client);
           session.proxy_client.start();
-          sessions.add(session);
+          synchronized (lock) {
+            sessions.add(session);
+          }
+          session.start();
         } catch (Exception e) {
           JFLog.log(log, e);
         }
@@ -217,7 +235,7 @@ public class WLProxy {
             JFLog.log(log, dir + ":write:" + data_len[0] + "," + fds_len[0]);
           }
           if (!write) {
-            JFLog.log(log, "WLProxy:write() failed");
+            throw new Exception(dir + ":WLProxy:write() failed");
           }
           if (fds_len[0] > 0) {
             //close fds received after they have been transferred
