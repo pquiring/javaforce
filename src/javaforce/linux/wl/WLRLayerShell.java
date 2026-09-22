@@ -34,7 +34,7 @@ public class WLRLayerShell extends WLObject {
   public static final int LAYER_OVERLAY = 3;
 
   public String get_wl_name() {
-    return "wlr_layer_shell";
+    return "zwlr_layer_shell_v1";
   }
 
   //requests
