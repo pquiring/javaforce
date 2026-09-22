@@ -145,6 +145,7 @@ public class WLClient {
       case "wl_buffer": return new WLBuffer(this, new_id);
       case "wl_callback": return new WLCallback(this, new_id);
       case "wl_compositor": return new WLCompositor(this, new_id);
+      case "wl_subcompositor": return new WLSubCompositor(this, new_id);
       case "wl_seat": return new WLSeat(this, new_id);
       case "wl_shm": return new WLSharedMemory(this, new_id);
       case "wl_shm_pool": return new WLSharedMemoryPool(this, new_id);
