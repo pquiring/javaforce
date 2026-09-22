@@ -46,7 +46,7 @@ public class WLRLayerShell extends WLObject {
   //V3
 
   public void destroy() {
-    invokeRequest(id, 2);
+    invokeRequest(id, 1);
   }
 
   //events
