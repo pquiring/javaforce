@@ -113,7 +113,7 @@ public class WLProxy {
   }
 
   public WLClient getClient() {
-    return sessions.get(0).client;
+    return sessions.get(0).injector;
   }
 
   public class Session extends Thread {
@@ -127,6 +127,7 @@ public class WLProxy {
     public Reader proxy_client;
 
     private WLClient client = new WLClient(notify);
+    private WLClient injector = new WLClient(notify);
 
     public void run() {
       try { client_proxy.join(); } catch (Exception e) {}
@@ -192,8 +193,8 @@ public class WLProxy {
             continue;
           }
 
-          //set client unixsocket to allow injecting requests
-          session.client.setSocket(session.real_socket);
+          //set WLClient socket to allow injecting requests
+          session.injector.setSocket(session.real_socket);
 
           session.client_socket = client;
           session.client_proxy = new Reader('>', session, session.client_socket, session.real_socket);
