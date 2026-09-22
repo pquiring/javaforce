@@ -152,6 +152,7 @@ public class WLClient {
       //wlroots
       case "zwlr_foreign_toplevel_manager_v1": return new WLRForeignToplevelManager(this, new_id);
       case "zwlr_foreign_toplevel_handle_v1": return new WLRForeignToplevelHandle(this, new_id);
+      case "zwlr_layer_shell_v1": return new WLRLayerShell(this, new_id);
     }
     log("WLClient.createObject:Error:iface not defined:iface=" + global.iface);
     return null;

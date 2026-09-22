@@ -123,8 +123,8 @@ public class Startup implements ShellProcessListener {
           },
           new String[] {
             "XDG_RUNTIME_DIR=/run/user/" + uid,
-            "XAUTHORITY=/root/.Xauthority",
-            "DISPLAY=:0",
+            "XDG_SESSION_TYPE=x11",
+            //XAUTHORITY and DISPLAY set in Logon
           }
         );
       }
