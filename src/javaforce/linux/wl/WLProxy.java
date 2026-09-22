@@ -25,6 +25,12 @@ public class WLProxy {
 
   private static int log = 99;
 
+  private WLNotify notify;
+
+  public WLProxy(WLNotify notify) {
+    this.notify = notify;
+  }
+
   public boolean start(String real_wayland_display) {
     if (debug) {
       JFLog.init(log, System.getenv("HOME") + "/wlproxy.log", true);
@@ -87,6 +93,18 @@ public class WLProxy {
     this.log = log;
   }
 
+  public void log(String msg) {
+    JFLog.log(log, msg);
+  }
+
+  public void log(String msg, byte[] data, int offset, int length) {
+    JFLog.log(log, msg, data, offset, length);
+  }
+
+  public void log(Exception e) {
+    JFLog.log(log, e);
+  }
+
   private ArrayList<Session> sessions = new ArrayList<>();
   private Object lock = new Object();
 
@@ -94,7 +112,11 @@ public class WLProxy {
     return sessions.get(0);
   }
 
-  public class Session extends Thread implements WLNotify {
+  public WLClient getClient() {
+    return sessions.get(0).client;
+  }
+
+  public class Session extends Thread {
 
     public String real_socket_addr;
     public UnixSocket real_socket;  //wayland-0
@@ -104,7 +126,7 @@ public class WLProxy {
     public Reader client_proxy;
     public Reader proxy_client;
 
-    private WLClient client = new WLClient(this);
+    private WLClient client = new WLClient(notify);
 
     public void run() {
       try { client_proxy.join(); } catch (Exception e) {}
@@ -127,40 +149,6 @@ public class WLProxy {
 
     public WLDisplay get_display() {
       return client.get_display();
-    }
-
-    public void onRequest(String cls, String method, Object[] args) {
-      JFLog.log(log, "onRequest:" + cls + "." + method);
-    }
-    public void onEvent(String cls, String method, Object[] args) {
-      JFLog.log(log, "onEvent:" + cls + "." + method);
-      switch (cls) {
-        case "wl_registry": {
-          switch (method) {
-            case "global": {
-              int name = (Integer)args[0];
-              String iface = (String)args[1];
-              int ver = (Integer)args[2];
-              switch (iface) {
-                case "zwlr_foreign_toplevel_manager_v1": {
-                  break;
-                }
-                case "wl_seat": {
-                  break;
-                }
-              }
-              break;
-            }
-          }
-          break;
-        }
-        case "zwlr_foreign_toplevel_manager_v1": {
-          break;
-        }
-        case "zwlr_foreign_toplevel_handle_v1": {
-          break;
-        }
-      }
     }
   }
 
@@ -203,6 +191,9 @@ public class WLProxy {
             session.real_socket = null;
             continue;
           }
+
+          //set client unixsocket to allow injecting requests
+          session.client.setSocket(session.real_socket);
 
           session.client_socket = client;
           session.client_proxy = new Reader('>', session, session.client_socket, session.real_socket);

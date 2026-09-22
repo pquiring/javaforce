@@ -14,7 +14,7 @@ import static javaforce.linux.Linux.*;
  * @author pquiring
  */
 
-public class Startup implements ShellProcessListener {
+public class Startup implements ShellProcessListener, WLNotify {
   public static Startup instance;
 
   public static boolean use_proxy = true;
@@ -85,7 +85,7 @@ public class Startup implements ShellProcessListener {
     if (is_wayland && use_proxy) {
       //create wayland proxy server
       WLProxy.debug = true;
-      proxy = new WLProxy();
+      proxy = new WLProxy(this);
       if (!proxy.start("wayland-0")) {
         JFLog.log("Failed to start wayland proxy");
         use_proxy = false;
@@ -166,6 +166,8 @@ public class Startup implements ShellProcessListener {
     process.run(cmds, true);
     JFLog.log("Desktop Session has ended");
   }
+
+  //interface ShellProcessListener
 
   public void shellProcessOutput(String out) {
     JFLog.log(LOG_DISPLAY, out);
@@ -423,6 +425,91 @@ public class Startup implements ShellProcessListener {
     JFLog.log("XDG_RUNTIME_DIR:");
     for(String file : files) {
       JFLog.log(file);
+    }
+  }
+
+  private WLRegistry wl_registry;
+  private WLRLayerShell wlr_layer_shell;
+
+  int dock = -1;
+  int desktop = -1;
+  int window = -1;
+
+  //interface WLNotify
+
+  public void onRequest(String cls, String method, Object[] args) {
+    proxy.log("onRequest:" + cls + "." + method);
+    switch (cls) {
+      case "wl_display": {
+        switch (method) {
+          case "get_registry":
+            int new_id = (Integer)args[0];
+            wl_registry = new WLRegistry(proxy.getClient(), new_id);
+            break;
+        }
+        break;
+      }
+    }
+  }
+
+  public void onEvent(String cls, String method, Object[] args) {
+    proxy.log("onEvent:" + cls + "." + method);
+    switch (cls) {
+      case "wl_compositor": {
+        switch (method) {
+          case "create_surface": {
+            int new_id = (Integer)args[0];
+            if (window == -1) {
+              if (dock == -1) {
+                //creating dock
+                dock = 1001;
+                wlr_layer_shell.get_layer_surface(dock, new_id, 0, WLRLayerShell.LAYER_BOTTOM, "taskbar");
+              } else if (desktop == -1) {
+                //creating desktop
+                desktop = 1002;
+                wlr_layer_shell.get_layer_surface(desktop, new_id, 0, WLRLayerShell.LAYER_BACKGROUND, "desktop");
+              }
+              window = 0;
+            }
+            break;
+          }
+          case "create_region": {
+            window = -1;
+            int new_id = (Integer)args[0];
+            break;
+          }
+        }
+        break;
+      }
+      case "wl_registry": {
+        switch (method) {
+          case "global": {
+            int name = (Integer)args[0];
+            String iface = (String)args[1];
+            int ver = (Integer)args[2];
+            switch (iface) {
+              case "zwlr_foreign_toplevel_manager_v1": {
+                break;
+              }
+              case "wl_seat": {
+                break;
+              }
+              case "zwlr_layer_shell_v1": {
+                wlr_layer_shell = (WLRLayerShell)wl_registry.bind(name, iface, ver, 1000);
+                break;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "zwlr_foreign_toplevel_manager_v1": {
+        break;
+      }
+      case "zwlr_foreign_toplevel_handle_v1": {
+        break;
+      }
     }
   }
 }

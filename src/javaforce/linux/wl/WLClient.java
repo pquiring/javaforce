@@ -6,6 +6,7 @@ import java.nio.channels.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.linux.*;
 
 /** Wayland client.
  *
@@ -21,7 +22,7 @@ public class WLClient {
   public static boolean debug_io = false;
   public static boolean debug_packet = false;
 
-  private SocketChannel socket;
+  private UnixSocket socket;
   private Reader reader;
 
   private HashMap<Integer, WLObject> objects = new HashMap<>();  //client side objects (id)
@@ -52,9 +53,7 @@ public class WLClient {
     path += wayland_display;
     log("Client:socket=" + path);
     try {
-      UnixDomainSocketAddress addr = UnixDomainSocketAddress.of(path);
-      socket = SocketChannel.open(StandardProtocolFamily.UNIX);
-      socket.connect(addr);
+      socket.connect(path);
       reader = new Reader();
       reader.start();
       return true;
@@ -65,6 +64,12 @@ public class WLClient {
       }
       socket = null;
       return false;
+    }
+  }
+
+  public void setSocket(UnixSocket socket) {
+    if (this.socket == null) {
+      this.socket = socket;
     }
   }
 
@@ -102,10 +107,15 @@ public class WLClient {
 
   public int read(byte[] data, int offset, int length) {
     if (socket == null) return -1;
+    int[] len_data = new int[1];
+    len_data[0] = length;
+    int[] fds = new int[1];
+    int offset_fds = 0;
+    int[] len_fds = new int[1];
     try {
-      int read = socket.read(ByteBuffer.wrap(data, offset, length));
-      if (debug_io) log("read=" + read);
-      return read;
+      socket.read(data, offset, len_data, fds, offset_fds, len_fds);
+      if (debug_io) log("read=" + len_data[0]);
+      return len_data[0];
     } catch (Exception e) {
       log(e);
       return -1;
@@ -115,10 +125,15 @@ public class WLClient {
   public boolean write(byte[] data, int offset, int length) {
     if (socket == null) return false;
     if (debug_packet) log("write.packet=", data, offset, length);
+    int[] len_data = new int[1];
+    len_data[0] = length;
+    int[] fds = new int[1];
+    int offset_fds = 0;
+    int[] len_fds = new int[1];
     try {
-      int write = socket.write(ByteBuffer.wrap(data, offset, length));
-      if (debug_io) log("write=" + write);
-      return write == length;
+      socket.write(data, offset, len_data, fds, offset_fds, len_fds);
+      if (debug_io) log("write=" + len_data[0]);
+      return len_data[0] == length;
     } catch (Exception e) {
       log(e);
       return false;
