@@ -29,7 +29,7 @@ public class WLWindowMonitor implements WLNotify, WLWindowEvents {
       return;
     }
     display = client.get_display();
-    registry = display.get_registry();
+    registry = display.get_registry(client.get_next_id());
   }
 
   public void stop() {

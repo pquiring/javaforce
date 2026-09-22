@@ -42,12 +42,11 @@ public class WLDisplay extends WLObject {
     invokeRequest(id, 0, new_id);
   }
 
-  public WLRegistry get_registry() {
+  public WLRegistry get_registry(int new_id) {
     if (registry != null) {
       return registry;
     }
     if (debug) client.log("get_registry");
-    int new_id = client.get_next_id();
     registry = new WLRegistry(client, new_id);
     registry.setNotify(notify);
     client.setObject(new_id, registry);

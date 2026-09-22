@@ -30,7 +30,7 @@ public class TestWL implements WLNotify, WLWindowEvents {
       return;
     }
     display = client.get_display();
-    registry = display.get_registry();
+    registry = display.get_registry(client.get_next_id());
     while (active) {
       JF.sleep(1000);
     }
