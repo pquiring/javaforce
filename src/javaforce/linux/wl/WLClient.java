@@ -38,6 +38,7 @@ public class WLClient {
   public WLNotify notify;
 
   public WLClient(WLNotify notify) {
+    this.notify = notify;
     display = new WLDisplay(this, 1);
   }
 
