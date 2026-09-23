@@ -174,6 +174,7 @@ public class WLClient {
         case "xdg_wm_base": return new XDGWMBase(this, new_id);
         case "xdg_activation_v1": return new XDGActivation(this, new_id);
         case "xdg_toplevel_icon_manager_v1": return new XDGTopLevelIconManager(this, new_id);
+        case "zxdg_decoration_manager_v1": return new XDGDecorationManager(this, new_id);
         //wlroots
         case "zwlr_foreign_toplevel_manager_v1": return new WLRForeignToplevelManager(this, new_id);
         case "zwlr_foreign_toplevel_handle_v1": return new WLRForeignToplevelHandle(this, new_id);
