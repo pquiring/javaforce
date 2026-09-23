@@ -38,6 +38,7 @@ public class WLDisplay extends WLObject {
 
   public void sync(int new_id) {
     if (debug) client.log("WLDisplay.sync:new_id=" + new_id);
+    client.setObject(new_id, new WLCallback(client, new_id));
     invokeRequest(id, 0, new_id);
   }
 
@@ -60,6 +61,7 @@ public class WLDisplay extends WLObject {
   }
 
   public void delete_id(int old_id) {
+    if (debug) client.log("WLDisplay.delete_id:old_id=" + old_id);
     client.removeObject(old_id);
   }
 }

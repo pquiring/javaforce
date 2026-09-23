@@ -156,20 +156,27 @@ public class WLClient {
       return null;
     }
     log("WLClient.createObject:iface=" + global.iface);
-    switch (global.iface) {
-      case "wl_buffer": return new WLBuffer(this, new_id);
-      case "wl_callback": return new WLCallback(this, new_id);
-      case "wl_compositor": return new WLCompositor(this, new_id);
-      case "wl_subcompositor": return new WLSubCompositor(this, new_id);
-      case "wl_seat": return new WLSeat(this, new_id);
-      case "wl_shm": return new WLSharedMemory(this, new_id);
-      case "wl_shm_pool": return new WLSharedMemoryPool(this, new_id);
-      //wlroots
-      case "zwlr_foreign_toplevel_manager_v1": return new WLRForeignToplevelManager(this, new_id);
-      case "zwlr_foreign_toplevel_handle_v1": return new WLRForeignToplevelHandle(this, new_id);
-      case "zwlr_layer_shell_v1": return new WLRLayerShell(this, new_id);
+    try {
+      switch (global.iface) {
+        case "wl_buffer": return new WLBuffer(this, new_id);
+        case "wl_callback": return new WLCallback(this, new_id);
+        case "wl_compositor": return new WLCompositor(this, new_id);
+        case "wl_subcompositor": return new WLSubCompositor(this, new_id);
+        case "wl_seat": return new WLSeat(this, new_id);
+        case "wl_shm": return new WLSharedMemory(this, new_id);
+        case "wl_shm_pool": return new WLSharedMemoryPool(this, new_id);
+        case "wl_data_device": return new WLDataDevice(this, new_id);
+        case "wl_data_device_manager": return new WLDataDeviceManager(this, new_id);
+        case "wl_output": return new WLOutput(this, new_id);
+        //wlroots
+        case "zwlr_foreign_toplevel_manager_v1": return new WLRForeignToplevelManager(this, new_id);
+        case "zwlr_foreign_toplevel_handle_v1": return new WLRForeignToplevelHandle(this, new_id);
+        case "zwlr_layer_shell_v1": return new WLRLayerShell(this, new_id);
+      }
+      log("WLClient.createObject:Error:iface not defined:iface=" + global.iface);
+    } catch (Exception e) {
+      log(e);
     }
-    log("WLClient.createObject:Error:iface not defined:iface=" + global.iface);
     return null;
   }
 
