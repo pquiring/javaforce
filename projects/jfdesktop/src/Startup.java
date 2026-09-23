@@ -445,7 +445,7 @@ public class Startup implements ShellProcessListener, WLNotify {
           case "get_registry":
             int new_id = (Integer)args[0];
             proxy.log("jfDesktop:get_registry");
-            wl_registry = new WLRegistry(proxy.getInjector(), new_id);
+            wl_registry = new WLRegistry(proxy.getClient(), new_id);
             break;
         }
         break;
@@ -461,17 +461,21 @@ public class Startup implements ShellProcessListener, WLNotify {
                 dock = proxy.getClient().get_next_id();
                 proxy.log("jfDesktop:get_layer_surface:dock");
                 WLGlobal layer_shell = proxy.getClient().getGlobal("zwlr_layer_shell_v1");
+                proxy.getClient().set_enable_write(true);
                 wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, dock);
                 wlr_layer_shell.get_layer_surface(dock, new_id, 0, WLRLayerShell.LAYER_BOTTOM, "taskbar");
                 wlr_layer_shell.destroy();  //TODO : block WLDisplay.delete_id() from reaching real client
+                proxy.getClient().set_enable_write(false);
               } else if (desktop == -1) {
                 //creating desktop
                 desktop = proxy.getClient().get_next_id();
                 proxy.log("jfDesktop:get_layer_surface:desktop");
                 WLGlobal layer_shell = proxy.getClient().getGlobal("zwlr_layer_shell_v1");
+                proxy.getClient().set_enable_write(true);
                 wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, dock);
                 wlr_layer_shell.get_layer_surface(desktop, new_id, 0, WLRLayerShell.LAYER_BACKGROUND, "desktop");
                 wlr_layer_shell.destroy();  //TODO : block WLDisplay.delete_id() from reaching real client
+                proxy.getClient().set_enable_write(false);
               }
               window = 0;  //wait for create_region to reset window indicating a new window might be created
             }

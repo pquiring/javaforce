@@ -35,6 +35,8 @@ public class WLClient {
 
   private int log;
 
+  private boolean enable_write = true;
+
   public WLNotify notify;
 
   public WLClient(WLNotify notify) {
@@ -107,6 +109,10 @@ public class WLClient {
     return display;
   }
 
+  public void set_enable_write(boolean state) {
+    this.enable_write = state;
+  }
+
   public int read(byte[] data, int offset, int length) {
     if (socket == null) return -1;
     int[] len_data = new int[1];
@@ -125,7 +131,7 @@ public class WLClient {
   }
 
   public boolean write(byte[] data, int offset, int length) {
-    if (socket == null) return false;
+    if (socket == null || !enable_write) return false;
     if (debug_packet) log("write.packet=", data, offset, length);
     int[] len_data = new int[1];
     len_data[0] = length;

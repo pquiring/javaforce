@@ -117,22 +117,10 @@ public class WLProxy {
     return sessions.get(idx);
   }
 
-  /** Gets the WLClient that tracks the wayland resources.
-   * This client does not own a copy of the UnixSocket and can not write requests.
-   *
-   * @see getInjector()
+  /** Gets the WLClient.
    */
   public WLClient getClient() {
     return sessions.get(0).client;
-  }
-
-  /** Gets the WLClient that allows requests to be submitted to the real wayland server.
-   * This client does not track wayland resources (calling get_next_id() would be invalid).
-   *
-   * @see getClient();
-   */
-  public WLClient getInjector() {
-    return sessions.get(0).injector;
   }
 
   public class Session extends Thread {
@@ -146,7 +134,6 @@ public class WLProxy {
     public Reader proxy_client;
 
     private WLClient client = new WLClient(notify);
-    private WLClient injector = new WLClient(notify);
 
     public void run() {
       try { client_proxy.join(); } catch (Exception e) {}
@@ -184,7 +171,6 @@ public class WLProxy {
 
           Session session = new Session();
           session.client.setLog(log);
-          session.injector.setLog(log);
 
           String real_path = System.getenv("XDG_RUNTIME_DIR");
           if (real_path == null || real_wayland_display == null) {
@@ -214,7 +200,8 @@ public class WLProxy {
           }
 
           //set WLClient socket to allow injecting requests
-          session.injector.setSocket(session.real_socket);
+          session.client.setSocket(session.real_socket);
+          session.client.set_enable_write(false);
 
           session.client_socket = client;
           session.client_proxy = new Reader('>', session, session.client_socket, session.real_socket);
