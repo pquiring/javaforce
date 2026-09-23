@@ -158,6 +158,7 @@ public class WLClient {
     log("WLClient.createObject:iface=" + global.iface);
     try {
       switch (global.iface) {
+        //wayland
         case "wl_buffer": return new WLBuffer(this, new_id);
         case "wl_callback": return new WLCallback(this, new_id);
         case "wl_compositor": return new WLCompositor(this, new_id);
@@ -168,6 +169,8 @@ public class WLClient {
         case "wl_data_device": return new WLDataDevice(this, new_id);
         case "wl_data_device_manager": return new WLDataDeviceManager(this, new_id);
         case "wl_output": return new WLOutput(this, new_id);
+        //xdg
+        case "zxdg_output_manager_v1": return new XDGOutputManager(this, new_id);
         //wlroots
         case "zwlr_foreign_toplevel_manager_v1": return new WLRForeignToplevelManager(this, new_id);
         case "zwlr_foreign_toplevel_handle_v1": return new WLRForeignToplevelHandle(this, new_id);
