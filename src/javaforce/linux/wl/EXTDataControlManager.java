@@ -9,9 +9,9 @@ import javaforce.*;
  * @author pquiring
  */
 
-public class EXTDataControManager extends WLObject {
+public class EXTDataControlManager extends WLObject {
   @SuppressWarnings("unchecked")
-  public EXTDataControManager(WLClient client, int id) {
+  public EXTDataControlManager(WLClient client, int id) {
     super(client, id);
     Class cls = getClass();
     try {
@@ -34,12 +34,12 @@ public class EXTDataControManager extends WLObject {
   //requests
 
   public void create_data_source(int new_id) {
-    if (debug) client.log("EXTDataControManager.create_data_source:new_id=" + new_id);
+    if (debug) client.log("EXTDataControlManager.create_data_source:new_id=" + new_id);
     invokeRequest(id, 0, new_id);
   }
 
   public void get_data_device(int new_id, int wl_seat) {
-    if (debug) client.log("EXTDataControManager.get_device:new_id=" + new_id);
+    if (debug) client.log("EXTDataControlManager.get_device:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_seat);
   }
 

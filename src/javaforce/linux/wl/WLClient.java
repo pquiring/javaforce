@@ -178,7 +178,7 @@ public class WLClient {
         //wp
         case "zwp_primary_selection_device_manager_v1": return new WPPrimarySelectionDeviceManager(this, new_id);
         //ext
-        case "ext_data_control_manager_v1": return new EXTDataControManager(this, new_id);
+        case "ext_data_control_manager_v1": return new EXTDataControlManager(this, new_id);
       }
       log("WLClient.createObject:Error:iface not defined:iface=" + global.iface);
     } catch (Exception e) {
