@@ -450,12 +450,6 @@ public class Startup implements ShellProcessListener, WLNotify {
         }
         break;
       }
-    }
-  }
-
-  public void onEvent(String cls, String method, Object[] args) {
-    proxy.log("onEvent:" + cls + "." + method);
-    switch (cls) {
       case "wl_compositor": {
         switch (method) {
           case "create_surface": {
@@ -491,6 +485,12 @@ public class Startup implements ShellProcessListener, WLNotify {
         }
         break;
       }
+    }
+  }
+
+  public void onEvent(String cls, String method, Object[] args) {
+    proxy.log("onEvent:" + cls + "." + method);
+    switch (cls) {
       case "wl_registry": {
         switch (method) {
           case "global": {

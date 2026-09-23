@@ -17,7 +17,6 @@ public abstract class WLObject {
   public int ver = 1;
   public Method[] requests;
   public Method[] events;
-  protected WLNotify notify;
 
   public WLObject(WLClient client, int id) {
     this.client = client;
@@ -82,8 +81,8 @@ public abstract class WLObject {
     } catch (Exception e) {
       client.log(e);
     }
-    if (notify != null) {
-      notify.onEvent(get_wl_name(), method.getName(), args);
+    if (client.notify != null) {
+      client.notify.onEvent(get_wl_name(), method.getName(), args);
     }
     return true;
   }
@@ -147,9 +146,6 @@ public abstract class WLObject {
     }
     return client.write(pkt, 0, pktlen);
   }
-  public void setNotify(WLNotify notify) {
-    this.notify = notify;
-  }
   public boolean dispatchRequest(int id, int opcode, int size, byte[] pkt, int offset, int length) {
     if (requests == null || opcode >= requests.length) {
       if (debug) client.log("ERROR:WLObject.dispatchRequest:opcode >= requests:this=" + getClass().getName() + ":opcode=" + opcode);
@@ -191,8 +187,8 @@ public abstract class WLObject {
     } catch (Exception e) {
       client.log(e);
     }
-    if (notify != null) {
-      notify.onRequest(get_wl_name(), method.getName(), args);
+    if (client.notify != null) {
+      client.notify.onRequest(get_wl_name(), method.getName(), args);
     }
     return true;
   }

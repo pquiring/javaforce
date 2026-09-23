@@ -35,9 +35,10 @@ public class WLClient {
 
   private int log;
 
+  public WLNotify notify;
+
   public WLClient(WLNotify notify) {
     display = new WLDisplay(this, 1);
-    display.setNotify(notify);
   }
 
   public boolean connect() {

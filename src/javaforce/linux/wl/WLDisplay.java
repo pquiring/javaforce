@@ -48,7 +48,6 @@ public class WLDisplay extends WLObject {
     }
     if (debug) client.log("WLDisplay:get_registry:new_id=" + new_id);
     registry = new WLRegistry(client, new_id);
-    registry.setNotify(notify);
     client.setObject(new_id, registry);
     invokeRequest(id, 1, new_id);
     return registry;
