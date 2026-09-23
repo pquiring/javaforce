@@ -444,6 +444,7 @@ public class Startup implements ShellProcessListener, WLNotify {
         switch (method) {
           case "get_registry":
             int new_id = (Integer)args[0];
+            proxy.log("jfDesktop:get_registry");
             wl_registry = new WLRegistry(proxy.getClient(), new_id);
             break;
         }
@@ -463,10 +464,12 @@ public class Startup implements ShellProcessListener, WLNotify {
               if (dock == -1) {
                 //creating dock
                 dock = 1001;
+                proxy.log("jfDesktop:get_layer_surface:dock");
                 wlr_layer_shell.get_layer_surface(dock, new_id, 0, WLRLayerShell.LAYER_BOTTOM, "taskbar");
               } else if (desktop == -1) {
                 //creating desktop
                 desktop = 1002;
+                proxy.log("jfDesktop:get_layer_surface:desktop");
                 wlr_layer_shell.get_layer_surface(desktop, new_id, 0, WLRLayerShell.LAYER_BACKGROUND, "desktop");
               }
               window = 0;
@@ -495,6 +498,7 @@ public class Startup implements ShellProcessListener, WLNotify {
                 break;
               }
               case "zwlr_layer_shell_v1": {
+                proxy.log("jfDesktop:bind:zwlr_layer_shell_v1");
                 wlr_layer_shell = (WLRLayerShell)wl_registry.bind(name, iface, ver, 1000);
                 break;
               }
