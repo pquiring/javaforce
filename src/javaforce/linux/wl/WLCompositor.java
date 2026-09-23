@@ -34,10 +34,12 @@ public class WLCompositor extends WLObject {
   //requests
 
   public void create_surface(int new_id) {
+    if (debug) client.log("WLCompositor.create_surface:new_id=" + new_id);
     invokeRequest(id, 0, new_id);
   }
 
   public void create_region(int new_id) {
+    if (debug) client.log("WLCompositor.create_region:new_id=" + new_id);
     invokeRequest(id, 1, new_id);
   }
 

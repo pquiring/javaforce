@@ -36,6 +36,7 @@ public class WLSharedMemory extends WLObject {
   //requests
 
   public void create_pool(int new_id, int fd, int size) {
+    if (debug) client.log("WLSharedMemory.create_pool:new_id=" + new_id);
     invokeRequest(id, 0, new_id, fd, size);
   }
 

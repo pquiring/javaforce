@@ -14,7 +14,7 @@ import javaforce.linux.*;
 
 import jffile.*;
 
-public class Desktop extends javax.swing.JFrame {
+public class Desktop extends javax.swing.JWindow {
 
   /**
    * Creates new form Desktop
@@ -22,8 +22,8 @@ public class Desktop extends javax.swing.JFrame {
   public Desktop() {
     try {
       //NOTE : for X11 remove these next two lines and change to javax.swing.JWindow
-      setUndecorated(true);
-      setTitle("jfDesktop");
+//      setUndecorated(true);
+//      setTitle("jfDesktop");
       initComponents();
       setPosition();
       desktop = this;

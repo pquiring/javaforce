@@ -40,6 +40,7 @@ public class WLRLayerShell extends WLObject {
   //requests
 
   public void get_layer_surface(int new_id, int wl_surface, int wl_output, int wl_layer, String namespace) {
+    if (debug) client.log("WLRLayerShell.get_layer_surface:new_id=" + new_id);
     invokeRequest(id, 0, new_id, wl_surface, wl_output, wl_layer, namespace);
   }
 

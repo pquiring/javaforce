@@ -36,9 +36,8 @@ public class WLDisplay extends WLObject {
 
   //requests
 
-  public void sync() {
-    if (debug) client.log("sync");
-    int new_id = client.get_next_id();
+  public void sync(int new_id) {
+    if (debug) client.log("WLDisplay.sync:new_id=" + new_id);
     invokeRequest(id, 0, new_id);
   }
 
@@ -46,7 +45,7 @@ public class WLDisplay extends WLObject {
     if (registry != null) {
       return registry;
     }
-    if (debug) client.log("get_registry");
+    if (debug) client.log("WLDisplay:get_registry:new_id=" + new_id);
     registry = new WLRegistry(client, new_id);
     registry.setNotify(notify);
     client.setObject(new_id, registry);
