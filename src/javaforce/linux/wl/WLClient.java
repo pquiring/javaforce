@@ -177,6 +177,7 @@ public class WLClient {
         case "zwlr_layer_shell_v1": return new WLRLayerShell(this, new_id);
         //wp
         case "zwp_primary_selection_device_manager_v1": return new WPPrimarySelectionDeviceManager(this, new_id);
+        case "zwp_text_input_manager_v3": return new WPTextInputManager(this, new_id);
         //ext
         case "ext_data_control_manager_v1": return new EXTDataControlManager(this, new_id);
         case "ext_data_control_device_v1": return new EXTDataControlDevice(this, new_id);
