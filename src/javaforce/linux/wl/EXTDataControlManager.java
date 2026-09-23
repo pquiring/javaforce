@@ -35,11 +35,13 @@ public class EXTDataControlManager extends WLObject {
 
   public void create_data_source(int new_id) {
     if (debug) client.log("EXTDataControlManager.create_data_source:new_id=" + new_id);
+    //TODO : EXTDataControlSource
     invokeRequest(id, 0, new_id);
   }
 
   public void get_data_device(int new_id, int wl_seat) {
     if (debug) client.log("EXTDataControlManager.get_device:new_id=" + new_id);
+    client.setObject(new_id, new EXTDataControlDevice(client, new_id));
     invokeRequest(id, 1, new_id, wl_seat);
   }
 
