@@ -184,6 +184,7 @@ public class WLProxy {
 
           Session session = new Session();
           session.client.setLog(log);
+          session.injector.setLog(log);
 
           String real_path = System.getenv("XDG_RUNTIME_DIR");
           if (real_path == null || real_wayland_display == null) {
