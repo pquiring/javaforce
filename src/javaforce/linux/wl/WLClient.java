@@ -171,6 +171,7 @@ public class WLClient {
         case "wl_output": return new WLOutput(this, new_id);
         //xdg
         case "zxdg_output_manager_v1": return new XDGOutputManager(this, new_id);
+        case "xdg_wm_base": return new XDGWMBase(this, new_id);
         //wlroots
         case "zwlr_foreign_toplevel_manager_v1": return new WLRForeignToplevelManager(this, new_id);
         case "zwlr_foreign_toplevel_handle_v1": return new WLRForeignToplevelHandle(this, new_id);
