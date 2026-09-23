@@ -108,11 +108,30 @@ public class WLProxy {
   private ArrayList<Session> sessions = new ArrayList<>();
   private Object lock = new Object();
 
-  public Session getSession() {
-    return sessions.get(0);
+  /** Returns number of sessions.  There typically is only one active. */
+  public int getSessionCount() {
+    return sessions.size();
   }
 
+  public Session getSession(int idx) {
+    return sessions.get(idx);
+  }
+
+  /** Gets the WLClient that tracks the wayland resources.
+   * This client does not own a copy of the UnixSocket and can not write requests.
+   *
+   * @see getInjector()
+   */
   public WLClient getClient() {
+    return sessions.get(0).client;
+  }
+
+  /** Gets the WLClient that allows requests to be submitted to the real wayland server.
+   * This client does not track wayland resources (calling get_next_id() would be invalid).
+   *
+   * @see getClient();
+   */
+  public WLClient getInjector() {
     return sessions.get(0).injector;
   }
 

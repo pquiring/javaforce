@@ -26,11 +26,11 @@ public class WLClient {
   private Reader reader;
 
   private HashMap<Integer, WLObject> objects = new HashMap<>();  //client side objects (id)
+  private Object objects_lock = new Object();
   private HashMap<Integer, WLGlobal> globals = new HashMap<>();  //server side objects (name)
+  private Object globals_lock = new Object();
 
-  private Object next_id_lock = new Object();
   /** Next client side id. */
-  private int next_id = 2;  //1 = reserved for wl_display
   private WLDisplay display;
 
   private int log;
@@ -142,9 +142,20 @@ public class WLClient {
 
   /** Returns next client side id. */
   public int get_next_id() {
-    int id;
-    synchronized (next_id_lock) {
-      id = next_id++;
+    int id = 2;  //1 = wl_display
+    boolean used = true;
+    synchronized (objects_lock) {
+      WLObject[] objs = objects.values().toArray(new WLObject[0]);
+      do {
+        used = false;
+        for(WLObject obj : objs) {
+          if (obj.id == id) {
+            used = true;
+            id++;
+            break;
+          }
+        }
+      } while (used);
     }
     return id;
   }
@@ -188,8 +199,10 @@ public class WLClient {
         //ext
         case "ext_data_control_manager_v1": return new EXTDataControlManager(this, new_id);
         case "ext_data_control_device_v1": return new EXTDataControlDevice(this, new_id);
+        default:
+          log("WLClient.createObject:Error:iface not defined:iface=" + global.iface);
+          return new WLUnknown(this, new_id);
       }
-      log("WLClient.createObject:Error:iface not defined:iface=" + global.iface);
     } catch (Exception e) {
       log(e);
     }
@@ -198,17 +211,23 @@ public class WLClient {
 
   /** Add client side WLObject. */
   public void setObject(int id, WLObject obj) {
-    objects.put(id, obj);
+    synchronized (objects_lock) {
+      objects.put(id, obj);
+    }
   }
 
   /** Get client side WLObject. */
   public WLObject getObject(int id) {
-    return objects.get(id);
+    synchronized (objects_lock) {
+      return objects.get(id);
+    }
   }
 
   /** Remove client side WLObject. */
   public void removeObject(int id) {
-    objects.remove(id);
+    synchronized (objects_lock) {
+      objects.remove(id);
+    }
   }
 
   /** Add server side Object name. */
@@ -217,22 +236,45 @@ public class WLClient {
     global.name = name;
     global.iface = iface;
     global.ver = ver;
-    globals.put(name, global);
+    synchronized (globals_lock) {
+      globals.put(name, global);
+    }
   }
 
   /** Get server side global object. */
   public WLGlobal getGlobal(int name) {
-    return globals.get(name);
+    synchronized (globals_lock) {
+      return globals.get(name);
+    }
+  }
+
+  /** Get server side global object. */
+  public WLGlobal getGlobal(String iface) {
+    WLGlobal[] list;
+    synchronized (globals_lock) {
+      list = globals.values().toArray(new WLGlobal[0]);
+    }
+    for(WLGlobal global : list) {
+      if (global.iface.equals(iface)) {
+        return global;
+      }
+    }
+    return null;
   }
 
   /** Remove server side Object name. */
   public void removeGlobal(int name) {
-    globals.remove(name);
+    synchronized (globals_lock) {
+      globals.remove(name);
+    }
   }
 
   /** Dispatch a request to Wayland server. */
   public boolean dispatchRequest(int id, int opcode, int size, byte[] pkt) {
-    WLObject obj = objects.get(id);
+    WLObject obj;
+    synchronized (objects_lock) {
+      obj = objects.get(id);
+    }
     if (obj == null) return false;
     try {
       obj.dispatchRequest(id, opcode, size, pkt, 8, size);
@@ -244,12 +286,15 @@ public class WLClient {
 
   /** Dispatches inbound event from Wayland server. */
   public boolean dispatchEvent(int id, int opcode, int size, byte[] pkt) {
-    WLObject object = objects.get(id);
-    if (object == null) {
+    WLObject obj;
+    synchronized (objects_lock) {
+      obj = objects.get(id);
+    }
+    if (obj == null) {
       return false;
     }
     try {
-      object.dispatchEvent(opcode, pkt, 8, size);
+      obj.dispatchEvent(opcode, pkt, 8, size);
     } catch (Exception e) {
       log(e);
     }
