@@ -39,6 +39,8 @@ public class WPTextInputManager extends WLObject {
   public void get_text_input(int new_id, int wl_seat) {
     if (debug) client.log("WPTextInputManager.get_text_input:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_seat);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   //events

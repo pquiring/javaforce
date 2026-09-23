@@ -41,6 +41,8 @@ public class XDGActivation extends WLObject {
   public void get_activation_token(int new_id) {
     if (debug) client.log("XDGActivation.get_activation_token:new_id=" + new_id);
     invokeRequest(id, 1, new_id);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   public void activate(String token, int wl_surface) {

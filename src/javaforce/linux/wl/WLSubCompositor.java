@@ -39,6 +39,8 @@ public class WLSubCompositor extends WLObject {
   public void get_subsurface(int new_id, int wl_surface, int wl_parent) {
     if (debug) client.log("WLSubCompositor.get_subsurface:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_surface, wl_parent);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   //events

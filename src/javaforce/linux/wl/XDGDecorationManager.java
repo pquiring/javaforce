@@ -40,6 +40,8 @@ public class XDGDecorationManager extends WLObject {
   public void get_toplevel_decoration(int new_id, int xdg_toplevel) {
     if (debug) client.log("XDGDecorationManager.get_toplevel_decoration:new_id=" + new_id);
     invokeRequest(id, 1, new_id, xdg_toplevel);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   //events

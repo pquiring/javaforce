@@ -43,6 +43,8 @@ public class XDGTopLevelIconManager extends WLObject {
   public void create_icon(int new_id) {
     if (debug) client.log("XDGTopLevelIconManager.create_icon:new_id=" + new_id);
     invokeRequest(id, 1, new_id);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   public void set_icon(int xdg_toplevel, int xdg_toplevel_icon) {

@@ -40,6 +40,8 @@ public class WPViewporter extends WLObject {
   public void get_viewport(int new_id, int wl_surface) {
     if (debug) client.log("WPViewporter.get_viewport:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_surface);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   //events

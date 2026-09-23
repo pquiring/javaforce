@@ -40,6 +40,8 @@ public class XDGOutputManager extends WLObject {
   public void get_xdg_output(int new_id, int wl_output) {
     if (debug) client.log("XDGOutputManager.get_xdg_output:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_output);
+    //TODO : use proper object
+    client.setObject(new_id, new WLUnknown(client, new_id));
   }
 
   //events
