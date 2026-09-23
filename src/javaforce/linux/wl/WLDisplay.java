@@ -16,7 +16,7 @@ public class WLDisplay extends WLObject {
     Class cls = getClass();
     try {
       requests = new Method[] {
-        cls.getMethod("sync", new Class[] {}),
+        cls.getMethod("sync", new Class[] {int.class}),
         cls.getMethod("get_registry", new Class[] {int.class}),
       };
       events = new Method[] {
