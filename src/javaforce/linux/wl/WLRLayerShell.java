@@ -17,8 +17,8 @@ public class WLRLayerShell extends WLObject {
     Class cls = getClass();
     try {
       requests = new Method[] {
-        cls.getMethod("get_layer_surface", new Class[] {int.class}),
-        cls.getMethod("destroy", new Class[] {int.class}),
+        cls.getMethod("get_layer_surface", new Class[] {int.class, int.class, int.class, int.class, String.class}),
+        cls.getMethod("destroy", new Class[] {}),
       };
       events = new Method[] {
       };
