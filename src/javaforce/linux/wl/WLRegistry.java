@@ -36,8 +36,7 @@ public class WLRegistry extends WLObject {
   public WLObject bind(int name, String iface, int ver, int new_id) {
     if (debug) client.log("WLRegistry.bind:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver) + ",new_id=" + new_id);
     invokeRequest(id, 0, name, iface, ver, new_id);
-    WLObject obj = client.createObject(client.getGlobal(name), new_id);
-    return obj;
+    return client.createObject(client.getGlobal(name), new_id);
   }
 
   //events
