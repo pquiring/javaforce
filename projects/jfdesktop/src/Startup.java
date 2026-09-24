@@ -458,7 +458,7 @@ public class Startup implements ShellProcessListener, WLNotify {
             if (window == -1) {
               if (dock == -1) {
                 //creating dock
-                dock = proxy.getClient().get_next_id();
+                dock = proxy.getClient().get_next_largest_id();
                 proxy.log("jfDesktop:get_layer_surface:dock");
                 WLGlobal layer_shell = proxy.getClient().getGlobal("zwlr_layer_shell_v1");
                 proxy.getClient().set_enable_write(true);
@@ -468,7 +468,7 @@ public class Startup implements ShellProcessListener, WLNotify {
                 proxy.getClient().set_enable_write(false);
               } else if (desktop == -1) {
                 //creating desktop
-                desktop = proxy.getClient().get_next_id();
+                desktop = proxy.getClient().get_next_largest_id();
                 proxy.log("jfDesktop:get_layer_surface:desktop");
                 WLGlobal layer_shell = proxy.getClient().getGlobal("zwlr_layer_shell_v1");
                 proxy.getClient().set_enable_write(true);

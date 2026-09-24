@@ -168,6 +168,20 @@ public class WLClient {
     return id;
   }
 
+  /** Returns next largest client side id (ignore gaps). */
+  public int get_next_largest_id() {
+    int id = 2;  //1 = wl_display
+    synchronized (objects_lock) {
+      WLObject[] objs = objects.values().toArray(new WLObject[0]);
+      for(WLObject obj : objs) {
+        if (obj.id <= id) {
+          id = obj.id + 1;
+        }
+      }
+    }
+    return id;
+  }
+
   /** Create new WLObject defined by global and assign new_id. */
   public WLObject createObject(WLGlobal global, int new_id) {
     if (global == null) {
