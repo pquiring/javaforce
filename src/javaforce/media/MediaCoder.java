@@ -44,7 +44,7 @@ public class MediaCoder {
   public static int codec_id(int codec_id) {
     if (MediaAPI.getInstance().mediaMajorVersion() >= 9) {
       //ffmpeg/9.0 removed AV_CODEC_ID_V410 causing others below to decrement :(
-      if (codec_id >= AV_CODEC_ID_V410) {
+      if (codec_id >= AV_CODEC_ID_V410 && codec_id < AV_CODEC_ID_PCM_S16LE) {
         codec_id--;
       }
     }
