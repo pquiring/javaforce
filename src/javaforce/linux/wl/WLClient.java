@@ -174,7 +174,7 @@ public class WLClient {
     synchronized (objects_lock) {
       WLObject[] objs = objects.values().toArray(new WLObject[0]);
       for(WLObject obj : objs) {
-        if (obj.id <= id) {
+        if (obj.id >= id) {
           id = obj.id + 1;
         }
       }
