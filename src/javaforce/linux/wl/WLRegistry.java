@@ -16,7 +16,7 @@ public class WLRegistry extends WLObject {
     Class cls = getClass();
     try {
       requests = new Method[] {
-        cls.getMethod("bind", new Class[] {int.class, int.class}),
+        cls.getMethod("bind", new Class[] {int.class, String.class, int.class, int.class}),
       };
       events = new Method[] {
         cls.getMethod("global", new Class[] {int.class, String.class, int.class}),
