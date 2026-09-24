@@ -233,8 +233,8 @@ public class WLClient {
 
   /** Add client side WLObject. */
   public void setObject(int id, WLObject obj) {
-    if (debug) log("setObject:" + id);
     synchronized (objects_lock) {
+      if (debug) log("setObject:new_id=" + id + ":cnt=" + objects.size());
       objects.put(id, obj);
     }
   }
@@ -248,9 +248,9 @@ public class WLClient {
 
   /** Remove client side WLObject. */
   public void removeObject(int id) {
-    if (debug) log("removeObject:" + id);
     synchronized (objects_lock) {
       objects.remove(id);
+      if (debug) log("removeObject:new_id=" + id + ":cnt=" + objects.size());
     }
   }
 

@@ -459,7 +459,7 @@ public class Startup implements ShellProcessListener, WLNotify {
               if (dock == -1) {
                 //creating dock
                 dock = proxy.getClient().get_next_largest_id();
-                proxy.log("jfDesktop:get_layer_surface:dock");
+                proxy.log("jfDesktop:get_layer_surface:dock:id=" + dock);
                 WLGlobal layer_shell = proxy.getClient().getGlobal("zwlr_layer_shell_v1");
                 proxy.getClient().set_enable_write(true);
                 wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, dock);
@@ -469,10 +469,10 @@ public class Startup implements ShellProcessListener, WLNotify {
               } else if (desktop == -1) {
                 //creating desktop
                 desktop = proxy.getClient().get_next_largest_id();
-                proxy.log("jfDesktop:get_layer_surface:desktop");
+                proxy.log("jfDesktop:get_layer_surface:desktop:id=" + desktop);
                 WLGlobal layer_shell = proxy.getClient().getGlobal("zwlr_layer_shell_v1");
                 proxy.getClient().set_enable_write(true);
-                wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, dock);
+                wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, desktop);
                 wlr_layer_shell.get_layer_surface(desktop, new_id, 0, WLRLayerShell.LAYER_BACKGROUND, "desktop");
                 wlr_layer_shell.destroy();  //TODO : block WLDisplay.delete_id() from reaching real client
                 proxy.getClient().set_enable_write(false);
