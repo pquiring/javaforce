@@ -206,6 +206,7 @@ extern "C" {
 JNIEXPORT jboolean JNICALL MediaAPIinit(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
   , const char* utilFile, const char* scaleFile, const char* resampleFile)
 {
+  printf("AV_CODEC_ID_H265=%d\n", AV_CODEC_ID_H265);
   //load libraries (order is important)
   printf("ffmpeg init...");
 
@@ -396,6 +397,15 @@ void mediaSetLogging(jboolean state)
   (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
 }
 
+int mediaMajorVersion() {
+  switch (LIBAVCODEC_VERSION_MAJOR) {
+    case 61: return 7;
+    case 62: return 8;
+    case 63: return 9;
+  }
+  return 0;  //unknown
+}
+
 static int ff_min(int a, int b) {
   if (a < b) return a; else return b;
 }
@@ -538,6 +548,7 @@ static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
 extern "C" {
   //MediaCoder
   JNIEXPORT void (*_mediaSetLogging)(jboolean state) = &mediaSetLogging;
+  JNIEXPORT int (*_mediaMajorVersion)() = &mediaMajorVersion;
   //MediaFormat
   JNIEXPORT jint (*_getVideoStream)(FFContext* ctx) = &getVideoStream;
   JNIEXPORT jint (*_getAudioStream)(FFContext* ctx) = &getAudioStream;

@@ -133,10 +133,8 @@ public class MediaServer {
       }
       if (rtp_coder == null) {
         av_codec_id = media.getStreamIDs()[0];
-        switch (av_codec_id) {
-          case MediaCoder.AV_CODEC_ID_H264: rtp_coder = new RTPH264(); break;
-          case MediaCoder.AV_CODEC_ID_H265: rtp_coder = new RTPH265(); break;
-        }
+        if (av_codec_id == MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264)) { rtp_coder = new RTPH264(); }
+        else if (av_codec_id == MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265)) { rtp_coder = new RTPH265(); }
         rtp_coder.setid(96);  //TODO : get from SDP
       }
       media.seekTime(ts_current);

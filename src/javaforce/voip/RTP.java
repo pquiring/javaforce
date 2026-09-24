@@ -6,7 +6,7 @@ import javaforce.*;
 import javaforce.net.*;
 
 /** RTP (Real-Time Transport Protocol).
- * 
+ *
  * Handles sending/receiving RTP packets.
  */
 
@@ -56,7 +56,7 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 111);  //patent expired
   public final static Codec CODEC_OPUS = new Codec("OPUS", 112, 48000);  //opus48
   public final static Codec CODEC_H264 = new Codec("H264", 120);  //patent expired (2024-03-26)
-  public final static Codec CODEC_H265 = new Codec("H265", 121);  //patent encumbered
+  public final static Codec CODEC_H265 = new Codec("H265", 121);  //patent encumbered (~2031/32)
 
   static {
     try {

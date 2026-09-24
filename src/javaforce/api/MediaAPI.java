@@ -17,6 +17,7 @@ public interface MediaAPI {
 
   //MediaCoder
   public void mediaSetLogging(boolean state);
+  public int mediaMajorVersion();
 
   //MediaFormat
   public int getVideoStream(long ctx);

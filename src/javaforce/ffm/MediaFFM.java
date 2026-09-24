@@ -130,6 +130,9 @@ public class MediaFFM implements MediaAPI {
   private MethodHandle inputRead;
   public int inputRead(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)inputRead.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle mediaMajorVersion;
+  public int mediaMajorVersion() { try { int _ret_value_ = (int)mediaMajorVersion.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle videoDecoderGetHeight;
   public int videoDecoderGetHeight(long a1) { try { int _ret_value_ = (int)videoDecoderGetHeight.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -229,6 +232,7 @@ public class MediaFFM implements MediaAPI {
     getVideoStream = ffm.getFunctionPtr("_getVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     getVideoWidth = ffm.getFunctionPtr("_getVideoWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     inputRead = ffm.getFunctionPtr("_inputRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS));
+    mediaMajorVersion = ffm.getFunctionPtr("_mediaMajorVersion", ffm.getFunctionDesciptor(JAVA_INT));
     videoDecoderGetHeight = ffm.getFunctionPtr("_videoDecoderGetHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     videoDecoderGetWidth = ffm.getFunctionPtr("_videoDecoderGetWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     videoDecoderDecode = ffm.getFunctionPtr("_videoDecoderDecode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));

@@ -38,6 +38,19 @@ public class MediaCoder {
     MediaAPI.getInstance().mediaSetLogging(state);
   }
 
+  /** Adjusts codec_id for different versions of ffmpeg.
+   Currently required for ffmpeg/9.0
+   */
+  public static int codec_id(int codec_id) {
+    if (MediaAPI.getInstance().mediaMajorVersion() >= 9) {
+      //ffmpeg/9.0 removed AV_CODEC_ID_V410 causing others below to decrement :(
+      if (codec_id >= AV_CODEC_ID_V410) {
+        codec_id--;
+      }
+    }
+    return codec_id;
+  }
+
   //seek types
   public static final int SEEK_SET = 0;
   public static final int SEEK_CUR = 1;
@@ -78,6 +91,8 @@ public class MediaCoder {
   public static final int AV_CODEC_ID_H264 = 27;
   public static final int AV_CODEC_ID_THEORA = 30;
   public static final int AV_CODEC_ID_VP8 = 139;
+  //these were decremented in 9.0
+  private static final int AV_CODEC_ID_V410 = 156;  //removed in ffmpeg/9.0
   public static final int AV_CODEC_ID_VP9 = 167;
   public static final int AV_CODEC_ID_H265 = 173;
 

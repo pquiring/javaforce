@@ -144,7 +144,7 @@ public class TestMedia implements MediaIO {
       info.height = 480;
       info.fps = 10f;
       info.video_bit_rate = (int)(1 * JF.MB);  //1Mb/s
-      info.video_codec = MediaCoder.AV_CODEC_ID_H265;
+      info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
       videoEncoder = encoder.createVideoEncoder(info);
       info.chs = 2;  //stereo
       info.freq = 44100;
