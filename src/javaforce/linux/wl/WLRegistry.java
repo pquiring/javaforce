@@ -33,19 +33,13 @@ public class WLRegistry extends WLObject {
 
   //requests
 
-  public WLObject bind(int name, int new_id) {
-    WLGlobal global = client.getGlobal(name);
+  //NOTE : new_id is preceded by iface, ver (this is the only time this happens in all of wayland protocol since the new_id is generic)
+  public WLObject bind(int name, String iface, int ver, int new_id) {
     if (debug) {
-      String iface;
-      if (global == null) {
-        iface = "unknown";
-      } else {
-        iface = global.iface;
-      }
       client.log("WLRegistry.bind:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver) + ",new_id=" + new_id);
     }
-    invokeRequest(id, 0, name, new_id);
-    return client.createObject(global, new_id);
+    invokeRequest(id, 0, name, iface, ver, new_id);
+    return client.createObject(client.getGlobal(name), new_id);
   }
 
   //events

@@ -53,7 +53,7 @@ public class TestWL implements WLNotify, WLWindowEvents {
             switch (iface) {
               case "zwlr_foreign_toplevel_manager_v1":
                 int new_id = client.get_next_id();
-                toplevel_manager = (WLRForeignToplevelManager)registry.bind(name, new_id);
+                toplevel_manager = (WLRForeignToplevelManager)registry.bind(name, iface, toplevel_manager.getVersion(), new_id);
                 toplevel_manager.setWindowEvents(this);
                 break;
             }
