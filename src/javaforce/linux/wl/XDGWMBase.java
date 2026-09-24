@@ -44,14 +44,14 @@ public class XDGWMBase extends WLObject {
     if (debug) client.log("XDGWMBase.create_positioner:new_id=" + new_id);
     invokeRequest(id, 1, new_id);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void get_xdg_surface(int new_id, int wl_surface) {
     if (debug) client.log("XDGWMBase.get_xdg_surface:new_id=" + new_id);
     invokeRequest(id, 2, new_id, wl_surface);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void pong(int serial) {

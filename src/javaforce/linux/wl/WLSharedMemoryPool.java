@@ -37,7 +37,7 @@ public class WLSharedMemoryPool extends WLObject {
     if (debug) client.log("WLSharedMemoryPool.create_buffer:new_id=" + new_id);
     invokeRequest(id, 0, new_id, offset, width, height, stride, format);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void destroy() {

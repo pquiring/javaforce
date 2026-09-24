@@ -62,7 +62,7 @@ public class WLDataDevice extends WLObject {
   public void data_offer(int new_id) {
     if (debug) client.log("WLDataDevice.data_offer:new_id=" + new_id);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void enter(int serial, int surface, int x, int y, int id) {
@@ -84,6 +84,6 @@ public class WLDataDevice extends WLObject {
   public void selection(int new_id) {
     if (debug) client.log("WLDataDevice.selection:new_id=" + new_id);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 }

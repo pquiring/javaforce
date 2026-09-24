@@ -38,8 +38,8 @@ public class WLDisplay extends WLObject {
 
   public void sync(int new_id) {
     if (debug) client.log("WLDisplay.sync:new_id=" + new_id);
-    client.setObject(new_id, new WLCallback(client, new_id));
     invokeRequest(id, 0, new_id);
+    new WLCallback(client, new_id);
   }
 
   public WLRegistry get_registry(int new_id) {
@@ -47,9 +47,8 @@ public class WLDisplay extends WLObject {
       return registry;
     }
     if (debug) client.log("WLDisplay:get_registry:new_id=" + new_id);
-    registry = new WLRegistry(client, new_id);
-    client.setObject(new_id, registry);
     invokeRequest(id, 1, new_id);
+    registry = new WLRegistry(client, new_id);
     return registry;
   }
 

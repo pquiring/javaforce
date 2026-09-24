@@ -41,7 +41,7 @@ public class WPRelativePointerManager extends WLObject {
     if (debug) client.log("WPRelativePointerManager.get_relative_pointer:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_pointer);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   //events

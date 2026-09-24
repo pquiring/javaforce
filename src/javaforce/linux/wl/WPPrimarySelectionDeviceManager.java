@@ -37,14 +37,14 @@ public class WPPrimarySelectionDeviceManager extends WLObject {
     if (debug) client.log("WPPrimarySelectionDeviceManager.create_source:new_id=" + new_id);
     invokeRequest(id, 0, new_id);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void get_device(int new_id, int wl_seat) {
     if (debug) client.log("WPPrimarySelectionDeviceManager.get_device:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_seat);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void destroy() {

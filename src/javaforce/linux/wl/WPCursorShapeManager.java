@@ -41,14 +41,14 @@ public class WPCursorShapeManager extends WLObject {
     if (debug) client.log("WPCursorShapeManager.get_pointer:new_id=" + new_id);
     invokeRequest(id, 1, new_id, wl_pointer);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   public void get_tablet_tool_v2(int new_id, int wl_tool) {
     if (debug) client.log("WPCursorShapeManager.get_tablet_tool_v2:new_id=" + new_id);
     invokeRequest(id, 2, new_id, wl_tool);
     //TODO : use proper object
-    client.setObject(new_id, new WLUnknown(client, new_id));
+    new WLUnknown(client, new_id);
   }
 
   //events
