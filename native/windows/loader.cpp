@@ -272,6 +272,7 @@ JavaVMInitArgs *BuildArgs() {
   } else {
     opts[nOpts++] = "-XX:-UsePerfData";
   }
+  opts[nOpts++] = "--enable-preview";  //enable best performance
   opts[nOpts++] = "--enable-native-access=ALL-UNNAMED";
   opts[nOpts++] = MakeString("-Djava.app.exec=%s", module);
   opts[nOpts++] = MakeString("-Djava.app.home=%s", exepath);

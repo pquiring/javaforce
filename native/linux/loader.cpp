@@ -262,6 +262,7 @@ JavaVMInitArgs *BuildArgs() {
   } else {
     opts[nOpts++] = "-XX:-UsePerfData";
   }
+  opts[nOpts++] = "--enable-preview";  //enable best performance
 
   if (wayland) {
     opts[nOpts++] = "-Dawt.toolkit.name=WLToolkit";
