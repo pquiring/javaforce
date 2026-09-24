@@ -23,7 +23,7 @@ import jffile.*;
  * @author pquiring
  */
 
-public class Dock extends javax.swing.JWindow implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, WLWindowEvents {
+public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, WLWindowEvents {
 
   /**
    * Creates new form Dock
@@ -31,8 +31,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   public Dock() {
     try {
       //NOTE : for X11 remove these next two lines and change to javax.swing.JWindow
-//      setUndecorated(true);
-//      setTitle("jfDock");
+      setUndecorated(true);
+      setTitle("jfDock");
       initComponents();
       IconCache.setPrefix("jfdesktop-");
       arrowImage = IconCache.loadIcon("jfdesktop-arrow");

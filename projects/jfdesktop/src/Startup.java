@@ -17,7 +17,7 @@ import static javaforce.linux.Linux.*;
 public class Startup implements ShellProcessListener, WLNotify {
   public static Startup instance;
 
-  public static boolean use_proxy = true;
+  public static boolean use_proxy = false;  //not working
 
   private Properties props;
   private boolean is_wayland = false;
