@@ -234,8 +234,8 @@ public class WLClient {
   /** Add client side WLObject. */
   public void setObject(int id, WLObject obj) {
     synchronized (objects_lock) {
-      if (debug) log("setObject:new_id=" + id + ":cnt=" + objects.size());
       objects.put(id, obj);
+      if (debug) log("setObject:new_id=" + id + ":cnt=" + objects.size());
     }
   }
 

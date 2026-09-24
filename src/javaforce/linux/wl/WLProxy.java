@@ -141,6 +141,7 @@ public class WLProxy {
       synchronized (lock) {
         sessions.remove(this);
       }
+      JFLog.log(log, "WLProxy:session.stop()");
     }
 
     public void cancel() {
@@ -211,6 +212,7 @@ public class WLProxy {
           synchronized (lock) {
             sessions.add(session);
           }
+          JFLog.log(log, "WLProxy:session.start()");
           session.start();
         } catch (Exception e) {
           JFLog.log(log, e);
