@@ -206,7 +206,6 @@ extern "C" {
 JNIEXPORT jboolean JNICALL MediaAPIinit(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
   , const char* utilFile, const char* scaleFile, const char* resampleFile)
 {
-  printf("AV_CODEC_ID_H265=%d\n", AV_CODEC_ID_H265);
   //load libraries (order is important)
   printf("ffmpeg init...");
 
