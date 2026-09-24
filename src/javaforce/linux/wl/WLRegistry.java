@@ -16,7 +16,7 @@ public class WLRegistry extends WLObject {
     Class cls = getClass();
     try {
       requests = new Method[] {
-        cls.getMethod("bind", new Class[] {int.class, String.class, int.class, int.class}),
+        cls.getMethod("bind", new Class[] {int.class, int.class}),
       };
       events = new Method[] {
         cls.getMethod("global", new Class[] {int.class, String.class, int.class}),
@@ -33,10 +33,19 @@ public class WLRegistry extends WLObject {
 
   //requests
 
-  public WLObject bind(int name, String iface, int ver, int new_id) {
-    if (debug) client.log("WLRegistry.bind:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver) + ",new_id=" + new_id);
-    invokeRequest(id, 0, name, iface, ver, new_id);
-    return client.createObject(client.getGlobal(name), new_id);
+  public WLObject bind(int name, int new_id) {
+    WLGlobal global = client.getGlobal(name);
+    if (debug) {
+      String iface;
+      if (global == null) {
+        iface = "unknown";
+      } else {
+        iface = global.iface;
+      }
+      client.log("WLRegistry.bind:name=" + name + ",iface=" + iface + ",ver=0x" + Integer.toHexString(ver) + ",new_id=" + new_id);
+    }
+    invokeRequest(id, 0, name, new_id);
+    return client.createObject(global, new_id);
   }
 
   //events
