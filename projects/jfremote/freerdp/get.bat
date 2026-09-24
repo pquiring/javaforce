@@ -2,11 +2,11 @@
 
 :: This script will copy FreeRDP from msys with all deps
 
-:: install FreeRDP : pacman -S mingw-w64-x86_64-freerdp
+:: install FreeRDP : pacman -S mingw-w64-ucrt-x86_64-freerdp
 
 :: install ntldd : pacman -S mingw-w64-ucrt-x86_64-ntldd
 
-set MSYS=c:\bin\msys\mingw64\bin
+set MSYS=c:\bin\msys\ucrt64\bin
 
 copy %MSYS%\wfreerdp.exe
 copy %MSYS%\sdl-freerdp.exe

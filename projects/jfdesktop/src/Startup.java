@@ -227,7 +227,7 @@ public class Startup implements ShellProcessListener, WLNotify {
             "--user",
             "--unit=jfdesktop_window_manager_" + user,
             "/usr/bin/labwc",
-            "-d",  //enable debugging : view with journalctl -u jfdesktop_window_manager_$LOGNAME
+            "-d",  //enable debugging : view with "journalctl --user -u jfdesktop_window_manager_$LOGNAME.scope"
           }
         );
         wait_wayland_socket_opened();

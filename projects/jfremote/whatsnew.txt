@@ -1,3 +1,6 @@
+2026-09-24 : v0.12
+  - new : upgraded FreeRDP to 3.32 on Windows
+
 2026-07-20 : v0.11
   - new : upgraded FreeRDP to 3.30 on Windows (floatbar has been fixed)
 
