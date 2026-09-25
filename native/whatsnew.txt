@@ -2,6 +2,7 @@ what's new in native API (since 113.0)
 
 119.0
   - upgrade to ffmpeg/9.0.2
+  - linux: added UnixSocket w/ fd support
 
 118.0
   - windows : camera : fixed issues
