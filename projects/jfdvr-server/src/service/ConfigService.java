@@ -16,7 +16,7 @@ import javaforce.webui.event.*;
 import javaforce.webui.panel.*;
 
 public class ConfigService implements WebUIServlet {
-  public static String version = "0.45";
+  public static String version = "0.46";
   public static String appname = "jfDVR";
   public static boolean debug = false;
   public WebUIServer server;

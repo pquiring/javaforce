@@ -1,3 +1,6 @@
+Sept 25, 2026 : 0.46 released!
+  - new : upgrade to ffmpeg/9.0.2
+
 Jul 10, 2026 : 0.45 released!
   - fix : Viewer grid mode issues
 
