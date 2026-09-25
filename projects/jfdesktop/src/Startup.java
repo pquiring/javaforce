@@ -434,6 +434,17 @@ public class Startup implements ShellProcessListener, WLNotify {
   int dock = -1;
   int desktop = -1;
   int window = -1;
+  int destroy = -1;
+
+  private void set_destroy(int id) {
+    destroy = id;
+  }
+
+  private void wait_destroy() {
+    while (destroy != -1) {
+      JF.sleep(100);
+    }
+  }
 
   //interface WLNotify
 
@@ -464,8 +475,10 @@ public class Startup implements ShellProcessListener, WLNotify {
                 proxy.getClient().set_enable_write(true);
                 wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, dock);
                 wlr_layer_shell.get_layer_surface(dock, new_id, 0, WLRLayerShell.LAYER_BOTTOM, "taskbar");
+                set_destroy(dock);
                 wlr_layer_shell.destroy();  //TODO : block WLDisplay.delete_id() from reaching real client
                 proxy.getClient().set_enable_write(false);
+                wait_destroy();
               } else if (desktop == -1) {
                 //creating desktop
                 desktop = proxy.getClient().get_next_largest_id();
@@ -474,8 +487,10 @@ public class Startup implements ShellProcessListener, WLNotify {
                 proxy.getClient().set_enable_write(true);
                 wlr_layer_shell = (WLRLayerShell)wl_registry.bind(layer_shell.name, layer_shell.iface, layer_shell.ver, desktop);
                 wlr_layer_shell.get_layer_surface(desktop, new_id, 0, WLRLayerShell.LAYER_BACKGROUND, "desktop");
+                set_destroy(desktop);
                 wlr_layer_shell.destroy();  //TODO : block WLDisplay.delete_id() from reaching real client
                 proxy.getClient().set_enable_write(false);
+                wait_destroy();
               }
               window = 0;  //wait for create_region to reset window indicating a new window might be created
             }
@@ -511,6 +526,13 @@ public class Startup implements ShellProcessListener, WLNotify {
               case "zwlr_layer_shell_v1": {
                 break;
               }
+            }
+            break;
+          }
+          case "delete_id": {
+            int old_id = (Integer)args[0];
+            if (old_id == destroy) {
+              destroy = -1;
             }
             break;
           }
