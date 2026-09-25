@@ -1,6 +1,6 @@
 //FFMPEG
 
-//Requires FFMPEG/5.1.x or better
+//Requires FFMPEG/7.1.0 or better
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>

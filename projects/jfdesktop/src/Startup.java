@@ -42,6 +42,7 @@ public class Startup implements ShellProcessListener, WLNotify {
       if (window_mgr.length() == 0) {
         window_mgr = "labwc";
       }
+      use_proxy = getProperty("wl_proxy").equals("true");
       JFLog.log("wayland:window_manager=" + window_mgr);
     }
   }
