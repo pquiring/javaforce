@@ -2,7 +2,8 @@ JavaForce SDK
 =============
 
 Version 119.0
-Native ABI min Version 119.0
+
+Min Native ABI Version 119.0
 
 Description
 ===========

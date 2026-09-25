@@ -10,6 +10,8 @@ Sept 25/2026 : JF/119.0
   - jfDVR-Server/0.46
   - jfDVR-Viewer/0.46
   - jfMedia/0.33
+  - jfRemote/0.12
+    - upgraded to freerdp/3.32.0
 
 Sept 11/2026 : JF/118.1
   - fix : jfLogon : logon/logoff issues
