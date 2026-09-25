@@ -9,7 +9,7 @@ import java.util.*;
 import java.net.*;
 
 public class Config {
-  public static String version = "0.45";
+  public static String version = "0.46";
   public static URL url;
   private static int nextPort = 6000;
   public static synchronized int getLocalPort() {
