@@ -232,10 +232,10 @@ public class Service extends Thread implements RTSPServerInterface {
           JFLog.log("Error:Unknown codec:" + Config.current.codec + ":using H264");
           //no break
         case 1:
-          info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264);
+          info.video_codec = MediaCoder.VIDEO_CODEC_ID_H264;
           break;
         case 2:
-          info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
+          info.video_codec = MediaCoder.VIDEO_CODEC_ID_H265;
           break;
       }
       JFLog.log("Stream=" + info);

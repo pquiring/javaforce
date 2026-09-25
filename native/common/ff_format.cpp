@@ -19,7 +19,7 @@ jint getVideoCodecID(FFContext *ctx)
   if (ctx == NULL) return -1;
   if (ctx->video_stream == NULL) return -1;
   if (ctx->video_stream->codecpar == NULL) return -1;
-  return ctx->video_stream->codecpar->codec_id;
+  return conv_av_video_codec_id(ctx->video_stream->codecpar->codec_id);
 }
 
 jint getAudioCodecID(FFContext *ctx)
@@ -27,7 +27,7 @@ jint getAudioCodecID(FFContext *ctx)
   if (ctx == NULL) return -1;
   if (ctx->audio_stream == NULL) return -1;
   if (ctx->audio_stream->codecpar == NULL) return -1;
-  return ctx->audio_stream->codecpar->codec_id;
+  return conv_av_audio_codec_id(ctx->audio_stream->codecpar->codec_id);
 }
 
 jint getVideoBitRate(FFContext *ctx)

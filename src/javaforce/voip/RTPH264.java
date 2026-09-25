@@ -250,7 +250,7 @@ public class RTPH264 implements RTPVideoCoder {
 
   public static CodecInfo getCodecInfo(Packet sps) {
     MediaVideoDecoder decoder = new MediaVideoDecoder();
-    decoder.start(MediaCoder.AV_CODEC_ID_H264, 320, 200);
+    decoder.start(MediaCoder.VIDEO_CODEC_ID_H264, 320, 200);
     decoder.decode(sps.data, sps.offset, sps.length);  //ignore return
     CodecInfo info = new CodecInfo();
     info.width = decoder.getWidth();

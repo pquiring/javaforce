@@ -348,7 +348,7 @@ public class RTPH265 implements RTPVideoCoder {
 
   public static CodecInfo getCodecInfo(Packet sps) {
     MediaVideoDecoder decoder = new MediaVideoDecoder();
-    decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265), 320, 200);
+    decoder.start(MediaCoder.VIDEO_CODEC_ID_H265, 320, 200);
     decoder.decode(sps.data, sps.offset, sps.length);  //ignore return
     CodecInfo info = new CodecInfo();
     info.width = decoder.getWidth();

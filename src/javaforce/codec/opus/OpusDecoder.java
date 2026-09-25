@@ -14,7 +14,7 @@ public class OpusDecoder {
 
   public void open() {
     decoder = new MediaAudioDecoder();
-    decoder.start(MediaCoder.AV_CODEC_ID_OPUS, 1, 48000);
+    decoder.start(MediaCoder.AUDIO_CODEC_ID_OPUS, 1, 48000);
   }
 
   public void close() {

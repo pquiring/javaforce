@@ -203,11 +203,11 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
   private void startEncoder(String format, CodecInfo info) {
     String container = null;
     switch (format) {
-      case "H263": info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H263); container = "mpg"; break;
-      case "H264": info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264); container = "mpg"; break;
-      case "H265": info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265); container = "mpg"; break;
-      case "VP8": info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_VP8); container = "ogg"; break;
-      case "VP9": info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_VP9); container = "ogg"; break;
+      case "H263": info.video_codec = MediaCoder.VIDEO_CODEC_ID_H263; container = "mpg"; break;
+      case "H264": info.video_codec = MediaCoder.VIDEO_CODEC_ID_H264; container = "mpg"; break;
+      case "H265": info.video_codec = MediaCoder.VIDEO_CODEC_ID_H265; container = "mpg"; break;
+      case "VP8": info.video_codec = MediaCoder.VIDEO_CODEC_ID_VP8; container = "ogg"; break;
+      case "VP9": info.video_codec = MediaCoder.VIDEO_CODEC_ID_VP9; container = "ogg"; break;
     }
     encoder = new MediaOutput();
     encoder.create(this, container);

@@ -144,12 +144,12 @@ public class TestMedia implements MediaIO {
       info.height = 480;
       info.fps = 10f;
       info.video_bit_rate = (int)(1 * JF.MB);  //1Mb/s
-      info.video_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
+      info.video_codec = MediaCoder.VIDEO_CODEC_ID_H265;
       videoEncoder = encoder.createVideoEncoder(info);
       info.chs = 2;  //stereo
       info.freq = 44100;
       info.audio_bit_rate = (int)(128 * JF.KB);  //128kb/s
-      info.audio_codec = MediaCoder.AV_CODEC_ID_AAC;
+      info.audio_codec = MediaCoder.AUDIO_CODEC_ID_AAC;
       audioEncoder = encoder.createAudioEncoder(info);
       if (i == 10) i = 0;
       int frame_size = audioEncoder.getAudioFramesize() * 2;  //*2=stereo

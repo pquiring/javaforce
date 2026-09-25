@@ -56,7 +56,7 @@ FFContext* audioDecoderStart(jint codec_id, jint chs, jint freq)
   FFContext *ctx = newFFContext(NULL,NULL);
   if (ctx == NULL) return 0;
 
-  if (!audioDecoderStart_ctx(NULL, NULL, ctx, codec_id, chs, freq)) {
+  if (!audioDecoderStart_ctx(NULL, NULL, ctx, conv_audio_codec_id(codec_id), chs, freq)) {
     freeFFContext(NULL, NULL, ctx);
     ctx = NULL;
   }
@@ -289,7 +289,7 @@ FFContext* videoDecoderStart(jint codec_id, jint width, jint height)
   FFContext *ctx = newFFContext(NULL,NULL);
   if (ctx == NULL) return JNI_FALSE;
 
-  if (!videoDecoderStart_ctx(ctx, codec_id, width, height)) {
+  if (!videoDecoderStart_ctx(ctx, conv_video_codec_id(codec_id), width, height)) {
     freeFFContext(NULL,NULL,ctx);
     ctx = NULL;
   }

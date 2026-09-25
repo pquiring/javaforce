@@ -342,11 +342,11 @@ public class Viewer {
         video_buffer = new VideoBuffer(width, height, buffer_frames);
         int av_codec = -1;
         if (stream.hasCodec(RTP.CODEC_H264)) {
-          av_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264);
+          av_codec = MediaCoder.VIDEO_CODEC_ID_H264;
           h264 = new RTPH264();
           packets = new PacketDemux(CodecType.H264);
         } else if (stream.hasCodec(RTP.CODEC_H265)) {
-          av_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
+          av_codec = MediaCoder.VIDEO_CODEC_ID_H265;
           h265 = new RTPH265();
           packets = new PacketDemux(CodecType.H265);
         } else {

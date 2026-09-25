@@ -361,8 +361,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       filename = DVRService.getRecordingFilename(camera.name, now + round);
       JFLog.log(log, camera.name + " : createFile:" + filename);
       int codec = -1;
-      if (h264 != null) codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264);
-      else if (h265 != null) codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
+      if (h264 != null) codec = MediaCoder.VIDEO_CODEC_ID_H264;
+      else if (h265 != null) codec = MediaCoder.VIDEO_CODEC_ID_H265;
       if (codec == -1) {
         JFLog.log("Error:createFile():Codec not known yet");
         return false;
@@ -444,7 +444,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (isEncoder) {
         camera.codec = stream.getCodec(RTP.CODEC_H264);
       }
-      av_codec_id = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264);
+      av_codec_id = MediaCoder.VIDEO_CODEC_ID_H264;
     }
     if (stream.hasCodec(RTP.CODEC_H265)) {
       h265 = new RTPH265();
@@ -460,7 +460,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (isEncoder) {
         camera.codec = stream.getCodec(RTP.CODEC_H265);
       }
-      av_codec_id = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
+      av_codec_id = MediaCoder.VIDEO_CODEC_ID_H265;
     }
     if (isDecoder) {
       if (decoder != null) {

@@ -405,6 +405,74 @@ int mediaMajorVersion() {
   return 0;  //unknown
 }
 
+//codec_id conversion (see javaforce.media.MediaCoder)
+
+//convert MediaCoder.VIDEO_CODEC_ID to AV_CODEC_ID
+static int conv_video_codec_id(int codec_id) {
+  switch (codec_id) {
+    case 1: return AV_CODEC_ID_MPEG1VIDEO;
+    case 2: return AV_CODEC_ID_MPEG2VIDEO;
+    case 3: return AV_CODEC_ID_MPEG4;
+    case 4: return AV_CODEC_ID_H263;
+    case 5: return AV_CODEC_ID_H264;
+    case 6: return AV_CODEC_ID_H265;
+    case 7: return AV_CODEC_ID_THEORA;
+    case 8: return AV_CODEC_ID_VP8;
+    case 9: return AV_CODEC_ID_VP9;
+  }
+  return 0;
+}
+
+//convert MediaCoder.AUDIO_CODEC_ID to AV_CODEC_ID
+static int conv_audio_codec_id(int codec_id) {
+  switch (codec_id) {
+    case 1: return AV_CODEC_ID_PCM_S16LE;
+    case 2: return AV_CODEC_ID_MP2;
+    case 3: return AV_CODEC_ID_MP3;
+    case 4: return AV_CODEC_ID_AAC;
+    case 5: return AV_CODEC_ID_AC3;
+    case 6: return AV_CODEC_ID_VORBIS;
+    case 7: return AV_CODEC_ID_FLAC;
+    case 8: return AV_CODEC_ID_GSM_MS;
+    case 9: return AV_CODEC_ID_SPEEX;
+    case 10: return AV_CODEC_ID_OPUS;
+  }
+  return 0;
+}
+
+//convert AV_CODEC_ID to MediaCoder.VIDEO_CODEC_ID
+static int conv_av_video_codec_id(int codec_id) {
+  switch (codec_id) {
+    case AV_CODEC_ID_MPEG1VIDEO: return 1;
+    case AV_CODEC_ID_MPEG2VIDEO: return 2;
+    case AV_CODEC_ID_MPEG4: return 3;
+    case AV_CODEC_ID_H263: return 4;
+    case AV_CODEC_ID_H264: return 5;
+    case AV_CODEC_ID_H265: return 6;
+    case AV_CODEC_ID_THEORA: return 7;
+    case AV_CODEC_ID_VP8: return 8;
+    case AV_CODEC_ID_VP9: return 9;
+  }
+  return 0;
+}
+
+//convert AV_CODEC_ID to MediaCoder.AUDIO_CODEC_ID
+static int conv_av_audio_codec_id(int codec_id) {
+  switch (codec_id) {
+    case AV_CODEC_ID_PCM_S16LE: return 1;
+    case AV_CODEC_ID_MP2: return 2;
+    case AV_CODEC_ID_MP3: return 3;
+    case AV_CODEC_ID_AAC: return 4;
+    case AV_CODEC_ID_AC3: return 5;
+    case AV_CODEC_ID_VORBIS: return 6;
+    case AV_CODEC_ID_FLAC: return 7;
+    case AV_CODEC_ID_GSM_MS: return 8;
+    case AV_CODEC_ID_SPEEX: return 9;
+    case AV_CODEC_ID_OPUS: return 10;
+  }
+  return 0;
+}
+
 static int ff_min(int a, int b) {
   if (a < b) return a; else return b;
 }

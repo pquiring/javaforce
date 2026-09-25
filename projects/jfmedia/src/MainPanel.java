@@ -1098,8 +1098,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         CodecInfo info = media.getCodecInfo();
         if (info == null) {
           //extract info from first frame
-          if (codec_id == MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264)) { info = RTPH264.getCodecInfo(packet); }
-          else if (codec_id == MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265)) { info = RTPH265.getCodecInfo(packet); }
+          if (codec_id == MediaCoder.VIDEO_CODEC_ID_H264) { info = RTPH264.getCodecInfo(packet); }
+          else if (codec_id == MediaCoder.VIDEO_CODEC_ID_H265) { info = RTPH265.getCodecInfo(packet); }
           else throw new Exception("unsupported codec id:" + codec_id);
           if (info == null) {
             throw new Exception("unable to detect codec info");
@@ -1444,12 +1444,12 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
       int av_codec = -1;
       if (stream.hasCodec(RTP.CODEC_H264)) {
-        av_codec = MediaCoder.AV_CODEC_ID_H264;
+        av_codec = MediaCoder.VIDEO_CODEC_ID_H264;
         h264 = new RTPH264();
         packets = new PacketDemux(CodecType.H264);
       }
       if (stream.hasCodec(RTP.CODEC_H265)) {
-        av_codec = MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265);
+        av_codec = MediaCoder.VIDEO_CODEC_ID_H265;
         h265 = new RTPH265();
         packets = new PacketDemux(CodecType.H265);
       }

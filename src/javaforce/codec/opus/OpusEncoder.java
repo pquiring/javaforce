@@ -20,7 +20,7 @@ public class OpusEncoder {
     info.freq = 48000;
     info.bits = 16;
     info.chs = 1;
-    info.audio_codec = MediaCoder.AV_CODEC_ID_OPUS;
+    info.audio_codec = MediaCoder.AUDIO_CODEC_ID_OPUS;
     info.audio_bit_rate = 128 * 1024;
     encoder.start(info);
   }

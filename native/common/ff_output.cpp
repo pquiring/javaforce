@@ -133,7 +133,7 @@ jint addVideoStream(FFContext *ctx, MediaIO* mio, jint codec_id, jint bit_rate, 
 
   ctx->FFMCopyMediaIO(mio);
 
-  jboolean res = addVideoStream_ctx(ctx, codec_id, bit_rate, width, height, fps, keyFrameInterval);
+  jboolean res = addVideoStream_ctx(ctx, conv_video_codec_id(codec_id), bit_rate, width, height, fps, keyFrameInterval);
 
   ctx->FFMClearMediaIO();
 
@@ -170,7 +170,7 @@ jint addAudioStream(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, 
 
   ctx->FFMCopyMediaIO(mio);
 
-  jboolean res = addAudioStream_ctx(ctx, codec_id, bit_rate, chs, freq);
+  jboolean res = addAudioStream_ctx(ctx, conv_audio_codec_id(codec_id), bit_rate, chs, freq);
 
   ctx->FFMClearMediaIO();
 

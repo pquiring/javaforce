@@ -75,7 +75,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H263), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_H263, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("H263 Decoder failed to start");
         decoder.stop();
         decoder = null;
@@ -91,7 +91,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H263), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_H263, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("H263-1998 Decoder failed to start");
         decoder.stop();
         decoder = null;
@@ -107,7 +107,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H263), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_H263, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("H263-2000 Decoder failed to start");
         decoder.stop();
         decoder = null;
@@ -123,7 +123,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H264), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_H264, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("H264 Decoder failed to start");
         decoder.stop();
         decoder = null;
@@ -139,7 +139,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_H265), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_H265, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("H265 Decoder failed to start");
         decoder.stop();
         decoder = null;
@@ -155,7 +155,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_VP8), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_VP8, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("VP8 Decoder failed to start");
         decoder.stop();
         decoder = null;
@@ -171,7 +171,7 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
-      if (!decoder.start(MediaCoder.codec_id(MediaCoder.AV_CODEC_ID_VP9), PhonePanel.vx, PhonePanel.vy)) {
+      if (!decoder.start(MediaCoder.VIDEO_CODEC_ID_VP9, PhonePanel.vx, PhonePanel.vy)) {
         JFLog.log("VP9 Decoder failed to start");
         decoder.stop();
         decoder = null;

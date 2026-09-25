@@ -33,7 +33,7 @@ FFContext* audioEncoderStart(jint codec_id, jint bit_rate, jint chs, jint freq)
   FFContext *ctx = newFFContext(NULL,NULL);
   if (ctx == NULL) return NULL;
 
-  if (!audioEncoderStart_ctx(ctx, codec_id, bit_rate, chs, freq)) {
+  if (!audioEncoderStart_ctx(ctx, conv_audio_codec_id(codec_id), bit_rate, chs, freq)) {
     freeFFContext(NULL,NULL,ctx);
     ctx = NULL;
   }
@@ -270,7 +270,7 @@ FFContext* videoEncoderStart(jint codec_id, jint bit_rate, jint width, jint heig
   FFContext *ctx = newFFContext(NULL,NULL);
   if (ctx == NULL) return 0;
 
-  if (!videoEncoderStart_ctx(ctx, codec_id, bit_rate, width, height, fps, keyFrameInterval)) {
+  if (!videoEncoderStart_ctx(ctx, conv_video_codec_id(codec_id), bit_rate, width, height, fps, keyFrameInterval)) {
     freeFFContext(NULL, NULL, ctx);
     ctx = NULL;
   }

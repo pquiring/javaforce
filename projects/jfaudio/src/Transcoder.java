@@ -93,7 +93,7 @@ public class Transcoder {
         , outCodec)) throw new Exception("Encoder Failed to start");
       CodecInfo info = new CodecInfo();
       info.audio_bit_rate = bit_rate;
-      info.audio_codec = MediaCoder.AV_CODEC_ID_DEFAULT;  //BUG ??? Need value from outCodec
+      info.audio_codec = MediaCoder.CODEC_ID_DEFAULT;  //BUG ??? Need value from outCodec
       info.chs = chs;
       info.bits = 16;
       info.freq = freq;
