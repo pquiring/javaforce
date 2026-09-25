@@ -1,7 +1,8 @@
 JavaForce SDK
 =============
 
-Version 118.1
+Version 119.0
+Native ABI min Version 119.0
 
 Description
 ===========
@@ -49,7 +50,7 @@ Before checking out the source make sure to configure line endings:
 Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
-  git checkout tags/118.1
+  git checkout tags/119.0
   ant
 Next build the native loaders.
 
@@ -66,10 +67,6 @@ After building Javaforce and the native components you can run package.sh to bui
 Supported distros : Debian, Fedora, Arch.
 All packages are stored in /repo and can then be processed and uploaded to a repo server.
 Pre-built packages are hosted on sourceforge.net which can be installed through the jfLinux install process (see /linux).
-
-Native ABI Compatibility
-------------------------
-This version of JavaForce is compatible with native loaders/library since 118.0
 
 JavaForce Ant tasks:
 --------------------

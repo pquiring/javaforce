@@ -1,5 +1,16 @@
 What's new...
 
+Sept 25/2026 : JF/119.0
+  - new : upgraded to ffmpeg/9.0.2
+    - note : in order to stay compatible with ffmpeg/7.x thru 9.x a new method was created to convert codec_ids.
+        int javaforce.media.MediaCoder.codec_id(int id)
+      must be used to convert codec_ids to support different versions of ffmpeg.
+      in ffmpeg/9.x a codec_id was deleted from the enum shifting some values which severely breaks the native ABI, but
+        javaforce still needs to support older versions (Debian 13 is ffmpeg/7.x and Debian 14 will only upgrade to 8.x)
+  - jfDVR-Server/0.46
+  - jfDVR-Viewer/0.46
+  - jfMedia/0.33
+
 Sept 11/2026 : JF/118.1
   - fix : jfLogon : logon/logoff issues
 
