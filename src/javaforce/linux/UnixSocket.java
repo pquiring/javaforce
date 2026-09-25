@@ -60,7 +60,6 @@ public class UnixSocket {
    *
    * Note : any fds received should be closed.
    *
-   * @param fd = socket fd
    * @param data = buffer to receive data
    * @param offset_data = offset into data
    * @param len_data = [0] = size of data (on success returns length read)
@@ -73,7 +72,7 @@ public class UnixSocket {
   }
 
   /** Write data and file descriptors.
-   * @param fd = socket fd
+   * 
    * @param data = buffer of data to send
    * @param offset_data = offset into data
    * @param len_data = [0] = size of data (on success returns length written)
