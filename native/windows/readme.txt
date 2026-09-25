@@ -27,7 +27,7 @@ Compiling using pre-built ffmpeg headers/libraries
   ant
 
   - where ${ffmpeg-version} can be found in ../../versions.xml
-  - downloads are available for 5.1.2 , 6.1.2 and 7.0.2 (you must change ..\..\versions.xml)
+  - downloads are available for 7.1.0, 8.1.1, 9.0.2 (you must change ..\..\versions.xml)
 
 Compiling using ffmpeg downloaded manually
 ------------------------------------------

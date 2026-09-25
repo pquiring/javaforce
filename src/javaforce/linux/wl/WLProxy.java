@@ -29,6 +29,7 @@ public class WLProxy {
 
   public WLProxy(WLNotify notify) {
     this.notify = notify;
+    WLClient.debug_packet = true;
   }
 
   public boolean start(String real_wayland_display) {
