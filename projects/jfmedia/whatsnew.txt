@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Sept 25, 2026 : v0.33 released
+  - new : upgrade to ffmpeg/9.0.2
+
 Sept 9, 2026 : v0.32 released
   - new : added Camera Source
 
