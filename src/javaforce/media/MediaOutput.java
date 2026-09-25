@@ -23,7 +23,7 @@ import javaforce.net.*;
 public class MediaOutput extends MediaFormat implements MediaIO {
   /** Create output file.
    * @param file = filename
-   * @param format = media container (see MediaCoder.AV_FORMAT_ID...)
+   * @param format = media container (see MediaCoder.FORMAT_ID...)
    */
   public boolean create(String file, String format) {
     if (ctx != 0) return false;
@@ -59,7 +59,7 @@ public class MediaOutput extends MediaFormat implements MediaIO {
 
   /** Create output media via MediaIO.
    * @param io = Media IO interface
-   * @param format = media container (see MediaCoder.AV_FORMAT_ID...)
+   * @param format = media container (see MediaCoder.FORMAT_ID...)
    */
   public boolean create(MediaIO io, String format) {
     if (ctx != 0) return false;
