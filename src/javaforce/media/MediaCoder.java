@@ -80,6 +80,7 @@ public class MediaCoder {
   public static final int VIDEO_CODEC_ID_THEORA = 7;
   public static final int VIDEO_CODEC_ID_VP8 = 8;
   public static final int VIDEO_CODEC_ID_VP9 = 9;
+  public static final int VIDEO_CODEC_ID_AV1 = 10;
 
   //audio codecs
   public static final int AUDIO_CODEC_ID_PCM_S16LE = 1;

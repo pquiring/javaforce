@@ -419,6 +419,7 @@ static int conv_video_codec_id(int codec_id) {
     case 7: return AV_CODEC_ID_THEORA;
     case 8: return AV_CODEC_ID_VP8;
     case 9: return AV_CODEC_ID_VP9;
+    case 10: return AV_CODEC_ID_AV1;
   }
   return 0;
 }
@@ -452,6 +453,7 @@ static int conv_av_video_codec_id(int codec_id) {
     case AV_CODEC_ID_THEORA: return 7;
     case AV_CODEC_ID_VP8: return 8;
     case AV_CODEC_ID_VP9: return 9;
+    case AV_CODEC_ID_AV1: return 10;
   }
   return 0;
 }
