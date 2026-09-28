@@ -70,7 +70,7 @@ public class MediaCoder {
   /** Select default codec for format (for encoding only) */
   public static final int CODEC_ID_DEFAULT = -1;
 
-  //video codecs (VideoDecoder)
+  //video codecs
   public static final int VIDEO_CODEC_ID_MPEG1VIDEO = 1;
   public static final int VIDEO_CODEC_ID_MPEG2VIDEO = 2;
   public static final int VIDEO_CODEC_ID_MPEG4 = 3;
