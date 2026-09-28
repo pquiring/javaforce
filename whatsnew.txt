@@ -1,5 +1,9 @@
 What's new...
 
+Sept 28/2026 : JF/119.1
+  - new : ffmpeg : JF now has its own codec_ids which are converted to AV codec_ids in native code
+    - this will avoid future changes in ffmpeg that JF would have to adjust to
+
 Sept 25/2026 : JF/119.0
   - new : upgraded to ffmpeg/9.0.2
     - note : in order to stay compatible with ffmpeg/7.x thru 9.x a new method was created to convert codec_ids.
@@ -12,6 +16,7 @@ Sept 25/2026 : JF/119.0
   - jfMedia/0.33
   - jfRemote/0.12
     - upgraded to freerdp/3.32.0
+  - linux: added UnixSocket w/ fd support
 
 Sept 11/2026 : JF/118.1
   - fix : jfLogon : logon/logoff issues
