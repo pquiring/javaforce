@@ -6,6 +6,8 @@ package viewer;
  */
 
 import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
@@ -42,6 +44,9 @@ public class VideoPanel extends javax.swing.JPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    cameraMenu = new javax.swing.JPopupMenu();
+    FlipHorizontal = new javax.swing.JMenuItem();
+    FlipVertical = new javax.swing.JMenuItem();
     container = new javax.swing.JScrollPane();
     controls = new javax.swing.JPanel();
     minutes = new javax.swing.JLabel();
@@ -49,6 +54,22 @@ public class VideoPanel extends javax.swing.JPanel {
     live = new javax.swing.JButton();
     download = new javax.swing.JButton();
     date = new javax.swing.JSpinner();
+
+    FlipHorizontal.setText("Flip Horizontal");
+    FlipHorizontal.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        FlipHorizontalActionPerformed(evt);
+      }
+    });
+    cameraMenu.add(FlipHorizontal);
+
+    FlipVertical.setText("Flip Vertical");
+    FlipVertical.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        FlipVerticalActionPerformed(evt);
+      }
+    });
+    cameraMenu.add(FlipVertical);
 
     setPreferredSize(new java.awt.Dimension(1280, 720));
     addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -209,7 +230,14 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_formComponentResized
 
   private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
-    zoom(evt.getX(), evt.getY());
+    if (evt.getButton() == MouseEvent.BUTTON1) {
+      zoom(evt.getX(), evt.getY());
+    }
+    if (evt.getButton() == MouseEvent.BUTTON3) {
+      mx = evt.getX();
+      my = evt.getY();
+      cameraMenu.show(this, mx, my);
+    }
   }//GEN-LAST:event_formMouseClicked
 
   private void liveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_liveActionPerformed
@@ -267,7 +295,18 @@ public class VideoPanel extends javax.swing.JPanel {
   private void minutesFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_minutesFocusGained
   }//GEN-LAST:event_minutesFocusGained
 
+  private void FlipHorizontalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FlipHorizontalActionPerformed
+    flip(FLIP_X, mx, my);
+  }//GEN-LAST:event_FlipHorizontalActionPerformed
+
+  private void FlipVerticalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FlipVerticalActionPerformed
+    flip(FLIP_Y, mx, my);
+  }//GEN-LAST:event_FlipVerticalActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JMenuItem FlipHorizontal;
+  private javax.swing.JMenuItem FlipVertical;
+  private javax.swing.JPopupMenu cameraMenu;
   private javax.swing.JScrollPane container;
   private javax.swing.JPanel controls;
   private javax.swing.JSpinner date;
@@ -288,6 +327,7 @@ public class VideoPanel extends javax.swing.JPanel {
   private int gx, gy;
   private boolean zoom;
   private int zx, zy;
+  private int mx, my;
   private long lastUpdate;
   private long ts_delta;  //0=live
   //selection on minutes in timestamp format
@@ -406,9 +446,22 @@ public class VideoPanel extends javax.swing.JPanel {
     video = new JFImage(getWidth(), getHeight());
   }
 
-  public void setImage(JFImage src) {
+  public static final int FLIP_X = 0x01;
+  public static final int FLIP_Y = 0x02;
+
+  private void transform(JFImage src, int transform) {
+    if (transform == 0) return;
+    switch (transform) {
+      case FLIP_X: src.flipHorizontal(); break;
+      case FLIP_Y: src.flipVertical(); break;
+      case FLIP_X + FLIP_Y: src.flipBoth(); break;
+    }
+  }
+
+  public void setImage(JFImage src, int transform) {
     init();
     if (video == null) return;
+    if (transform != 0) transform(src, transform);
     if (src.getWidth() == getWidth() && src.getHeight() == getHeight()) {
       video.putJFImage(src, 0, 0);
     } else {
@@ -417,12 +470,12 @@ public class VideoPanel extends javax.swing.JPanel {
     update();
   }
 
-  public void setImage(JFImage src, int px, int py) {
+  public void setImage(JFImage src, int px, int py, int transform) {
     init();
     if (video == null) return;
     if (zoom) {
       if (px != zx || py != zy) return;
-      setImage(src);
+      setImage(src, transform);
       return;
     }
     int img_w = getWidth();
@@ -431,13 +484,14 @@ public class VideoPanel extends javax.swing.JPanel {
     int h = img_h / gy;
     int x = w * px;
     int y = h * py;
-    setImageRect(src, x, y, w, h);
+    setImageRect(src, x, y, w, h, transform);
     update();
   }
 
-  private void setImageRect(JFImage src, int x, int y, int w, int h) {
+  private void setImageRect(JFImage src, int x, int y, int w, int h, int transform) {
     init();
     if (video == null) return;
+    if (transform != 0) transform(src, transform);
     video.putJFImageScale(src, x, y, w, h);
   }
 
@@ -510,6 +564,24 @@ public class VideoPanel extends javax.swing.JPanel {
       zx = x / w;
       zy = y / h;
       zoom = true;
+    }
+  }
+
+  private void flip(int flip, int x, int y) {
+    if (!grid) {
+      viewer.flip(flip, 0, 0);
+      return;
+    }
+    if (zoom) {
+      viewer.flip(flip, zx, zy);
+    } else {
+      int img_w = getWidth();
+      int img_h = getHeight();
+      int w = img_w / gx;
+      int h = img_h / gy;
+      int zx = x / w;
+      int zy = y / h;
+      viewer.flip(flip, zx, zy);
     }
   }
 

@@ -104,6 +104,7 @@ public class Viewer {
     private boolean solo;
     private boolean grid;
     private int gx, gy;
+    private int transform;
     private AudioBuffer audio_buffer;
     private VideoBuffer video_buffer;
     private MediaVideoDecoder video_decoder;
@@ -204,9 +205,9 @@ public class Viewer {
       try {
         if (type.equals("group")) return;
         if (grid) {
-          videoPanel.setImage(ViewerApp.cameraicon, gx, gy);
+          videoPanel.setImage(ViewerApp.cameraicon, gx, gy, 0);
         } else {
-          videoPanel.setImage(ViewerApp.cameraicon);
+          videoPanel.setImage(ViewerApp.cameraicon, 0);
         }
       } catch (Exception e) {
         JFLog.log(log, e);
@@ -662,9 +663,9 @@ public class Viewer {
             skip = 0;
             if (img != null) {
               if (grid) {
-                videoPanel.setImage(img, gx, gy);
+                videoPanel.setImage(img, gx, gy, transform);
               } else {
-                videoPanel.setImage(img);
+                videoPanel.setImage(img, transform);
               }
               video_buffer.freeNextFrame();
             }
@@ -773,9 +774,9 @@ public class Viewer {
             skip = 0;
             if (img != null) {
               if (grid) {
-                videoPanel.setImage(img, gx, gy);
+                videoPanel.setImage(img, gx, gy, transform);
               } else {
-                videoPanel.setImage(img);
+                videoPanel.setImage(img, transform);
               }
               video_buffer.freeNextFrame();
             }
@@ -836,5 +837,18 @@ public class Viewer {
       }});
     }
     play(JF.createURL(VideoPanel.cleanURL(url.toString())));
+  }
+  public void flip(int flip, int gx, int gy) {
+    if (networkReaders == null) {
+      if (networkReader != null) {
+        networkReader.transform ^= flip;
+      }
+      return;
+    }
+    for(NetworkReader reader : networkReaders) {
+      if (reader.gx == gx && reader.gy == gy) {
+        reader.transform ^= flip;
+      }
+    }
   }
 }

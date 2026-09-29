@@ -1536,4 +1536,12 @@ public class JFImage extends JComponent implements Icon {
     LookupOp op = new LookupOp(lookup, new RenderingHints(null));
     init(op.filter(bi, null), false);
   }
+
+  public void setTransform(AffineTransform transform) {
+    g2d.setTransform(transform);
+  }
+
+  public void resetTransform() {
+    g2d.setTransform(new AffineTransform());
+  }
 };
