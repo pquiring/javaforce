@@ -1889,6 +1889,8 @@ public class JF {
   public static String filter_alpha = "[a-zA-Z]";
   /** Filter regex for any number. */
   public static String filter_numeric = "[0-9]";
+  /** Filter regex for any float. */
+  public static String filter_float = "[0-9.+-]";
   /** Filter regex for any hex number. */
   public static String filter_hex = "[0-9a-fA-F]";
   /** Filter regex for any letter or number. */
