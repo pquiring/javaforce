@@ -33,14 +33,14 @@ public class CheckBox extends Container {
     if (selected) {
       input.addAttr("checked", null);
     }
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<div" + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+      html.append(get(a).html());
     }
-    sb.append("</div>");
-    return sb.toString();
+    html.append("</div>");
+    return html.toString();
   }
   public void setText(String text) {
     label.setText(text);

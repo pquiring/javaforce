@@ -286,17 +286,17 @@ public abstract class Component {
     }
   }
   public String getEvents() {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder html = new StringBuilder();
     int cnt = events.size();
     for(int a=0;a<cnt;a++) {
-      sb.append(' ');
+      html.append(' ');
       OnEvent event = events.get(a);
-      sb.append(event.event);
-      sb.append("='");
-      sb.append(event.js);
-      sb.append("'");
+      html.append(event.event);
+      html.append("='");
+      html.append(event.js);
+      html.append("'");
     }
-    return sb.toString();
+    return html.toString();
   }
   public void requestPos() {
     sendEvent("getpos", null);
@@ -392,40 +392,40 @@ public abstract class Component {
   }
   /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(" id='" + id + "'");
+    StringBuilder html = new StringBuilder();
+    html.append(" id='" + id + "'");
     if (attrs.size() > 0) {
       int size = attrs.size();
       String[] keys = attrs.keySet().toArray(new String[size]);
       for(String key : keys) {
         String value = attrs.get(key);
         if (value == null) {
-          sb.append(" " + key);
+          html.append(" " + key);
         } else {
-          sb.append(" " + key + "='" + value + "'");
+          html.append(" " + key + "='" + value + "'");
         }
       }
     }
     if (classes.size() > 0) {
-      sb.append(" class='");
+      html.append(" class='");
       for(int a=0;a<classes.size();a++) {
-        if (a > 0) sb.append(' ');
-        sb.append(classes.get(a));
+        if (a > 0) html.append(' ');
+        html.append(classes.get(a));
       }
-      sb.append("'");
+      html.append("'");
     }
-    sb.append(getEvents());
+    html.append(getEvents());
     if (styles.size() > 0) {
-      sb.append(" style='");
+      html.append(" style='");
       int size = styles.size();
       String[] keys = styles.keySet().toArray(new String[size]);
       for(String key : keys) {
         String value = styles.get(key);
-        sb.append(key + ":" + value + ";");
+        html.append(key + ":" + value + ";");
       }
-      sb.append("'");
+      html.append("'");
     }
-    return sb.toString();
+    return html.toString();
   }
 
   private boolean isVisible = true;

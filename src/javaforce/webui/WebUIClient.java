@@ -223,28 +223,28 @@ public class WebUIClient {
     }
   }
   private String stringify(String in) {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder txt = new StringBuilder();
     char[] ca = in.toCharArray();
     int len = ca.length;
-    sb.append("\"");
+    txt.append("\"");
     for(int a=0;a<len;a++) {
       char ch = ca[a];
       switch (ch) {
-        case '\"': sb.append("\\\""); break;
-        case '\r': sb.append("\\r"); break;
-        case '\n': sb.append("\\n"); break;
-        case '\\': sb.append("\\\\"); break;
+        case '\"': txt.append("\\\""); break;
+        case '\r': txt.append("\\r"); break;
+        case '\n': txt.append("\\n"); break;
+        case '\\': txt.append("\\\\"); break;
         default:
           if (ch < ' ') {
-            sb.append(String.format("\\u%04x", (int)ch));
+            txt.append(String.format("\\u%04x", (int)ch));
           } else {
-            sb.append(ch);
+            txt.append(ch);
           }
           break;
       }
     }
-    sb.append("\"");
-    return sb.toString();
+    txt.append("\"");
+    return txt.toString();
   }
   private Object lock = new Object();
   public void sendData(byte[] data) {
@@ -265,15 +265,15 @@ public class WebUIClient {
       JFLog.log("WebUIClient:Error:sendEvent():id==null");
       return false;
     }
-    StringBuilder sb = new StringBuilder();
+    StringBuilder evt = new StringBuilder();
     StringBuilder log = new StringBuilder();
     String str;
     str = "{\"event\":\"" + event + "\"";
-    sb.append(str);
+    evt.append(str);
     log.append(str);
     if (id != null) {
       str = ",\"id\":\"" + id + "\"";
-      sb.append(str);
+      evt.append(str);
       log.append(str);
     }
     if (args != null) {
@@ -288,7 +288,7 @@ public class WebUIClient {
         String key = arg.substring(0, idx);
         String value = arg.substring(idx+1);
         str = ",\"" + key + "\":" + stringify(value);
-        sb.append(str);
+        evt.append(str);
         if (key.equals("html")) {
           //omit lengthy html code from log
           log.append(",\"" + key + "\":\"...\"");
@@ -297,12 +297,12 @@ public class WebUIClient {
         }
       }
     }
-    sb.append("}");
+    evt.append("}");
     log.append("}");
     if (WebUIServer.debug) JFLog.log("SEND=" + log.toString());
     try {
       synchronized (lock) {
-        return socket.write(sb.toString().getBytes("utf-8"));
+        return socket.write(evt.toString().getBytes("utf-8"));
       }
     } catch (Exception e) {
       JFLog.log(e);

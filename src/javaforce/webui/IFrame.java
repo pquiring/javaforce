@@ -13,9 +13,9 @@ public class IFrame extends Component {
   }
 
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<iframe" + getAttrs() + " src='" + url + "'>");
-    sb.append("</iframe>");
-    return sb.toString();
+    StringBuilder html = new StringBuilder();
+    html.append("<iframe" + getAttrs() + " src='" + url + "'>");
+    html.append("</iframe>");
+    return html.toString();
   }
 }

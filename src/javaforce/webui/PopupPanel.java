@@ -38,17 +38,17 @@ public class PopupPanel extends Panel {
     titleBar.setOnClose(onClose);
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder html = new StringBuilder();
     if (modal) {
-      sb.append(block.html());
+      html.append(block.html());
     }
-    sb.append("<div" + getAttrs() + "'>");
+    html.append("<div" + getAttrs() + "'>");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+      html.append(get(a).html());
     }
-    sb.append("</div>");
-    return sb.toString();
+    html.append("</div>");
+    return html.toString();
   }
   public void setVisible(boolean state) {
     if (modal) {

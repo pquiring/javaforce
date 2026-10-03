@@ -12,13 +12,13 @@ public class InnerPanel extends Panel {
       this.text = text;
     }
     public String html() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("<legend");
-      sb.append(getAttrs());
-      sb.append(">");
-      sb.append(text);
-      sb.append("</legend>");
-      return sb.toString();
+      StringBuilder html = new StringBuilder();
+      html.append("<legend");
+      html.append(getAttrs());
+      html.append(">");
+      html.append(text);
+      html.append("</legend>");
+      return html.toString();
     }
   }
   private Legend legend;
@@ -28,15 +28,15 @@ public class InnerPanel extends Panel {
     addClass("innerpanel");
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<fieldset" + getAttrs() + "'>");
-    sb.append(legend.html());
+    StringBuilder html = new StringBuilder();
+    html.append("<fieldset" + getAttrs() + "'>");
+    html.append(legend.html());
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+      html.append(get(a).html());
     }
-    sb.append("</fieldset>");
-    return sb.toString();
+    html.append("</fieldset>");
+    return html.toString();
   }
   public void setAlign(int value) {
     super.setAlign(value);

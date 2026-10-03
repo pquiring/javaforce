@@ -12,6 +12,9 @@ public class Container extends Component {
   public void setTag(String tag) {
     this.tag = tag;
   }
+  public String getTag() {
+    return tag;
+  }
   public void setClient(WebUIClient client) {
     super.setClient(client);
     int cnt = count();
@@ -118,13 +121,13 @@ public class Container extends Component {
     }
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<" + tag + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<" + tag + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+      html.append(get(a).html());
     }
-    sb.append("</" + tag + ">");
-    return sb.toString();
+    html.append("</" + tag + ">");
+    return html.toString();
   }
 }

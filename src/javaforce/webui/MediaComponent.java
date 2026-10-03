@@ -8,7 +8,6 @@ import javaforce.webui.event.*;
  */
 
 public class MediaComponent extends Container {
-  private String tag;
   private String src;
   private int state;
 
@@ -20,7 +19,7 @@ public class MediaComponent extends Container {
   public static final int STATE_PAUSE = 3;
 
   public MediaComponent(String tag) {
-    this.tag = tag;
+    setTag(tag);
     addEvent("onplay", "media_onplay(this);");
     addEvent("onstop", "media_onstop(this);");
     addEvent("onpause", "media_onpause(this);");
@@ -40,38 +39,38 @@ public class MediaComponent extends Container {
     add(button_play);
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div id='" + getID() + "s1' style='display: inline-block; position: relative;");
+    StringBuilder html = new StringBuilder();
+    html.append("<div id='" + getID() + "s1' style='display: inline-block; position: relative;");
     if (width != 0) {
-      sb.append(" width:" + width + ";");
+      html.append(" width:" + width + ";");
     }
     if (height != 0) {
-      sb.append(" height:" + height + ";");
+      html.append(" height:" + height + ";");
     }
-    sb.append("'>");
-    sb.append("<");
-    sb.append(tag);
-    sb.append(getAttrs());
+    html.append("'>");
+    html.append("<");
+    html.append(getTag());
+    html.append(getAttrs());
     if (src != null) {
-      sb.append(" src='" + src + "'");
+      html.append(" src='" + src + "'");
     }
-    sb.append(">");
-    sb.append("</");
-    sb.append(tag);
-    sb.append(">");
-    sb.append("<table id='" + getID() + "s2' style='position:absolute; left:0px; top:0px; width: 100%; height: 100%; background-color: grey;'>\n" +
-              "<tr height=50%></tr>\n" +
-              "<tr>\n" +
-              "<td width=50%></td>\n" +
-              "<td>\n" +
-              button_play.html() +
-              "</td>\n" +
-              "<td width=50%></td>\n" +
-              "</tr>\n" +
-              "<tr height=50%></tr>" +
-              "</table>");
-    sb.append("</div>");
-    return sb.toString();
+    html.append(">");
+    html.append("</");
+    html.append(getTag());
+    html.append(">");
+    html.append("<table id='" + getID() + "s2' style='position:absolute; left:0px; top:0px; width: 100%; height: 100%; background-color: grey;'>");
+    html.append("<tr height=50%></tr>");
+    html.append("<tr>");
+    html.append("<td width=50%></td>");
+    html.append("<td>");
+    html.append(button_play.html());
+    html.append("</td>");
+    html.append("<td width=50%></td>");
+    html.append("</tr>");
+    html.append("<tr height=50%></tr>");
+    html.append("</table>");
+    html.append("</div>");
+    return html.toString();
   }
   public void setSource(String url) {
     src = url;

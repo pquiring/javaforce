@@ -24,19 +24,19 @@ public class Tree extends ScrollPanel implements Click {
       model.changed = false;
       rebuild();
     }
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + "'>");
-    sb.append(innerhtml());
-    sb.append("</div>");
-    return sb.toString();
+    StringBuilder html = new StringBuilder();
+    html.append("<div" + getAttrs() + "'>");
+    html.append(innerhtml());
+    html.append("</div>");
+    return html.toString();
   }
   public String innerhtml() {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder html = new StringBuilder();
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+      html.append(get(a).html());
     }
-    return sb.toString();
+    return html.toString();
   }
   public void setRootNode(TreeNode newRoot) {
     model.setRoot(newRoot);

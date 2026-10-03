@@ -72,11 +72,11 @@ public class Table extends Container implements Click {
       //setPosition(x * width, y * height);
       setStyle("left", Integer.toString(getColPosition(x)) + "px");
       setStyle("top", Integer.toString(y * cellHeight) + "px");
-      StringBuilder sb = new StringBuilder();
-      sb.append("<div" + getAttrs() + ">");
-      sb.append(get(0).html());
-      sb.append("</div>");
-      return sb.toString();
+      StringBuilder html = new StringBuilder();
+      html.append("<div" + getAttrs() + ">");
+      html.append(get(0).html());
+      html.append("</div>");
+      return html.toString();
     }
     public void setBorder(boolean state) {
       border = state;
@@ -154,16 +154,16 @@ public class Table extends Container implements Click {
     return has_header;
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder html = new StringBuilder();
     //using an actualy <table> proved to be too difficult once spans where implemented
-    sb.append("<div" + getAttrs() + ">");
+    html.append("<div" + getAttrs() + ">");
     Component[] cells = getAll();
     for(int a=0;a<cells.length;a++) {
       Cell cell = (Cell)cells[a];
-      sb.append(cell.html());
+      html.append(cell.html());
     }
-    sb.append("</div>");
-    return sb.toString();
+    html.append("</div>");
+    return html.toString();
   }
   public void add(Component comp, int x, int y) {
     add(comp,x,y,1,1);

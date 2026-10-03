@@ -66,11 +66,11 @@ public class GridLayout extends LayoutManager {
       }
     }
     public String html() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("<div" + getAttrs() + ">");
-      sb.append(get(0).html());
-      sb.append("</div>");
-      return sb.toString();
+      StringBuilder html = new StringBuilder();
+      html.append("<div" + getAttrs() + ">");
+      html.append(get(0).html());
+      html.append("</div>");
+      return html.toString();
     }
     public void setBorder(boolean state) {
       border = state;
@@ -86,21 +86,21 @@ public class GridLayout extends LayoutManager {
   }
 
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<table" + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<table" + getAttrs() + ">");
     for(int y=0;y<rows;y++) {
-      sb.append("<tr>");
+      html.append("<tr>");
       for(int x=0;x<cols;x++) {
         Cell cell = getCell(x, y, false);
         if (cell == null) continue;
-        sb.append("<td>");
-        sb.append(cell.html());
-        sb.append("</td>");
+        html.append("<td>");
+        html.append(cell.html());
+        html.append("</td>");
       }
-      sb.append("</tr>");
+      html.append("</tr>");
     }
-    sb.append("</table>");
-    return sb.toString();
+    html.append("</table>");
+    return html.toString();
   }
 
   public void setBorder(boolean state) {

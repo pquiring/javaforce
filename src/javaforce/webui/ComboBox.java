@@ -18,16 +18,16 @@ public class ComboBox extends Component {
   private int index = -1;
 
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<select" + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<select" + getAttrs() + ">");
     int cnt = values.size();
     for(int a=0;a<cnt;a++) {
-      sb.append("<option value='" + values.get(a) + "'" + (a == index ? " selected" : "") + ">");
-      sb.append(texts.get(a));
-      sb.append("</option>");
+      html.append("<option value='" + values.get(a) + "'" + (a == index ? " selected" : "") + ">");
+      html.append(texts.get(a));
+      html.append("</option>");
     }
-    sb.append("</select>");
-    return sb.toString();
+    html.append("</select>");
+    return html.toString();
   }
 
   public void add(String value, String text) {

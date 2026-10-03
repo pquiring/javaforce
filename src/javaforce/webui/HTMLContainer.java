@@ -6,11 +6,11 @@ package javaforce.webui;
  */
 
 public class HTMLContainer extends Container {
-  private String tag, text;
+  private String text;
   private boolean enclosed = true;
 
   public HTMLContainer(String tag) {
-    this.tag = tag;
+    setTag(tag);
     if (tag.equals("hr") || tag.equals("br")) {
       enclosed = false;
     }
@@ -18,7 +18,7 @@ public class HTMLContainer extends Container {
   }
 
   public HTMLContainer(String tag, String text) {
-    this.tag = tag;
+    setTag(tag);
     this.text = text;
   }
 
@@ -31,18 +31,18 @@ public class HTMLContainer extends Container {
   }
 
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<" + tag + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<" + getTag() + getAttrs() + ">");
     int cnt = count();
     if (cnt == 0) {
-      sb.append(text);
+      html.append(text);
     } else {
       for(int a=0;a<cnt;a++) {
-        sb.append(get(a).html());
+        html.append(get(a).html());
       }
     }
-    if (enclosed) sb.append("</" + tag + ">");
-    return sb.toString();
+    if (enclosed) html.append("</" + getTag() + ">");
+    return html.toString();
   }
 
 }

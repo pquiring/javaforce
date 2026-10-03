@@ -18,18 +18,18 @@ public class Canvas extends Container {
     addAttr("tabindex", "1");
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<canvas" + getAttrs());
+    StringBuilder html = new StringBuilder();
+    html.append("<canvas" + getAttrs());
     //the width and height must be specified
-    sb.append(" width='" + width + "'");
-    sb.append(" height='" + height + "'");
-    sb.append(">");
+    html.append(" width='" + width + "'");
+    html.append(" height='" + height + "'");
+    html.append(">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+      html.append(get(a).html());
     }
-    sb.append("</canvas>");
-    return sb.toString();
+    html.append("</canvas>");
+    return html.toString();
   }
   /** Tells the client to start WebGL on canvas. */
   public void initWebGL() {

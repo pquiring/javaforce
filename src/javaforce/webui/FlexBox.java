@@ -15,9 +15,9 @@ public class FlexBox extends Component {
   }
 
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + ">");
-    sb.append("</div>");
-    return sb.toString();
+    StringBuilder html = new StringBuilder();
+    html.append("<div" + getAttrs() + ">");
+    html.append("</div>");
+    return html.toString();
   }
 }

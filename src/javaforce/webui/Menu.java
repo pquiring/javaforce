@@ -34,10 +34,10 @@ public class Menu extends MenuItem {
     }
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(super.html());
-    sb.append(popupMenu.html());
-    return sb.toString();
+    StringBuilder html = new StringBuilder();
+    html.append(super.html());
+    html.append(popupMenu.html());
+    return html.toString();
   }
   public void add(MenuItem item) {
     popupMenu.add(item);
