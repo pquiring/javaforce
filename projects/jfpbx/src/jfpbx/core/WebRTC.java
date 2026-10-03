@@ -382,7 +382,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
           //add a bogus ice params and DTLS fingerprint before first m=
           out.append("a=ice-ufrag:12345678");
           out.append("\\r\\n");
-          out.append("a=ice-pwd:javaforce");
+          out.append("a=ice-pwd:javaforce0javaforce1javaforce2");  //must be 22 - 256 chars
           out.append("\\r\\n");
           out.append("a=fingerprint:sha-256 " + fingerprintSHA256);
           out.append("\\r\\n");
@@ -392,9 +392,9 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
           //output candidate for last stream
           out.append("a=setup:actpass");  //http://tools.ietf.org/html/rfc4145
           out.append("\\r\\n");
-          out.append("a=candidate: 0 1 UDP " + (id++) + " " + ip + " " + port + " typ host"); // raddr " + ip + " rport " + port);
+          out.append("a=candidate:0 1 UDP " + (id++) + " " + ip + " " + port + " typ host"); // raddr " + ip + " rport " + port);
           out.append("\\r\\n");
-          out.append("a=candidate: 0 2 UDP " + (id++) + " " + ip + " " + (port+1) + " typ host"); // raddr " + ip + " rport " + port);
+          out.append("a=candidate:0 2 UDP " + (id++) + " " + ip + " " + (port+1) + " typ host"); // raddr " + ip + " rport " + port);
           out.append("\\r\\n");
           out.append("a=rtcp-mux");
           out.append("\\r\\n");
@@ -409,9 +409,9 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
       //output candidate for last stream
       out.append("a=setup:actpass");
       out.append("\\r\\n");
-      out.append("a=candidate: 0 1 UDP " + (id++) + " " + ip + " " + port + " typ host"); // raddr " + ip + " rport " + port);
+      out.append("a=candidate:0 1 UDP " + (id++) + " " + ip + " " + port + " typ host"); // raddr " + ip + " rport " + port);
       out.append("\\r\\n");
-      out.append("a=candidate: 0 2 UDP " + (id++) + " " + ip + " " + (port+1) + " typ host"); // raddr " + ip + " rport " + port);
+      out.append("a=candidate:0 2 UDP " + (id++) + " " + ip + " " + (port+1) + " typ host"); // raddr " + ip + " rport " + port);
       out.append("\\r\\n");
       out.append("a=rtcp-mux");
       out.append("\\r\\n");

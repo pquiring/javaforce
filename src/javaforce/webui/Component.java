@@ -114,7 +114,20 @@ public abstract class Component {
   /** Perform any initialization with the client.
    * Containers should call init() on all sub-components.
    */
-  public void init() {}
+  public void init() {
+    onInited(null);
+  }
+
+  protected void onInited(String[] args) {
+    for(int a=0;a<inited.length;a++) {
+      inited[a].inited(this);
+    }
+  }
+  private Inited[] inited = new Inited[0];
+  public void addInitedListener(Inited handler) {
+    inited = Arrays.copyOf(inited, inited.length + 1);
+    inited[inited.length-1] = handler;
+  }
 
   /** Perform any post loading events.
    * Containers should call events() on all sub-components.

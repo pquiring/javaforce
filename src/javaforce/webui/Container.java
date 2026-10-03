@@ -8,6 +8,10 @@ import java.util.*;
  */
 
 public class Container extends Component {
+  private String tag = "div";
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
   public void setClient(WebUIClient client) {
     super.setClient(client);
     int cnt = count();
@@ -115,12 +119,12 @@ public class Container extends Component {
   }
   public String html() {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + ">");
+    sb.append("<" + tag + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       sb.append(get(a).html());
     }
-    sb.append("</div>");
+    sb.append("</" + tag + ">");
     return sb.toString();
   }
 }

@@ -54,7 +54,7 @@ public class RTPVP8 implements RTPVideoCoder {
         packet.data[12] = (byte)(0x10);  //X R N S PartID(4)
         first = false;
       }
-      System.arraycopy(data, pos, packet, 13, packetLength);
+      System.arraycopy(data, pos, packet.data, 13, packetLength);
       pr.onPacket(packet);
       pos += packetLength;
       len -= packetLength;

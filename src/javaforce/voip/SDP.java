@@ -281,6 +281,11 @@ public class SDP implements Cloneable {
       }
       content.add(m.toString());
 
+      //c= must follow m=
+      if (stream.ip != null) {
+        content.add("c=IN IP4 " + stream.ip);
+      }
+
       if (stream.keyExchange == KeyExchange.SDP && stream.keys != null) {
         for(int c=0;c<stream.keys.length;c++) {
           Key keys = stream.keys[c];
@@ -297,10 +302,6 @@ public class SDP implements Cloneable {
         content.add("a=content:" + stream.content);
       }
       content.add("a=" + stream.getMode());
-      if (stream.ip != null) {
-        content.add("c=IN IP4 " + stream.ip);
-      }
-      content.add("a=ptime:20");
       if (stream.hasCodec(RTP.CODEC_G711u)) {
         content.add("a=rtpmap:0 PCMU/8000");
       }
@@ -337,6 +338,7 @@ public class SDP implements Cloneable {
       if (stream.type == Type.audio) {
         content.add("a=rtpmap:" + rfc2833.id + " telephone-event/8000");
         content.add("a=fmtp:" + rfc2833.id + " 0-15");
+        content.add("a=ptime:20");
       }
       if (stream.hasCodec(RTP.CODEC_JPEG)) {
         content.add("a=rtpmap:26 JPEG/90000");
@@ -370,7 +372,7 @@ public class SDP implements Cloneable {
       }
       JFLog.log(log, "keyexchange=" + stream.keyExchange);
       if (stream.keyExchange == KeyExchange.DTLS) {
-        content.add("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
+        content.add("a=rtcp-mux");
       }
     }
     return content.toArray(JF.StringArrayType);

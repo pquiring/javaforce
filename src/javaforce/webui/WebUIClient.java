@@ -167,7 +167,7 @@ public class WebUIClient {
             initPanel();
           }
           isReady = true;
-          String html = root.html();
+          String html = html();
           html = "<iframe name='upload' style='display:none;'></iframe>" + html;
           sendEvent("body", "sethtml", new String[] {"html=" + html});
           sendEvent("body", "setroot", new String[] {"root=" + root.id});

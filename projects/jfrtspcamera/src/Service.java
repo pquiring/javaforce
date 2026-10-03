@@ -148,7 +148,6 @@ public class Service extends Thread implements RTSPServerInterface {
   }
 
   public class CameraWorker extends Thread implements RTPInterface, PacketReceiver {
-    private Codec codec;
     private CodecInfo info;
     private int idx;
     private int fps;
@@ -157,6 +156,8 @@ public class Service extends Thread implements RTSPServerInterface {
     private MediaVideoEncoder encoder;
     private RTPH264 h264;
     private RTPH265 h265;
+    private RTPVP8 vp8;
+    private RTPVP9 vp9;
     private RTPVideoCoder rtpCoder;
     private ArrayList<RTSPSession> viewers = new ArrayList<>();
     public String name;  //camera01, etc.
@@ -169,18 +170,22 @@ public class Service extends Thread implements RTSPServerInterface {
     }
 
     public String[] get_sdp(RTSPSession sess) {
+      String remoteip = service.rtsp.resolve(sess.remotehost);
       SDP sdp = new SDP();
+      sdp.setIP(remoteip);
       SDP.Stream stream = sdp.addStream(SDP.Type.video);
-      if (codec != null) {
-        stream.framerate = fps;
-        stream.addCodec(codec);
-      } else {
-        //create generic codec type
-        stream.framerate = fps;
-        stream.addCodec(new Codec("H264", 96));
+      //create generic codec type
+      stream.framerate = fps;
+      switch (Config.current.codec) {
+        case MediaCoder.VIDEO_CODEC_ID_H264: stream.addCodec(new Codec("H264", 96)); break;
+        case MediaCoder.VIDEO_CODEC_ID_H265: stream.addCodec(new Codec("H265", 96)); break;
+        case MediaCoder.VIDEO_CODEC_ID_VP8: stream.addCodec(new Codec("VP8", 96)); break;
+        case MediaCoder.VIDEO_CODEC_ID_VP9: stream.addCodec(new Codec("VP9", 96)); break;
       }
-      stream.setIP(service.rtsp.resolve(sess.remotehost));
-      stream.setPort(-1);
+      if (Config.current.dtls) {
+        stream.keyExchange = SDP.KeyExchange.DTLS;
+      }
+      stream.setIP(remoteip);
       if (sess.rtp != null) {
         sess.rtp.uninit();
         sess.rtp = null;
@@ -195,6 +200,7 @@ public class Service extends Thread implements RTSPServerInterface {
       sess.channel.start();
       if (debug) JFLog.log("Camera.get_sdp():remotehost=" + sess.remotehost);
       sess.channel.stream.setIP(sess.remotehost);
+      stream.setPort(sess.rtp.getlocalrtpport());
       return sdp.build(sess.localhost);
     }
 
@@ -227,17 +233,7 @@ public class Service extends Thread implements RTSPServerInterface {
       info.height = camera.getHeight();
       info.video_stream = 0;  //stream #0
       info.keyFrameInterval = (int)info.fps;
-      switch (Config.current.codec) {
-        default:
-          JFLog.log("Error:Unknown codec:" + Config.current.codec + ":using H264");
-          //no break
-        case 1:
-          info.video_codec = MediaCoder.VIDEO_CODEC_ID_H264;
-          break;
-        case 2:
-          info.video_codec = MediaCoder.VIDEO_CODEC_ID_H265;
-          break;
-      }
+      info.video_codec = Config.current.codec;
       JFLog.log("Stream=" + info);
 
       encoder = new MediaVideoEncoder();
@@ -254,6 +250,14 @@ public class Service extends Thread implements RTSPServerInterface {
         case Config.H265:
           h265 = new RTPH265();
           rtpCoder = h265;
+          break;
+        case Config.VP8:
+          vp8 = new RTPVP8();
+          rtpCoder = vp8;
+          break;
+        case Config.VP9:
+          vp9 = new RTPVP9();
+          rtpCoder = vp9;
           break;
       }
       rtpCoder.setid(96);

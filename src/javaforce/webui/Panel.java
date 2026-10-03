@@ -49,20 +49,4 @@ public class Panel extends Container {
       }
     }
   }
-
-  public void init() {
-    super.init();
-    onInited(null);
-  }
-
-  protected void onInited(String[] args) {
-    for(int a=0;a<inited.length;a++) {
-      inited[a].inited(this);
-    }
-  }
-  private Inited[] inited = new Inited[0];
-  public void addInitedListener(Inited handler) {
-    inited = Arrays.copyOf(inited, inited.length + 1);
-    inited[inited.length-1] = handler;
-  }
 }

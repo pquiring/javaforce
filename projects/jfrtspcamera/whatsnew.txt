@@ -1,5 +1,8 @@
 What's new ??
 
+Oct 2/2026 : version 0.3 released
+  - new : add BouncyCastle for DTLS support
+
 Feb 6/2026 : version 0.2 released
   - fix : Media Framework fixes
 

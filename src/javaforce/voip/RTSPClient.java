@@ -349,6 +349,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     return setup(url, localrtpport, control, TransportType.UDP);
   }
 
+  public boolean setup(String url, int localrtpport) {
+    return setup(url, localrtpport, null, TransportType.UDP);
+  }
+
   /**
    * Send PLAY request to server (RTSP).
    */

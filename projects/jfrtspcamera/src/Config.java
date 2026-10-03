@@ -6,6 +6,7 @@
 import java.io.*;
 
 import javaforce.*;
+import javaforce.media.*;
 
 public class Config {
   public static Config current;
@@ -14,9 +15,12 @@ public class Config {
   public int fps;
   public int bit_rate;
   public int codec;
+  public boolean dtls;
 
-  public static final int H264 = 1;
-  public static final int H265 = 2;
+  public static final int H264 = MediaCoder.VIDEO_CODEC_ID_H264;  //5
+  public static final int H265 = MediaCoder.VIDEO_CODEC_ID_H265;  //6
+  public static final int VP8 = MediaCoder.VIDEO_CODEC_ID_VP8;  //8
+  public static final int VP9 = MediaCoder.VIDEO_CODEC_ID_VP9;  //9
 
   public Config() {
     idx = 0;  //first camera
@@ -47,7 +51,12 @@ public class Config {
           case "idx": current.idx = clamp(Integer.valueOf(value), 0, 64); break;  //0-64
           case "fps": current.fps = clamp(Integer.valueOf(value), 5, 60); break;  //5-60 fps
           case "bit_rate": current.bit_rate = clamp(Integer.valueOf(value), 128 * 1024, 16 * 1024 * 1024); break;  //128k to 16M bps
-          case "codec": current.codec = clamp(Integer.valueOf(value), 1, 2); break;  //1=H264 or 2=H265
+          case "codec":
+            current.codec = clamp(Integer.valueOf(value), 5, 9);
+            if (current.codec == 7) {  //not supported
+              current.codec = H264;
+            }
+            break;
         }
       }
     } catch (Exception e) {

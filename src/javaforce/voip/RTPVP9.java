@@ -70,7 +70,7 @@ public class RTPVP9 implements RTPVideoCoder {
       if (last) {
         packet.data[12] = E;
       }
-      System.arraycopy(data, pos, packet, 13, packetLength);
+      System.arraycopy(data, pos, packet.data, 13, packetLength);
       pr.onPacket(packet);
       pos += packetLength;
       len -= packetLength;
