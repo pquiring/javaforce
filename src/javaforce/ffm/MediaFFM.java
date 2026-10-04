@@ -142,6 +142,12 @@ public class MediaFFM implements MediaAPI {
   private MethodHandle videoDecoderDecode;
   public int[] videoDecoderDecode(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();videoDecoderDecode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
+  private MethodHandle getAudioMimeType;
+  public java.lang.String getAudioMimeType(long a1) { try { String _ret_value_ = FFM.getString((MemorySegment)getAudioMimeType.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle getVideoMimeType;
+  public java.lang.String getVideoMimeType(long a1) { try { String _ret_value_ = FFM.getString((MemorySegment)getVideoMimeType.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
   private MethodHandle audioDecoderStart;
   public long audioDecoderStart(int a1,int a2,int a3) { try { long _ret_value_ = (long)audioDecoderStart.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -236,6 +242,8 @@ public class MediaFFM implements MediaAPI {
     videoDecoderGetHeight = ffm.getFunctionPtr("_videoDecoderGetHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     videoDecoderGetWidth = ffm.getFunctionPtr("_videoDecoderGetWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     videoDecoderDecode = ffm.getFunctionPtr("_videoDecoderDecode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    getAudioMimeType = ffm.getFunctionPtr("_getAudioMimeType", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG));
+    getVideoMimeType = ffm.getFunctionPtr("_getVideoMimeType", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG));
     audioDecoderStart = ffm.getFunctionPtr("_audioDecoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT));
     audioEncoderStart = ffm.getFunctionPtr("_audioEncoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
     getDuration = ffm.getFunctionPtr("_getDuration", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));

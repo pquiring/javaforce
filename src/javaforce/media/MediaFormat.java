@@ -39,4 +39,14 @@ public class MediaFormat extends MediaCoder {
   public int getAudioBitRate() {
     return MediaAPI.getInstance().getAudioBitRate(ctx);
   }
+
+  /** Gets video stream Mime Type. */
+  public String getVideoMimeType() {
+    return MediaAPI.getInstance().getVideoMimeType(ctx);
+  }
+
+  /** Gets audio stream Mime Type. */
+  public String getAudioMimeType() {
+    return MediaAPI.getInstance().getAudioMimeType(ctx);
+  }
 }

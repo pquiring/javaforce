@@ -26,6 +26,8 @@ public interface MediaAPI {
   public int getAudioCodecID(long ctx);
   public int getVideoBitRate(long ctx);
   public int getAudioBitRate(long ctx);
+  public String getVideoMimeType(long ctx);
+  public String getAudioMimeType(long ctx);
 
   //MediaInput
   public long inputOpenFile(String file, String format);

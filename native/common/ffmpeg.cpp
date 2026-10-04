@@ -9,9 +9,11 @@
 #include <libavutil/mathematics.h>
 #include <libavutil/timestamp.h>
 #include <libavutil/opt.h>
+#include <libavutil/bprint.h>
 #include <libswscale/swscale.h>
 
 #include <chrono>
+
 
 //returned by Decoder.read()
 #define END_FRAME -1
@@ -103,6 +105,7 @@ void (*_av_dump_format)(AVFormatContext *fmt_ctx, int index, const char* url, in
 int (*_av_write_trailer)(AVFormatContext *fc);
 int (*_avformat_version)();
 int (*_avformat_query_codec)(const AVOutputFormat *ofmt, int codec_id, int std_compliance);
+int (*_av_mime_codec_str)(const AVCodecParameters *par, AVRational frame_rate, AVBPrint *out);
 
 //avutil functions
 void (*_av_image_copy)(uint8_t* dst_data[],int dst_linesizes[], uint8_t* src_data[],int src_linesizes[],int pix_fmt,int width,int height);
@@ -139,6 +142,8 @@ void (*_av_buffer_unref)(AVBufferRef **buf);
 int (*_av_channel_layout_copy) (AVChannelLayout* dst, const AVChannelLayout* src);
 char* (*_av_strerror)(int errnum, char* buf, size_t bufsiz);
 int (*_avutil_version)();
+void (*_av_bprint_init)(AVBPrint *buf, unsigned size_init, unsigned size_max);
+int (*_av_bprint_finalize)(AVBPrint *buf, char **ret_str);
 
 //swresample functions (audio resample)
 void* (*_swr_alloc)();
@@ -299,6 +304,7 @@ JNIEXPORT jboolean JNICALL MediaAPIinit(const char* codecFile, const char* devic
   getFunction(format, (void**)&_av_write_trailer, "av_write_trailer");
   getFunction(format, (void**)&_avformat_version, "avformat_version");
   getFunction(format, (void**)&_avformat_query_codec, "avformat_query_codec");
+  getFunction(format, (void**)&_av_mime_codec_str, "av_mime_codec_str");
 
   getFunction(util, (void**)&_av_image_copy, "av_image_copy");
   getFunction(util, (void**)&_av_get_bytes_per_sample, "av_get_bytes_per_sample");
@@ -333,6 +339,8 @@ JNIEXPORT jboolean JNICALL MediaAPIinit(const char* codecFile, const char* devic
   getFunction(util, (void**)&_av_channel_layout_copy, "av_channel_layout_copy");
   getFunction(util, (void**)&_av_strerror, "av_strerror");
   getFunction(util, (void**)&_avutil_version, "avutil_version");
+  getFunction(util, (void**)&_av_bprint_init, "av_bprint_init");
+  getFunction(util, (void**)&_av_bprint_finalize, "av_bprint_finalize");
 
   getFunction(scale, (void**)&_sws_getContext, "sws_getContext");
   getFunction(scale, (void**)&_sws_scale, "sws_scale");
@@ -625,6 +633,8 @@ extern "C" {
   JNIEXPORT jint (*_getAudioCodecID)(FFContext* ctx) = &getAudioCodecID;
   JNIEXPORT jint (*_getVideoBitRate)(FFContext* ctx) = &getVideoBitRate;
   JNIEXPORT jint (*_getAudioBitRate)(FFContext* ctx) = &getAudioBitRate;
+  JNIEXPORT char* (*_getVideoMimeType)(FFContext* ctx) = &getVideoMimeType;
+  JNIEXPORT char* (*_getAudioMimeType)(FFContext* ctx) = &getAudioMimeType;
   //MediaInput
   JNIEXPORT FFContext* (*_inputOpenFile)(const char* file, const char* format) = &inputOpenFile;
   JNIEXPORT FFContext* (*_inputOpenIO)(MediaIO* mio) = &inputOpenIO;

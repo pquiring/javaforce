@@ -61,6 +61,7 @@ struct FFContext {
   //decoder:alloc:decoder_open_video_codec() free:MediaInput.close(),MediaVideoDecoder.stop(),MediaDecoder.stop()
   uint8_t* rgb_video_dst_data[4];
   int rgb_video_dst_linesize[4];
+  char video_mime[32];
 
   int audio_stream_idx;
   //decoder:copy_from:fmt_ctx free:with fmt_ctx
@@ -69,6 +70,7 @@ struct FFContext {
   //transfer_from:decoder_open_codec_context() free:MediaInput.close(),MediaOutput.close()
   AVCodecContext *audio_codec_ctx;
   void* swr_ctx;
+  char audio_mime[32];
 
   //compressed audio
   int src_rate;
