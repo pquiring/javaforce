@@ -1,14 +1,10 @@
 package javaforce.tests;
 
-import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.service.*;
 import javaforce.media.*;
-import javaforce.webui.*;
-import javaforce.webui.event.*;
 
 /** Tests Camera function
  *
@@ -17,7 +13,7 @@ import javaforce.webui.event.*;
  * Created : Jun 9, 2014
  */
 
-public class TestCamera extends javax.swing.JFrame implements WebUIHandler, MediaIO {
+public class TestCamera extends javax.swing.JFrame {
 
   /**
    * Creates new form TestCamera
@@ -26,7 +22,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     initComponents();
     pack();
     listCameras();
-    new WebUIServer().start(this, 8080);
   }
 
   /**
@@ -260,10 +255,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private JFImage img;
   private JFImage dst_img;
   private int width, height;
-  private WebUIClient client;
-  private Video video;
-  private Video video_capture;
-  private byte[] init_segment;
 
   public void listCameras() {
     cameraList.removeAllItems();
@@ -312,122 +303,5 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   public void setState(boolean state) {
     cameraList.setEnabled(state);
-  }
-
-  //WebUIHandler
-
-  public void clientConnected(WebUIClient client) {
-    JFLog.log("clientConnected:" + client);
-    this.client = client;
-    client.setProperty("init-segment", "false");  //got init segment (ftyp)
-    client.setProperty("start-segment", "false");  //got start of segment (styp) (else wait for next styp)
-  }
-
-  public void clientDisconnected(WebUIClient client) {
-    JFLog.log("clientDisconnected:" + client);
-    this.client = null;
-    //System.exit(0);
-  }
-
-  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
-    //TODO : return static images, etc needed by webpage
-    return null;
-  }
-
-  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
-    Panel panel = new Panel();
-
-    video = new Video();
-    video.setWidth(640);
-    video.setHeight(480);
-    panel.add(video);
-
-    video.addActionListener(new Action() {
-      public void action(Component cmp) {
-      }
-    });
-
-    video_capture = new Video();
-    video_capture.setWidth(1024);
-    video_capture.setHeight(720);
-    panel.add(video_capture);
-
-    video_capture.addActionListener(new Action() {
-      public void action(Component cmp) {
-        video_capture.setCapture(true, true);
-        try {
-          client.setOutputStream(new FileOutputStream("test.mkv"));
-        } catch (Exception e) {}
-      }
-    });
-
-    return panel;
-  }
-
-  //MediaIO
-
-  public int read(byte[] data) {
-    JFLog.log("read:" + data.length);
-    return -1;
-  }
-
-  /*
-  struct mp4_header { int size; char type[4]; }
-  types:
-    ftyp / moov = init segment (describes video details)
-    styp = start of segment
-    moof / mdat = frame
-  */
-
-  public int write(byte[] data) {
-    JFLog.log("dash.write:" + data.length + ":" + getCurrentTime());
-    boolean is_init = init_segment == null;
-    boolean is_start_segment = false;
-    if (data.length >= 8) {
-      String type = new String(data, 4, 4);
-      if (type.equals("styp")) {
-        is_start_segment = true;
-      }
-    }
-    if (init_segment == null) {
-      init_segment = new byte[data.length];
-      System.arraycopy(data, 0, init_segment, 0, data.length);
-    }
-    //send fragments
-    if (client != null) {
-      if (!video.isPlaying()) {
-        return data.length;
-      }
-      JFLog.log("send frame:" + data.length);
-      if (client.getProperty("init-segment").equals("false")) {
-        if (is_init) {
-          client.setProperty("init-segment", "true");
-          client.setProperty("start-segment", "true");
-        }
-      }
-      if (!is_start_segment) {
-        if (client.getProperty("start-segment").equals("false")) {
-          return data.length;
-        }
-      } else {
-        if (client.getProperty("start-segment").equals("false")) {
-          client.setProperty("init-segment", "true");
-          client.sendDataEvent(init_segment, video.getID(), "media_add_buffer", null);
-          client.setProperty("start-segment", "true");
-          //because player has missed some segments it will need to seek to currentTime
-          client.sendEvent(video.getID(), "media_seek", new String[] {"time=" + getCurrentTime()});
-        }
-      }
-      client.sendDataEvent(data, video.getID(), "media_add_buffer", null);
-      if (is_init) {
-        client.setProperty("init-segment", "true");
-      }
-    }
-    return data.length;
-  }
-
-  public long seek(long pos, int type) {
-    JFLog.log("seek:" + pos + "," + type);
-    return pos;
   }
 }

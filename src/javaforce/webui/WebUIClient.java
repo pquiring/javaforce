@@ -27,11 +27,14 @@ public class WebUIClient {
   public int width, height;
   public boolean isReady;
 
+  public static boolean debug = false;
+
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
 
   private WebUIHandler handler;
   private OutputStream os;
+  private boolean write_length;
   private String upload_folder;
   private Status upload_status;
 
@@ -209,8 +212,13 @@ public class WebUIClient {
     }
   }
   public void dispatchData(byte[] data) {
-    //JFLog.log("data=" + data.length);
+    if (debug) JFLog.log("data.length=" + data.length);
     if (os != null) {
+      if (write_length) {
+        byte[] len = new byte[4];
+        LE.setuint32(len, 0, data.length);
+        try { os.write(len); } catch (Exception e) {}
+      }
       try { os.write(data); } catch (Exception e) {}
     }
   }
@@ -253,10 +261,10 @@ public class WebUIClient {
       socket.write(data, WebSocket.TYPE_BINARY);
     }
   }
-  public void sendData(byte[] data, int pos, int length) {
+  public void sendData(byte[] data, int offset, int length) {
     if (!isReady) return;
     synchronized (lock) {
-      socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
+      socket.write(Arrays.copyOfRange(data, offset, offset + length), WebSocket.TYPE_BINARY);
     }
   }
   public boolean sendEvent(String id, String event, String[] args) {
@@ -316,10 +324,10 @@ public class WebUIClient {
       sendEvent(id, event, args);
     }
   }
-  public void sendDataEvent(byte[] data, int pos, int length, String id, String event, String[] args) {
+  public void sendDataEvent(byte[] data, int offset, int length, String id, String event, String[] args) {
     if (!isReady) return;
     synchronized (lock) {
-      sendData(data, pos, length);
+      sendData(data, offset, length);
       sendEvent(id, event, args);
     }
   }
@@ -389,6 +397,11 @@ public class WebUIClient {
   /** Set where binary data is written to. */
   public void setOutputStream(OutputStream os) {
     this.os = os;
+  }
+
+  /** Write a int length before each packet received. */
+  public void setOutputPacketLength(boolean state) {
+    this.write_length = true;
   }
 
   public String getUploadFolder() {

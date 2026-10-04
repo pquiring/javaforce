@@ -15,6 +15,7 @@ function media_set_live_source(media, codecs) {
   ctx.mediaSource = null;
   ctx.streamBuffer = null;
   ctx.codecs = codecs;
+  ctx.playing = false;
   ctx.toString = function() {return "media context:id=" + this.media.id;};
   console.log("media_init:ctx=" + ctx);
   medias.set(media.id, ctx);
@@ -32,8 +33,11 @@ function media_set_live_source(media, codecs) {
     }
     ctx.streamBuffer = ctx.mediaSource.addSourceBuffer(ctx.codecs);
   });
-  media.play();
 }
+
+var mkv = "video/x-matroska;codecs=avc1,opus";  //capture supported, playback not supported
+var mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported but not working yet
+var webm = "video/webm;codecs=vp9,opus";  //capture and playback supported and working
 
 function media_set_capture(media, audio, video) {
   console.log("media_set_capture:id=" + media.id);
@@ -47,7 +51,7 @@ function media_set_capture(media, audio, video) {
     var opts = {
       audioBitsPerSecond: 128000,
       videoBitsPerSecond: 2500000,
-      mimeType: 'video/x-matroska;codecs=avc1,opus'
+      mimeType: webm
     };
     ctx.recorder = new MediaRecorder(stream, opts);
     ctx.recorder.onstart = (event) => {console.log("recorder.start");};
@@ -69,9 +73,21 @@ function media_uninit(media) {
   medias.delete(media.id);
 }
 
+var HTMLMediaElement_HAVE_NOTHING = 0;
+var HTMLMediaElement_HAVE_METADATA = 1;
+var HTMLMediaElement_HAVE_CURRENT_DATA = 2;
+var HTMLMediaElement_HAVE_FUTURE_DATA = 3;
+var HTMLMediaElement_HAVE_ENOUGH_DATA = 4;
+
+//MediaSource.readyState = "open", "closed", "ended"
+
 function media_add_buffer(media) {
   var ctx = medias.get(media.id);
-  console.log("media_add_buffer:ctx=" + ctx + ":byteLength=" + bindata.byteLength + ":readyState=" + ctx.media.readyState + ":currentTime=" + ctx.media.currentTime);
+  console.log("media_add_buffer:ctx=" + ctx
+    + ":byteLength=" + bindata.byteLength
+    + ":media.readyState=" + ctx.media.readyState
+    + ":mediasource.readyState=" + ctx.mediaSource.readyState
+    + ":currentTime=" + ctx.media.currentTime);
   if (ctx.mediaSource.readyState !== 'open') {
     console.log("media_add_buffer:Error:MediaSource not open");
     return;
@@ -85,22 +101,25 @@ function media_add_buffer(media) {
     return;
   }
   ctx.streamBuffer.appendBuffer(bindata);
-  if (ctx.media.readyState !== 4) {
+  if (!ctx.playing && ctx.media.readyState === HTMLMediaElement.HAVE_ENOUGH_DATA) {
     var bufs = media.buffered;
     var len = bufs.length;
     for(var i=0;i<len;i++) {
       console.log("buffered:" + bufs.start(i) + " to " + bufs.end(i));
     }
-    if (len > 0) {
-      ctx.media.currentTime = bufs.start(0);
-      ctx.media.play();
-    }
+    ctx.media.play();
+    ctx.playing = true;
   }
 }
 
 function media_play(media) {
   console.log("media_play");
-  media.play();
+  var ctx = {};
+  ctx.media = media;
+  var table = document.getElementById(media.id + "s2");
+  table.style.display = 'none';  //hide initial controls
+  ctx.media.play();
+  medias.set(media.id, ctx);
 }
 
 function media_pause(media) {

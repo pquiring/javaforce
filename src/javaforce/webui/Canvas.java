@@ -21,8 +21,8 @@ public class Canvas extends Container {
     StringBuilder html = new StringBuilder();
     html.append("<canvas" + getAttrs());
     //the width and height must be specified
-    html.append(" width='" + width + "'");
-    html.append(" height='" + height + "'");
+    html.append(" width='" + width + "px'");
+    html.append(" height='" + height + "px'");
     html.append(">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {

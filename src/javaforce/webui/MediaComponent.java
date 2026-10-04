@@ -17,6 +17,7 @@ public class MediaComponent extends Container {
   public static final int STATE_STOP = 1;
   public static final int STATE_PLAY = 2;
   public static final int STATE_PAUSE = 3;
+  public static final int STATE_CAPTURE = 4;
 
   public MediaComponent(String tag) {
     setTag(tag);
@@ -40,12 +41,20 @@ public class MediaComponent extends Container {
   }
   public String html() {
     StringBuilder html = new StringBuilder();
-    html.append("<div id='" + getID() + "s1' style='display: inline-block; position: relative;");
+    html.append("<div style='");
     if (width != 0) {
-      html.append(" width:" + width + ";");
+      html.append(" width:" + width + "px;");
     }
     if (height != 0) {
-      html.append(" height:" + height + ";");
+      html.append(" height:" + height + "px;");
+    }
+    html.append("'>");
+    html.append("<div id='" + getID() + "s1' style='display: inline-block; position: relative;");
+    if (width != 0) {
+      html.append(" width:" + width + "px;");
+    }
+    if (height != 0) {
+      html.append(" height:" + height + "px;");
     }
     html.append("'>");
     html.append("<");
@@ -70,6 +79,7 @@ public class MediaComponent extends Container {
     html.append("<tr height=50%></tr>");
     html.append("</table>");
     html.append("</div>");
+    html.append("</div>");
     return html.toString();
   }
   public void setSource(String url) {
@@ -80,6 +90,7 @@ public class MediaComponent extends Container {
   }
   public void setCapture(boolean doVideo, boolean doAudio) {
     sendEvent("media_set_capture", new String[] {"audio=" + doAudio, "video=" + doVideo});
+    state = STATE_CAPTURE;
   }
   public void play() {
     sendEvent("media_play", null);
