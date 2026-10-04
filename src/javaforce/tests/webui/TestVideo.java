@@ -16,12 +16,12 @@ import javaforce.webui.event.*;
 
 public class TestVideo extends Thread implements WebUIHandler {
 
-  private String file = "test.webm";
+  private String file = "test.mp4";
 
-  private String mkv = "video/x-matroska;codecs=avc1,opus";  //capture supported, playback not supported
-  private String mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported but not working yet
+  private String mkv = "video/x-matroska;codecs=avc1.42401e,opus";  //capture supported, playback not supported
+  private String mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported and working!
   private String webm = "video/webm;codecs=vp9,opus";  //capture and playback supported and working!
-  private String codec = webm;
+  private String codec = mp4;
 
   /**
    * @param args the command line arguments

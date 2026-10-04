@@ -35,8 +35,8 @@ function media_set_live_source(media, codecs) {
   });
 }
 
-var mkv = "video/x-matroska;codecs=avc1,opus";  //capture supported, playback not supported
-var mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported but not working yet
+var mkv = "video/x-matroska;codecs=avc1.42401e,opus";  //capture supported, playback not supported
+var mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported and working
 var webm = "video/webm;codecs=vp9,opus";  //capture and playback supported and working
 
 function media_set_capture(media, audio, video) {
@@ -51,7 +51,7 @@ function media_set_capture(media, audio, video) {
     var opts = {
       audioBitsPerSecond: 128000,
       videoBitsPerSecond: 2500000,
-      mimeType: webm
+      mimeType: mp4
     };
     ctx.recorder = new MediaRecorder(stream, opts);
     ctx.recorder.onstart = (event) => {console.log("recorder.start");};
