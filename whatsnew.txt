@@ -1,5 +1,10 @@
 What's new...
 
+Oct 5/2026 : JF/120.0
+  - new : ffmpeg : codec specific options can be specified in CodecInfo.video_opts and audio_opts when encoding
+  - new : webui : Video capture/playback works (very codec specific)
+    - see javaforce.tests.webui.TestVideo
+
 Sept 28/2026 : JF/119.1
   - new : ffmpeg : JF now has its own codec_ids which are converted to AV codec_ids in native code
     - this will avoid future changes in ffmpeg that JF would have to adjust to

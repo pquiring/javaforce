@@ -1,5 +1,8 @@
 what's new in native API (since 113.0)
 
+120.0
+  - ffmpeg : add codec options for encoder
+
 119.1
   - ffmpeg : JF codec_ids are converted to AV codec_ids
 

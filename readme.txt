@@ -1,9 +1,7 @@
 JavaForce SDK
 =============
 
-Version 119.1
-
-Min Native ABI Version 119.1
+Version 120.0
 
 Description
 ===========
@@ -51,7 +49,7 @@ Before checking out the source make sure to configure line endings:
 Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
-  git checkout tags/119.1
+  git checkout tags/120.0
   ant
 Next build the native loaders.
 
