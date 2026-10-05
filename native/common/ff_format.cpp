@@ -46,12 +46,14 @@ jint getAudioBitRate(FFContext *ctx)
 
 char* getVideoMimeType(FFContext *ctx)
 {
-  if (ctx == NULL) return 0;
-  if (ctx->video_codec_ctx == NULL) return 0;
-  if (ctx->video_stream == NULL) return 0;
+  if (ctx == NULL) return NULL;
+  if (ctx->video_codec_ctx == NULL) return NULL;
+  if (ctx->video_stream == NULL) return NULL;
   AVBPrint print;
   (*_av_bprint_init)(&print, 0, AV_BPRINT_SIZE_AUTOMATIC);
-  if ((*_av_mime_codec_str)(ctx->video_stream->codecpar, ctx->audio_codec_ctx->framerate, &print) < 0) {
+  int ret = (*_av_mime_codec_str)(ctx->video_stream->codecpar, ctx->audio_codec_ctx->framerate, &print);
+  if (ret < 0) {
+    printf("av_mime_codec_str failed:%d:%s\n", ret, ctx->error_string(ret));
     ctx->video_mime[0] = 0;
   } else {
 //    printf("video_codec=%s\n", print.str);
@@ -63,12 +65,14 @@ char* getVideoMimeType(FFContext *ctx)
 
 char* getAudioMimeType(FFContext *ctx)
 {
-  if (ctx == NULL) return 0;
-  if (ctx->audio_codec_ctx == NULL) return 0;
-  if (ctx->audio_stream == NULL) return 0;
+  if (ctx == NULL) return NULL;
+  if (ctx->audio_codec_ctx == NULL) return NULL;
+  if (ctx->audio_stream == NULL) return NULL;
   AVBPrint print;
   (*_av_bprint_init)(&print, 0, AV_BPRINT_SIZE_AUTOMATIC);
-  if ((*_av_mime_codec_str)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx->framerate, &print) < 0) {
+  int ret = (*_av_mime_codec_str)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx->framerate, &print);
+  if (ret < 0) {
+    printf("av_mime_codec_str failed:%d:%s\n", ret, ctx->error_string(ret));
     ctx->audio_mime[0] = 0;
   } else {
 //    printf("audio_codec=%s\n", print.str);
