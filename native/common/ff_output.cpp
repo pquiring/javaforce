@@ -90,7 +90,7 @@ FFContext* outputCreateIO(MediaIO* mio, const char* format)
   return ctx;
 }
 
-jint addVideoStream_ctx(FFContext *ctx, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+jint addVideoStream_ctx(FFContext *ctx, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval, jint nOpts, const char** opts)
 {
   if (ctx == NULL) return -1;
 
@@ -118,6 +118,8 @@ jint addVideoStream_ctx(FFContext *ctx, jint codec_id, jint bit_rate, jint width
   ctx->height = height;
   ctx->fps = fps;
   ctx->config_gop_size = keyFrameInterval;
+  ctx->nOpts = nOpts;
+  ctx->opts = opts;
 
   if (!encoder_init_video(ctx)) {
     printf("MediaOutput:encoder_init_video() failed\n");
@@ -127,20 +129,20 @@ jint addVideoStream_ctx(FFContext *ctx, jint codec_id, jint bit_rate, jint width
   return ctx->video_stream->index;
 }
 
-jint addVideoStream(FFContext *ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+jint addVideoStream(FFContext *ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval, jint nOpts, const char** opts)
 {
   if (ctx == NULL) return -1;
 
   ctx->FFMCopyMediaIO(mio);
 
-  jboolean res = addVideoStream_ctx(ctx, conv_video_codec_id(codec_id), bit_rate, width, height, fps, keyFrameInterval);
+  jboolean res = addVideoStream_ctx(ctx, conv_video_codec_id(codec_id), bit_rate, width, height, fps, keyFrameInterval, nOpts, opts);
 
   ctx->FFMClearMediaIO();
 
   return res;
 }
 
-jint addAudioStream_ctx(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, jint freq)
+jint addAudioStream_ctx(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, jint freq, jint nOpts, const char** opts)
 {
   if (ctx == NULL) return -1;
 
@@ -155,6 +157,8 @@ jint addAudioStream_ctx(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, 
   ctx->config_audio_bit_rate = bit_rate;
   ctx->chs = chs;
   ctx->freq = freq;
+  ctx->nOpts = nOpts;
+  ctx->opts = opts;
 
   if (!encoder_init_audio(ctx)) {
     printf("MediaOutput:encoder_init_audio() failed\n");
@@ -164,13 +168,13 @@ jint addAudioStream_ctx(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, 
   return ctx->audio_stream->index;
 }
 
-jint addAudioStream(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint chs, jint freq)
+jint addAudioStream(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint chs, jint freq, jint nOpts, const char** opts)
 {
   if (ctx == NULL) return -1;
 
   ctx->FFMCopyMediaIO(mio);
 
-  jboolean res = addAudioStream_ctx(ctx, conv_audio_codec_id(codec_id), bit_rate, chs, freq);
+  jboolean res = addAudioStream_ctx(ctx, conv_audio_codec_id(codec_id), bit_rate, chs, freq, nOpts, opts);
 
   ctx->FFMClearMediaIO();
 

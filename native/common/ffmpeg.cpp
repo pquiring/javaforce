@@ -132,6 +132,7 @@ int (*_av_samples_get_buffer_size)(void* linesize, int chs, int samples, int sam
 int (*_av_log_set_level)(int lvl);
 void* (*_av_dict_get)(AVDictionary* dict, const char* key, void* prev, int flags);
 int (*_av_dict_set)(AVDictionary** dictref, const char* key, const char* value, int flags);
+void (*_av_dict_free)(AVDictionary **pm);
 int (*_av_frame_make_writable)(AVFrame *frame);
 int (*_av_compare_ts)(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb_b);
 int (*_av_frame_get_buffer)(AVFrame *frame, int align);
@@ -329,6 +330,7 @@ JNIEXPORT jboolean JNICALL MediaAPIinit(const char* codecFile, const char* devic
   getFunction(util, (void**)&_av_log_set_level, "av_log_set_level");
   getFunction(util, (void**)&_av_dict_get, "av_dict_get");
   getFunction(util, (void**)&_av_dict_set, "av_dict_set");
+  getFunction(util, (void**)&_av_dict_free, "av_dict_free");
   getFunction(util, (void**)&_av_frame_make_writable, "av_frame_make_writable");
   getFunction(util, (void**)&_av_compare_ts, "av_compare_ts");
   getFunction(util, (void**)&_av_frame_get_buffer, "av_frame_get_buffer");
@@ -655,8 +657,8 @@ extern "C" {
   //MediaOutput
   JNIEXPORT FFContext* (*_outputCreateFile)(const char* file, const char* format) = &outputCreateFile;
   JNIEXPORT FFContext* (*_outputCreateIO)(MediaIO* io, const char* format) = &outputCreateIO;
-  JNIEXPORT jint (*_addVideoStream)(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint width, jint height, float fps, jint keyFrameInterval) = &addVideoStream;
-  JNIEXPORT jint (*_addAudioStream)(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint chs, jint freq) = &addAudioStream;
+  JNIEXPORT jint (*_addVideoStream)(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint width, jint height, float fps, jint keyFrameInterval, jint , const char**) = &addVideoStream;
+  JNIEXPORT jint (*_addAudioStream)(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint chs, jint freq, jint , const char**) = &addAudioStream;
   JNIEXPORT jboolean (*_outputClose)(FFContext* ctx, MediaIO* mio) = &outputClose;
   JNIEXPORT jboolean (*_writeHeader)(FFContext* ctx, MediaIO* mio) = &writeHeader;
   JNIEXPORT jboolean (*_writePacket)(FFContext* ctx, MediaIO* mio, jint stream, jbyte* data, jint offset, jint length, jboolean keyFrame) = &writePacket;

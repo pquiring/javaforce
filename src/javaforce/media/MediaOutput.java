@@ -84,7 +84,11 @@ public class MediaOutput extends MediaFormat implements MediaIO {
    *         info.video_codec = selected codec
    */
   public boolean addVideoStream(CodecInfo info) {
-    info.video_stream = MediaAPI.getInstance().addVideoStream(ctx, this, info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
+    int nOpts = 0;
+    if (info.video_opts != null) {
+      nOpts = info.video_opts.length;
+    }
+    info.video_stream = MediaAPI.getInstance().addVideoStream(ctx, this, info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval, nOpts, info.video_opts);
     if (info.video_stream == -1) {
       JFLog.log("addVideoStream == -1");
       return false;
@@ -107,7 +111,11 @@ public class MediaOutput extends MediaFormat implements MediaIO {
    *         info.audio_codec = selected codec
    */
   public boolean addAudioStream(CodecInfo info) {
-    info.audio_stream = MediaAPI.getInstance().addAudioStream(ctx, this, info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
+    int nOpts = 0;
+    if (info.audio_opts != null) {
+      nOpts = info.audio_opts.length;
+    }
+    info.audio_stream = MediaAPI.getInstance().addAudioStream(ctx, this, info.audio_codec, info.audio_bit_rate, info.chs, info.freq, nOpts, info.audio_opts);
     if (info.audio_stream == -1) {
       JFLog.log("addAudioStream == -1");
       return false;

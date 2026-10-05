@@ -50,8 +50,8 @@ public interface MediaAPI {
   //MediaOutput
   public long outputCreateFile(String file, String format);
   public long outputCreateIO(MediaIO io, String format);
-  public int addVideoStream(long ctx, MediaIO io, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
-  public int addAudioStream(long ctx, MediaIO io, int codec_id, int bit_rate, int chs, int freq);
+  public int addVideoStream(long ctx, MediaIO io, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval, int nOpts, String[] opts);
+  public int addAudioStream(long ctx, MediaIO io, int codec_id, int bit_rate, int chs, int freq, int nOpts, String[] opts);
   public boolean outputClose(long ctx, MediaIO io);
   public boolean writeHeader(long ctx, MediaIO io);
   public boolean writePacket(long ctx, MediaIO io, int stream, byte[] data, int offset, int length, boolean keyFrame);

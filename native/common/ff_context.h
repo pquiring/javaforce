@@ -155,10 +155,9 @@ struct FFContext {
    */
   int config_audio_bit_rate;
 
-  int config_compressionLevel;
-
-  /** ProfileLevel (1=baseline 2=main 3=high) */
-  int config_profileLevel;
+  //codec options
+  int nOpts;
+  const char** opts;
 
 //JNI callbacks
   void JNIGetMediaIO(jobject mio) {

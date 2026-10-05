@@ -77,10 +77,10 @@ public class MediaFFM implements MediaAPI {
   public float videoDecoderGetFrameRate(long a1) { try { float _ret_value_ = (float)videoDecoderGetFrameRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle addAudioStream;
-  public int addAudioStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)addAudioStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int addAudioStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6,int a7,java.lang.String[] a8) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a8 = FFM.toMemory(arena, a8);FFM.setMediaIO(a2);int _ret_value_ = (int)addAudioStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6,a7,_array_a8);FFM.copyBack(_array_a8,a8);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle addVideoStream;
-  public int addVideoStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6,float a7,int a8) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)addVideoStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6,a7,a8);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int addVideoStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6,float a7,int a8,int a9,java.lang.String[] a10) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a10 = FFM.toMemory(arena, a10);FFM.setMediaIO(a2);int _ret_value_ = (int)addVideoStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6,a7,a8,a9,_array_a10);FFM.copyBack(_array_a10,a10);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle audioDecoderGetChannels;
   public int audioDecoderGetChannels(long a1) { try { int _ret_value_ = (int)audioDecoderGetChannels.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -220,8 +220,8 @@ public class MediaFFM implements MediaAPI {
     compareFrames = ffm.getFunctionPtr("_compareFrames", ffm.getFunctionDesciptor(JAVA_FLOAT,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
     getVideoFrameRate = ffm.getFunctionPtr("_getVideoFrameRate", ffm.getFunctionDesciptor(JAVA_FLOAT,JAVA_LONG));
     videoDecoderGetFrameRate = ffm.getFunctionPtr("_videoDecoderGetFrameRate", ffm.getFunctionDesciptor(JAVA_FLOAT,JAVA_LONG));
-    addAudioStream = ffm.getFunctionPtr("_addAudioStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
-    addVideoStream = ffm.getFunctionPtr("_addVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_FLOAT,JAVA_INT));
+    addAudioStream = ffm.getFunctionPtr("_addAudioStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,ADDRESS));
+    addVideoStream = ffm.getFunctionPtr("_addVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_FLOAT,JAVA_INT,JAVA_INT,ADDRESS));
     audioDecoderGetChannels = ffm.getFunctionPtr("_audioDecoderGetChannels", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     audioDecoderGetSampleRate = ffm.getFunctionPtr("_audioDecoderGetSampleRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     audioEncoderGetAudioFramesize = ffm.getFunctionPtr("_audioEncoderGetAudioFramesize", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));

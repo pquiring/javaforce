@@ -17,6 +17,8 @@ public class CodecInfo {
   public int video_codec;
   public int video_bit_rate;
   public int video_stream;
+  /** Video Codec specific options. */
+  public String[] video_opts;
 
   //audio
   public int chs;
@@ -25,6 +27,8 @@ public class CodecInfo {
   public int audio_codec;
   public int audio_bit_rate;
   public int audio_stream;
+  /** Audio Codec specific options. */
+  public String[] audio_opts;
 
   public String toString() {
     StringBuilder sb = new StringBuilder();
