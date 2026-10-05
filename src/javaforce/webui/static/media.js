@@ -35,9 +35,24 @@ function media_set_live_source(media, codecs) {
   });
 }
 
-var mkv = "video/x-matroska;codecs=avc1.42401e,opus";  //capture supported, playback not supported
-var mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported and working
-var webm = "video/webm;codecs=vp9,opus";  //capture and playback supported and working
+//containers
+var mkv = "video/x-matroska";  //capture works, playback does not
+var mp4 = "video/mp4";
+var webm = "video/webm";
+
+//video codecs
+var h264 = "avc1.42401e";
+var h265 = "hvc1.1.6.L186.B0";
+var h265vr = "hev1.1.6.L186.B0";  //variable resolution
+var vp8 = "vp8";
+var vp9 = "vp9";
+var av1 = "av01.0.04M.08";
+
+//audio codes
+var opus = "opus";
+var mp4a = "mp4a.40.2";  //AAC
+
+//NOTE : not all container/codec combinations are supported
 
 function media_set_capture(media, audio, video) {
   console.log("media_set_capture:id=" + media.id);
@@ -51,7 +66,7 @@ function media_set_capture(media, audio, video) {
     var opts = {
       audioBitsPerSecond: 128000,
       videoBitsPerSecond: 2500000,
-      mimeType: mp4
+      mimeType: mp4 + ";codecs=" + h264 + "," + opus
     };
     ctx.recorder = new MediaRecorder(stream, opts);
     ctx.recorder.onstart = (event) => {console.log("recorder.start");};

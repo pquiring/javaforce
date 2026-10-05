@@ -18,10 +18,24 @@ public class TestVideo extends Thread implements WebUIHandler {
 
   private String file = "test.mp4";
 
-  private String mkv = "video/x-matroska;codecs=avc1.42401e,opus";  //capture supported, playback not supported
-  private String mp4 = "video/mp4;codecs=avc1.42401e,opus";  //capture and playback supported and working!
-  private String webm = "video/webm;codecs=vp9,opus";  //capture and playback supported and working!
-  private String codec = mp4;
+  //containers
+  private String mkv = "video/x-matroska";  //not working
+  private String mp4 = "video/mp4";
+  private String webm = "video/webm";
+
+  //video codecs
+  private String h264 = "avc1.42401e";
+  private String h265 = "hvc1.1.6.L186.B0";
+  private String h265vr = "hev1.1.6.L186.B0";  //variable resolution
+  private String vp8 = "vp8";
+  private String vp9 = "vp9";
+  private String av1 = "av01.0.04M.08";
+
+  //audio codes
+  private String opus = "opus";
+  private String mp4a = "mp4a.40.2";  //AAC
+
+  private String codec = mp4 + ";codecs=" + h264 + "," + opus;
 
   /**
    * @param args the command line arguments
