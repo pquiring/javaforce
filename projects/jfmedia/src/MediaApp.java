@@ -17,7 +17,7 @@ import javaforce.voip.*;
 
 public class MediaApp extends javax.swing.JFrame {
 
-  public static String version = "0.33";
+  public static String version = "0.34";
 
   private static String logfile = JF.getUserPath() + "/.jfmedia.log";
 

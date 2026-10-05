@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Oct 5, 2025 : 0.34 released!
+  - fix : ffmpeg improvements
+
 Sept 25, 2026 : v0.33 released
   - new : upgrade to ffmpeg/9.0.2
 
