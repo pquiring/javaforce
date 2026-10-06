@@ -1,5 +1,5 @@
 /**
- * This package contains classes for ANSI client apps.
+ * Provides classes for ANSI client apps.
  *
  */
 package javaforce.ansi.client;

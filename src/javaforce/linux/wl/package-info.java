@@ -1,5 +1,5 @@
 /**
- * These classes provide pure-java Wayland API.
+ * Provides pure-java Wayland API (WIP).
  *
  * Communication is directly over a UnixSocket.
  *

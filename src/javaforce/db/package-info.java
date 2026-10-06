@@ -1,5 +1,5 @@
 /**
- * These classes provide a framework for persistent app data storage.
+ * Provides a framework for persistent app data storage.
  *
  * Classes that derive from Row are records that are serialized and saved to disk.
  * Table stores a collection of Rows.

@@ -1,5 +1,5 @@
 /**
- * These classes provide OpenGL programming.
+ * Provides OpenGL graphics API.
  *
  */
 package javaforce.gl;

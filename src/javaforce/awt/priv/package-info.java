@@ -1,5 +1,5 @@
 /**
- * This package contains internal class for awt support.
+ * Contains internal classes for awt support.
  *
  */
 package javaforce.awt.priv;

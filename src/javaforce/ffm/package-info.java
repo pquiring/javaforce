@@ -1,7 +1,7 @@
 /**
- * These classes provide FFM native access.
+ * Provides FFM native access.
  *
- * JNI is also used to pin arrays for best performance.
+ * JNI is used to pin arrays for best performance.
  *
  */
 package javaforce.ffm;

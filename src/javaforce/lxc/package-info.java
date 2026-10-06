@@ -1,5 +1,5 @@
 /**
- * These classes provide Linux container support.
+ * Provides Linux container support.
  *
  * Docker is the only supported implementation.
  *

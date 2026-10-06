@@ -1,7 +1,6 @@
 /**
- * This package contains many client classes and misc classes.
+ * Provides many client and misc classes.
  *
  */
-
 @PackageInfo
 package javaforce;

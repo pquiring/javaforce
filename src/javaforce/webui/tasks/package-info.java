@@ -1,5 +1,5 @@
 /**
- * WebUI Task related classes.
+ * Provides WebUI Task related classes.
  *
  */
 package javaforce.webui.tasks;

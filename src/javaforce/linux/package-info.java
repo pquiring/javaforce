@@ -1,5 +1,5 @@
 /**
- * These classes provide Linux OS-related functions.
+ * Provides Linux OS-related functions.
  *
  */
 package javaforce.linux;

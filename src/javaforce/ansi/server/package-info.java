@@ -1,5 +1,5 @@
 /**
- * This package contains classes for ANSI server apps.
+ * Provides classes for ANSI server apps.
  *
  */
 package javaforce.ansi.server;

@@ -1,4 +1,4 @@
 /**
- * These classes provide access to OpenCL programming.
+ * Provides OpenCL programming APIs.
  */
 package javaforce.cl;

@@ -1,7 +1,7 @@
 /**
  * Provides access to libvirt (virtual machine management system).
  *
- * Used by jfKVM
+ * Used by jfKVM.
  *
  */
 package javaforce.vm;

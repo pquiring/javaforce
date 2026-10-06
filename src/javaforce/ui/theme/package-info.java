@@ -1,5 +1,5 @@
 /**
- * This package includes UI themes.
+ * Provides UI themes.
  *
  */
 package javaforce.ui.theme;

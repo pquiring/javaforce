@@ -1,5 +1,5 @@
 /**
- * This package contains APIs for native access related to Windows OS.
+ * Provides APIs for native access related to Windows OS.
  *
  */
 package javaforce.api.windows;

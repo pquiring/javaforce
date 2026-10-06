@@ -1,4 +1,4 @@
 /**
- * Internal classes for AllenBradley Protocol.
+ * Provides AllenBradley PLC Protocols.
  */
 package javaforce.controls.ab;

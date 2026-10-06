@@ -1,5 +1,5 @@
 /**
- * This package contains classes dependent on Java AWT.
+ * Provides classes dependent on Java AWT.
  *
  */
 package javaforce.awt;

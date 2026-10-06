@@ -1,4 +1,5 @@
 /**
- * Implements the slf4j interfaces using javaforce.JFLog
+ * Provides slf4j interfaces using javaforce.JFLog
+ *
  */
 package javaforce.slf;
