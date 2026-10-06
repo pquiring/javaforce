@@ -2,10 +2,10 @@ Java Valhalla
 -------------
 
 Valhalla is a new type system for Java that will flatten fields in memory for better memory usage and performance.
-Testing has shown that arrays inside value types can have their elements modified.
 Have not figured out how these value types will work with FFM and JNI (project still lacks documentation),
 but will most likely greatly improve native inter-op performance.
 
 Fields must be final because if the value is used as a key the value can not change.
   HashMap<MyValue, Object>
 If MyValue was mutable then the HashMap would be broken.
+Although testing has shown that arrays inside value types can have their elements modified.
