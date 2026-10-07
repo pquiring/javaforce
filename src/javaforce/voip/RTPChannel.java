@@ -220,6 +220,7 @@ public class RTPChannel {
     int pos = 8;
     for(int a=0;a<rrs.length;a++) {
       BE.setuint32(data, pos, rrs[a]);
+      pos += 4;
     }
   }
 
