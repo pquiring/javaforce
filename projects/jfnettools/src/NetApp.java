@@ -2016,14 +2016,14 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             tcp6++;
             break;
           case "udp":
-            if (udp6s[port]) continue;
-            udp6s[port] = true;
-            udp6++;
-            break;
-          case "udp6":
             if (udp4s[port]) continue;
             udp4s[port] = true;
             udp4++;
+            break;
+          case "udp6":
+            if (udp6s[port]) continue;
+            udp6s[port] = true;
+            udp6++;
             break;
         }
       }
