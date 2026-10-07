@@ -126,6 +126,11 @@ public class RTPChannel {
     if (stream.getPort() == -1) {
       return;  //not ready yet (NATing)
     }
+    if (stream.mux) {
+      //send RTCP packet on RTP port
+      writeRTP(data, off, len);
+      return;
+    }
     try {
       if (RTP.useTURN) {
         rtp.stun2.sendData(turn2ch, data, off, len);
@@ -174,13 +179,15 @@ public class RTPChannel {
 
   /**
    * Builds RTP header in first 12 bytes of data[].
+   *
+   * https://en.wikipedia.org/wiki/Real-time_Transport_Protocol#Packet_header
    */
   public static void buildHeader(byte[] data, int id, int seqnum, int timestamp, int ssrc, boolean last) {
     //build RTP header
-    data[0] = (byte) 0x80;  //version
-    data[1] = (byte) id;    //0=g711u 3=gsm 8=g711a 18=g729a 26=JPEG 34=H.263 etc.
+    data[0] = (byte) 0x80;  //version=2 P=0 X=0 CC=0
+    data[1] = (byte) id;    //PT : 0=g711u 3=gsm 8=g711a 18=g729a 26=JPEG 34=H.263 etc.
     if (last) {
-      data[1] |= 0x80;
+      data[1] |= 0x80;      //marker bit
     }
     BE.setuint16(data, 2, seqnum);
     BE.setuint32(data, 4, timestamp);
@@ -189,6 +196,31 @@ public class RTPChannel {
 
   public void buildHeader(byte[] data, int type) {
     buildHeader(data, type, 0, 0, getssrc(), false);
+  }
+
+  public static final byte RTCP_SENDER_REPORT = (byte)200;  //SR
+  public static final byte RTCP_RECEIVER_REPORT = (byte)201;  //RR
+  public static final byte RTCP_SRC_DESC = (byte)202;  //SDES
+  public static final byte RTCP_BYE = (byte)203;  //BYE
+  public static final byte RTCP_APP = (byte)204;  //APP defined
+  //others defined by IANA 192-195 and 205-209
+
+  /** Builds RTCP header in first 8 bytes of data[]
+   *
+   * https://en.wikipedia.org/wiki/RTP_Control_Protocol#Packet_header
+   */
+  public static void buildRTCPHeader(byte[] data, byte type, int ssrc, int rrs[]) {
+    //build RTCP header
+    byte rrcount = (byte)rrs.length;
+    int length = (2 + rrcount) - 1;  //length in 32bit ints including header which is 2 ints minus one
+    data[0] = (byte) (0x80 + rrcount);  //version=2 P=0 RC=rrs.length
+    data[1] = type;  //PT : SR, RR, SDES, BYE, APP
+    BE.setuint16(data, 2, length);
+    BE.setuint32(data, 4, ssrc);
+    int pos = 8;
+    for(int a=0;a<rrs.length;a++) {
+      BE.setuint32(data, pos, rrs[a]);
+    }
   }
 
   public int getseqnum() {
@@ -562,7 +594,11 @@ public class RTPChannel {
         addSamples(coder.decode(data, off, len));
         rtp.iface.rtpSamples(this);
       } else {
-        if (debug) JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);
+        if (stream.mux) {
+          processRTCP(data, off, len);
+        } else {
+          if (debug) JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);
+        }
       }
     }
   }
@@ -570,6 +606,7 @@ public class RTPChannel {
   protected void processRTCP(byte[] data, int off, int len) {
     if (rtp.rawMode) {
       rtp.iface.rtpPacket(this, CodecType.RTCP, data, off, len);
+      return;
     }
     //TODO : RTCP ???
   }

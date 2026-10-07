@@ -38,6 +38,7 @@ public class SDP implements Cloneable {
     public Key[] keys;  //if KeyExchange == SDP
     public float framerate;
     public String control;
+    public boolean mux;  //RTP/RTCP muxed on same port (rtcp-mux)
 
     public String getType() {
       switch (type) {
@@ -370,10 +371,10 @@ public class SDP implements Cloneable {
       if (stream.control != null) {
         content.add("a=control:" + stream.control);
       }
-      JFLog.log(log, "keyexchange=" + stream.keyExchange);
-      if (stream.keyExchange == KeyExchange.DTLS) {
+      if (stream.mux) {
         content.add("a=rtcp-mux");
       }
+      JFLog.log(log, "keyexchange=" + stream.keyExchange);
     }
     return content.toArray(JF.StringArrayType);
   }
@@ -476,6 +477,9 @@ public class SDP implements Cloneable {
           if (id >= 96) {
             stream.addCodec(new Codec(name, id, rate));
           }
+        }
+        else if (ln.startsWith("a=rtcp-mux")) {
+          stream.mux = true;
         }
         else if (ln.startsWith("a=sendrecv")) {
           if (stream != null) {
