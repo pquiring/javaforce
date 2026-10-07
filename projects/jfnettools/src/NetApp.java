@@ -114,9 +114,13 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     jPanel12 = new javax.swing.JPanel();
     start_port_usage = new javax.swing.JButton();
     jLabel21 = new javax.swing.JLabel();
-    ports_tcp = new javax.swing.JTextField();
+    ports_tcp4 = new javax.swing.JTextField();
     jLabel22 = new javax.swing.JLabel();
-    ports_udp = new javax.swing.JTextField();
+    ports_udp4 = new javax.swing.JTextField();
+    jLabel23 = new javax.swing.JLabel();
+    jLabel24 = new javax.swing.JLabel();
+    ports_tcp6 = new javax.swing.JTextField();
+    ports_udp6 = new javax.swing.JTextField();
     netmap = new javax.swing.JPanel();
     jPanel1 = new javax.swing.JPanel();
     jLabel17 = new javax.swing.JLabel();
@@ -604,15 +608,26 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       }
     });
 
-    jLabel21.setText("TCP Ports");
+    jLabel21.setText("TCP4 Ports");
 
-    ports_tcp.setEditable(false);
-    ports_tcp.setText("0");
+    ports_tcp4.setEditable(false);
+    ports_tcp4.setText("0");
 
-    jLabel22.setText("UDP Ports");
+    jLabel22.setText("UDP4 Ports");
 
-    ports_udp.setEditable(false);
-    ports_udp.setText("0");
+    ports_udp4.setEditable(false);
+    ports_udp4.setText("0");
+
+    jLabel23.setText("TCP6 Ports");
+
+    jLabel24.setText("UDP6 Ports");
+
+    ports_tcp6.setEditable(false);
+    ports_tcp6.setText("0");
+    ports_tcp6.setPreferredSize(new java.awt.Dimension(64, 22));
+
+    ports_udp6.setEditable(false);
+    ports_udp6.setText("0");
 
     javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
     jPanel12.setLayout(jPanel12Layout);
@@ -625,13 +640,26 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(start_port_usage))
           .addGroup(jPanel12Layout.createSequentialGroup()
-            .addComponent(jLabel21)
+            .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addGroup(jPanel12Layout.createSequentialGroup()
+                .addComponent(jLabel22)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ports_udp4))
+              .addGroup(jPanel12Layout.createSequentialGroup()
+                .addComponent(jLabel21)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ports_tcp4, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(ports_tcp))
-          .addGroup(jPanel12Layout.createSequentialGroup()
-            .addComponent(jLabel22)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(ports_udp)))
+            .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jPanel12Layout.createSequentialGroup()
+                .addComponent(jLabel23)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ports_tcp6, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addGroup(jPanel12Layout.createSequentialGroup()
+                .addComponent(jLabel24)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ports_udp6, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel12Layout.setVerticalGroup(
@@ -640,11 +668,15 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
         .addContainerGap()
         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel21)
-          .addComponent(ports_tcp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(ports_tcp4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel23)
+          .addComponent(ports_tcp6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel22)
-          .addComponent(ports_udp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(ports_udp4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel24)
+          .addComponent(ports_udp6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addComponent(start_port_usage)
         .addContainerGap())
@@ -1308,6 +1340,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JLabel jLabel20;
   private javax.swing.JLabel jLabel21;
   private javax.swing.JLabel jLabel22;
+  private javax.swing.JLabel jLabel23;
+  private javax.swing.JLabel jLabel24;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
@@ -1343,8 +1377,10 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JTextField pingHost;
   private javax.swing.JButton pingStart;
   private javax.swing.JLabel pingStatus;
-  private javax.swing.JTextField ports_tcp;
-  private javax.swing.JTextField ports_udp;
+  private javax.swing.JTextField ports_tcp4;
+  private javax.swing.JTextField ports_tcp6;
+  private javax.swing.JTextField ports_udp4;
+  private javax.swing.JTextField ports_udp6;
   private javax.swing.JTextField serverPort;
   private javax.swing.JButton serverStart;
   private javax.swing.JLabel serverStatus;
@@ -1902,10 +1938,14 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   }
 
   private void ports_usage() {
-    int tcp = 0;
-    int udp = 0;
-    boolean[] tcps = new boolean[65536];
-    boolean[] udps = new boolean[65536];
+    int tcp4 = 0;
+    int tcp6 = 0;
+    int udp4 = 0;
+    int udp6 = 0;
+    boolean[] tcp4s = new boolean[65536];
+    boolean[] tcp6s = new boolean[65536];
+    boolean[] udp4s = new boolean[65536];
+    boolean[] udp6s = new boolean[65536];
     if (JF.isWindows()) {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[] {"netstat", "-an"}, false);
@@ -1920,17 +1960,34 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
         int idx = fs[1].lastIndexOf(':');
         if (idx == -1) continue;
         int port = Integer.valueOf(fs[1].substring(idx + 1));
-        switch (fs[0]) {
-          case "TCP":
-            if (tcps[port]) continue;
-            tcps[port] = true;
-            tcp++;
-            break;
-          case "UDP":
-            if (udps[port]) continue;
-            udps[port] = true;
-            udp++;
-            break;
+        if (!fs[1].startsWith("[")) {
+          //IP4
+          switch (fs[0]) {
+            case "TCP":
+              if (tcp4s[port]) continue;
+              tcp4s[port] = true;
+              tcp4++;
+              break;
+            case "UDP":
+              if (udp4s[port]) continue;
+              udp4s[port] = true;
+              udp4++;
+              break;
+          }
+        } else {
+          //IP6
+          switch (fs[0]) {
+            case "TCP":
+              if (tcp6s[port]) continue;
+              tcp6s[port] = true;
+              tcp6++;
+              break;
+            case "UDP":
+              if (udp6s[port]) continue;
+              udp6s[port] = true;
+              udp6++;
+              break;
+          }
         }
       }
     } else {
@@ -1949,21 +2006,31 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
         int port = Integer.valueOf(fs[3].substring(idx + 1));
         switch (fs[0]) {
           case "tcp":
+            if (tcp4s[port]) continue;
+            tcp4s[port] = true;
+            tcp4++;
+            break;
           case "tcp6":
-            if (tcps[port]) continue;
-            tcps[port] = true;
-            tcp++;
+            if (tcp6s[port]) continue;
+            tcp6s[port] = true;
+            tcp6++;
             break;
           case "udp":
+            if (udp6s[port]) continue;
+            udp6s[port] = true;
+            udp6++;
+            break;
           case "udp6":
-            if (udps[port]) continue;
-            udps[port] = true;
-            udp++;
+            if (udp4s[port]) continue;
+            udp4s[port] = true;
+            udp4++;
             break;
         }
       }
     }
-    ports_tcp.setText(Integer.toString(tcp));
-    ports_udp.setText(Integer.toString(udp));
+    ports_tcp4.setText(Integer.toString(tcp4));
+    ports_udp4.setText(Integer.toString(udp4));
+    ports_tcp6.setText(Integer.toString(tcp6));
+    ports_udp6.setText(Integer.toString(udp6));
   }
 }
