@@ -19,8 +19,8 @@ jfcontrols - PLC / HMI System
 jfdatalogger - PLC Data Logger
 jfdataloggerplus - PLC Data Logger to SQL
 jfdesktop - Desktop Service for jfLinux
-jfdhcp - DHCP Service
-jfdns - DNS Service
+jfdhcp-server - DHCP Service
+jfdns-server - DNS Service
 jfdvr-server - DVR Service (IP Camera Recording)
 jfdvr-viewer - DVR Viewer
  - E -
@@ -42,11 +42,12 @@ jfkvm - Virtual Machine Management System (libvirt)
  - L -
 jflogon - Logon Manager for jfLinux
  - M -
-jfmedia - Multi-Media Player for jfLinux
-jfmodbusserver - MODBUS Server for Raspberry PI
+jfmedia - Multi-Media Player
+jfmodbus-server - MODBUS Server for Raspberry PI
 jfmonitor - Network Monitoring Service
 jfmping - Multi-Ping Utility
-jfmqtt - MQTT Server
+jfmqtt-server - MQTT Server
+jfmqtt-viewer - MQTT Viewer
 jfmusic - Music Editor (MIDI + Tracker)
  - N -
 jfnetboot - PXE Booting Service
@@ -59,11 +60,11 @@ jfparted - Partition Editor for jfLinux
 jfpasswords - Passwords Manager
 jfpbx - VoIP PBX Service
 jfphone - VoIP Phone
-jfprint - Print Server
+jfprint-server - Print Server
 jfplcbackup - PLC Backup/Restore Utility
-jfpop3 - POP3 Service
+jfpop3-server - POP3 Service
 jfprojector - Desktop/Audio Projector
-jfproxy - Proxy Service
+jfproxy-server - Proxy Service
  - Q -
 jfqemu - QEMU Manager
  - R -
@@ -73,15 +74,15 @@ jfremote - VNC/RDP Client
 jfrepo - Linux Repository Selection Utility for jfLinux
  - S -
 jfservlets - WebServer supporting javax.servlet.http.HttpServlet
-jfsmtp - SMTP Service
-jfsmtprelay - POP3 to SMTP Relay Service
-jfsocks - SOCKS Service
-jfssh - SSH Service
-jfstun - STUN Service
+jfsmtp-server - SMTP Service
+jfsmtprelay-server - POP3 to SMTP Relay Service
+jfsocks-server - SOCKS Service
+jfssh-server - SSH Service
+jfstun-server - STUN Service
  - T -
 jftaskmgr - Task Manager for jfLinux
 jfterm - Telnet/SSH Client
-jftermserver - Terminal Server
+jfterm-server - Terminal Server
 jftorrent - Torrent Server/Client
  - U -
 jfupgrade - Package Upgrade Manager for jfLinux
