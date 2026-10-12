@@ -55,6 +55,7 @@ public class SQL {
 
   /** Connects to SQL Server. */
   public boolean connect(String connectionURL, Properties info) {
+    clearLastException();
     try {
       if (debug) JFLog.log("SQL.connect()" + connectionURL);
       conn = DriverManager.getConnection(connectionURL, info);
@@ -140,6 +141,7 @@ public class SQL {
 
   /** Executes a SQL query (no return data). */
   public boolean execute(String str) {
+    clearLastException();
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
@@ -159,6 +161,7 @@ public class SQL {
 
   /** Executes a SQL query with one return value. */
   public String select1value(String str) {
+    clearLastException();
     String ret;
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
@@ -189,6 +192,7 @@ public class SQL {
 
   /** Executes a SQL query with one row of data. */
   public String[] select1row(String str) {
+    clearLastException();
     String[] ret;
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
@@ -222,6 +226,7 @@ public class SQL {
 
   /** Executes a SQL query with one column of data. */
   public String[] select1col(String str) {
+    clearLastException();
     ArrayList<String> rows = new ArrayList<String>();
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
@@ -255,6 +260,7 @@ public class SQL {
 
   /** Executes a SQL query and returns a table of data. */
   public String[][] select(String str) {
+    clearLastException();
     ArrayList<String[]> rows = new ArrayList<String[]>();
     String[] row;
     java.sql.Statement stmt = null;
@@ -302,6 +308,7 @@ public class SQL {
 
   /** Returns list of tables in current database. */
   public String[] getTables() {
+    clearLastException();
     ArrayList<String> rows = new ArrayList<String>();
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
@@ -332,6 +339,7 @@ public class SQL {
    * @see colNames for details
    */
   public String[][] getTableDesign(String table) {
+    clearLastException();
     ArrayList<String[]> rows = new ArrayList<String[]>();
     String[] row;
     java.sql.ResultSet rs = null;
@@ -366,6 +374,11 @@ public class SQL {
   /** Returns last exception that occurred. */
   public Exception getLastException() {
     return lastException;
+  }
+
+  /** Clears last exception if it exists. */
+  public void clearLastException() {
+    lastException = null;
   }
 
   /** SQL CLI. */
