@@ -13,7 +13,7 @@ iSpy Connect can help detect URLs.
 
 Includes motion detection recording.
 
-Does NOT re-encode video if recording but just saves live stream into mp4 files.
+Does NOT re-encode video when recording.
 
 Requirements:
   Viewer : 12GB memory
