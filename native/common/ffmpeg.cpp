@@ -610,13 +610,9 @@ static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
 
 #include "ff_format.cpp"
 
-#include "ff_decoder.cpp"
-
 #include "ff_input.cpp"
 
 #include "ff_av_decoder.cpp"
-
-#include "ff_encoder.cpp"
 
 #include "ff_output.cpp"
 
