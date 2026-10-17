@@ -125,6 +125,11 @@ public class Dispatcher {
       return null;
     }
     if (debug) JFLog.log("Dispatcher:invoke method");
-    return method.invoke(obj, args);
+    if (method.getReturnType() == Void.TYPE) {
+      method.invoke(obj, args);
+      return null;
+    } else {
+      return method.invoke(obj, args);
+    }
   }
 }

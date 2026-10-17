@@ -34,7 +34,7 @@ public class Bluetooth {
       public String getEndPointName() {
         return null;
       }
-      public Object dispatch(String method, Object[] args) throws Exception {
+      public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
         //Release
         //RequestConfirmation
         //RequestPasskey || RequestPinCode

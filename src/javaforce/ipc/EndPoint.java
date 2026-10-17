@@ -17,10 +17,12 @@ public interface EndPoint {
    */
   public String getEndPointName();
   /** Dispatch function called to this endpoint.
-   * @param method = method invoked
-   * @param args = arguments
+   * @param object = /path/object invoked on.
+   * @param iface = interface invoked on.
+   * @param method = method invoked.
+   * @param args = arguments.
    *
    * @return method return value or null if error
    */
-  public Object dispatch(String method, Object[] args) throws Exception;
+  public Object dispatch(String object, String iface, String method, Object[] args) throws Exception;
 }

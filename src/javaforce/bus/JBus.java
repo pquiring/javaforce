@@ -36,7 +36,7 @@ public class JBus implements EndPoint {
   }
 
   /** Dispatches inbound method call. */
-  public Object dispatch(String method, Object[] args) throws Exception {
+  public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
     if (dispatch != null) {
       return dispatch.onMessage(method, args);
     } else {

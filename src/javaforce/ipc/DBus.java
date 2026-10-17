@@ -124,7 +124,7 @@ public class DBus implements IPC {
   };
 
   // Field Types                                         CALL RETURN ERROR SIGNAL Example (R=required O=optional)
-  private static final byte FIELD_PATH         = 0x01;  // R                 R     /path/to/object
+  private static final byte FIELD_OBJECT       = 0x01;  // R                 R     /path/to/object
   private static final byte FIELD_INTERFACE    = 0x02;  // O                 R     com.example.InterfaceName
   private static final byte FIELD_MEMBER       = 0x03;  // R                 R     MethodName
   private static final byte FIELD_ERROR_MSG    = 0x04;  //             R           Error msg
@@ -137,7 +137,7 @@ public class DBus implements IPC {
 
   private static final String[] field_names = {
     "NULL",
-    "PATH",
+    "OBJECT",
     "INTERFACE",
     "MEMBER",
     "ERROR",
@@ -477,7 +477,7 @@ public class DBus implements IPC {
       public String getEndPointName() {
         return null;
       }
-      public Object dispatch(String method, Object[] args) throws Exception {
+      public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
         return dispatcher.dispatch(method, args);
       }
     };
@@ -494,7 +494,7 @@ public class DBus implements IPC {
       public String getEndPointName() {
         return name;
       }
-      public Object dispatch(String method, Object[] args) throws Exception {
+      public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
         return dispatcher.dispatch(method, args);
       }
     };
@@ -504,7 +504,7 @@ public class DBus implements IPC {
   /** Convert a message bus name to object path.
    * org.freedesktop.DBus becomes /org/freedesktop/DBus
    */
-  public static String nameToPath(String name) {
+  public static String nameToObject(String name) {
     return "/" + name.replaceAll("[.]", "/");
   }
 
@@ -594,16 +594,15 @@ public class DBus implements IPC {
   private ArrayList<Invoke> invokes = new ArrayList<>();
 
   /** Invokes method in remote end point.
-   * @param dest = dot destination end point on bus
-   * @param path = slash path within service
-   * @param iface = dot interface name (optional if unique)
-   * @param method = method to invoke
+   * @param dest = dot destination end point on bus (ie: org.freedesktop.NetworkManager)
+   * @param obj = slash object path within service (ie: /org/freedesktop/NetworkManager/Devices/0)
+   * @param iface = dot interface name (ie: org.freedesktop.Properties)
+   * @param method = method to invoke (ie: Get)
    * @param args = arguments
    * @return return value from remote method
-   * @exception Exception thrown if method returned at error message or no reply within timeout duration
-   *   Errors could be method not found, mismatch arguments, etc.
+   * @exception Exception thrown if method returned at error message or no reply within timeout duration.
    */
-  public Object invoke(String dest, String path, String iface, String method, Object... args) throws Exception {
+  public Object invoke(String dest, String obj, String iface, String method, Object... args) throws Exception {
     if (debug) JFLog.log("DBus.invoke:" + dest + "." + method);
     Invoke invoke = new Invoke();
     invoke.serial = nextSerial();
@@ -614,7 +613,7 @@ public class DBus implements IPC {
     }
     synchronized (invoke.lock) {
       synchronized (invokes_lock) {
-        write_msg(MSG_CALL, dest, path, iface, invoke.serial, -1, method, args);
+        write_msg(MSG_CALL, dest, obj, iface, invoke.serial, -1, method, args);
         invokes.add(invoke);
       }
       try {
@@ -640,19 +639,20 @@ public class DBus implements IPC {
   }
 
   /** Invokes method in remote end point.
+   * Object and iface are inferred from dest.
+   *
    * @param dest = dot destination end point on bus
    * @param method = method to invoke
    * @param args = arguments
    * @return return value from remote method
-   * @exception Exception thrown if method returned at error message or no reply within timeout duration
-   *   Errors could be method not found, mismatch arguments, etc.
-   * Path and iface are inferred from dest.
+   * @exception Exception thrown if method returned at error message or no reply within timeout duration.
+   *
    */
   public Object invoke(String dest, String method, Object... args) throws Exception {
     boolean dest_generic = dest.startsWith(":");
     String iface = dest_generic ? "javaforce.endpoint" : dest;
-    String path = nameToPath(iface);
-    return invoke(dest, path, iface, method, args);
+    String obj = nameToObject(iface);
+    return invoke(dest, obj, iface, method, args);
   }
 
   /** Invokes a method in all bus members that have subscribed to the method.
@@ -660,9 +660,9 @@ public class DBus implements IPC {
    * @see subscribe
    * @see unsubscribe
    */
-  public boolean signal(String path, String iface, String method, Object... args) {
+  public boolean signal(String obj, String iface, String method, Object... args) {
     try {
-      write_msg(MSG_SIGNAL, DBUS_MESSAGE_BUS, path, iface, nextSerial(), -1, method, args);
+      write_msg(MSG_SIGNAL, DBUS_MESSAGE_BUS, obj, iface, nextSerial(), -1, method, args);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -702,15 +702,49 @@ public class DBus implements IPC {
     }
   }
 
+  /** Get a property.
+   * @param dest = dot destination end point on bus
+   * @param obj = slash object path within service
+   * @param property = name of property
+   * @return Property value.
+   * @exception Exception thrown if method returned at error message or no reply within timeout duration.
+   */
+  public Object get(String dest, String obj, String property) throws Exception {
+    return invoke(dest, obj, DBUS_PROPERTIES, "Get", dest, property);
+  }
+
+  /** Get all properties.
+   * @param dest = dot destination end point on bus
+   * @param obj = slash object path within service
+   * @return Property values (JFDictionary)
+   * @exception Exception thrown if method returned at error message or no reply within timeout duration.
+   */
+  public Object getAll(String dest, String obj) throws Exception {
+    return invoke(dest, obj, DBUS_PROPERTIES, "GetAll", dest);
+  }
+
+  /** Set a property.
+   * @param dest = dot destination end point on bus
+   * @param obj = slash object path within service
+   * @param iface = dot interface name
+   * @param property = name of property
+   * @param value = value to set property to
+   * @return Property value.
+   * @exception Exception thrown if method returned at error message or no reply within timeout duration.
+   */
+  public Object set(String dest, String obj, String property, JFVariant value) throws Exception {
+    return invoke(dest, obj, DBUS_PROPERTIES, "Set", dest, property, value);
+  }
+
   private Object write_lock = new Object();
 
-  private boolean write(String path, byte[] data, int offset, int length) {
+  private boolean write(String obj, byte[] data, int offset, int length) {
     if (debug) {
       JFLog.log("DBus.write.length=" + length);
       JFLog.log("packet=", data, offset, length);
     }
     synchronized (write_lock) {
-      return transport.write(path, data, offset, length);
+      return transport.write(obj, data, offset, length);
     }
   }
 
@@ -1127,14 +1161,13 @@ public class DBus implements IPC {
 
   private static final Object[] empty = new Object[0];
 
-  private void write_msg(byte msg_type, String dest, String path, String iface, int serial, int serial_reply, String member, Object[] args) {
+  private void write_msg(byte msg_type, String dest, String obj, String iface, int serial, int serial_reply, String member, Object[] args) {
     if (args == null) args = empty;
     if (debug_msg) JFLog.log("DBus.invoke:" + dest + ":" + member + ":" + serial + ":" + serial_reply);
     synchronized (write_msg_lock) {
       boolean write_to_dbus = dest.equals(DBUS_MESSAGE_BUS);
       String sign = gen_sign(args);
       wpos = 0;
-      if (args == null) args = new Object[0];
 
       try {
         write_byte((byte)'l');  //little endian
@@ -1155,10 +1188,10 @@ public class DBus implements IPC {
         if (msg_type != MSG_RETURN) {
           //field:obj_path
           walign(8);
-          if (debug) JFLog.log("write.field:PATH=" + path);
-          write_byte(FIELD_PATH);
+          if (debug) JFLog.log("write.field:PATH=" + obj);
+          write_byte(FIELD_OBJECT);
           write_sign(TYPE_OBJECT_PATH);
-          write_String(path);
+          write_String(obj);
         }
         if (msg_type != MSG_RETURN) {
           //field:interface
@@ -1218,8 +1251,8 @@ public class DBus implements IPC {
 
         //write args (body)
         int body_start = wpos;
-        for(Object obj : args) {
-          write_type(obj);
+        for(Object arg : args) {
+          write_type(arg);
         }
 
         //patch body size
@@ -1240,8 +1273,8 @@ public class DBus implements IPC {
   private void write_msg(byte msg_type, String dest, int serial, int serial_reply, String member, Object[] args) {
     boolean dest_generic = dest.startsWith(":");
     String iface = dest_generic ? "javaforce.endpoint" : dest;
-    String path = nameToPath(iface);
-    write_msg(msg_type, dest, path, iface, serial, serial_reply, member, args);
+    String obj = nameToObject(iface);
+    write_msg(msg_type, dest, obj, iface, serial, serial_reply, member, args);
   }
 
   private class Reader extends Thread {
@@ -1363,7 +1396,7 @@ public class DBus implements IPC {
             //read variant {sign + value}
             field.sign = read_sign();
             switch (field.type) {
-              case FIELD_PATH:
+              case FIELD_OBJECT:
                 if (!field.sign.equals("o")) {
                   throw new Exception("field:mismatch type:o != " + field.sign);
                 }
@@ -1424,7 +1457,8 @@ public class DBus implements IPC {
       }
     }
     private void method_call() throws Exception {
-      String path = null;
+      String obj = null;
+      String iface = null;
       String sender = null;
       String member = null;
       int signidx = -1;
@@ -1435,14 +1469,17 @@ public class DBus implements IPC {
           case FIELD_MEMBER:
             member = (String)field.value;
             break;
-          case FIELD_PATH:
-            path = (String)field.value;
+          case FIELD_OBJECT:
+            obj = (String)field.value;
             break;
           case FIELD_SIGNATURE:
             signidx = field.idx;
             break;
           case FIELD_SENDER:
             sender = (String)field.value;
+            break;
+          case FIELD_INTERFACE:
+            iface = (String)field.value;
             break;
         }
       }
@@ -1462,6 +1499,8 @@ public class DBus implements IPC {
       }
       try {
         //to avoid deadlock this must be done on a seperate thread
+        String _obj = obj;
+        String _iface = iface;
         String _member = member;
         String _sender = sender;
         int _msg_serial = msg_serial;  //field value may change with next inbound msg
@@ -1470,9 +1509,8 @@ public class DBus implements IPC {
           new Runnable() {
             public void run() {
               try {
-                Object ret = ep.dispatch(_member, _args);
-                if (ret == null) throw new Exception("null");
-                write_msg(MSG_RETURN, _sender, nextSerial(), _msg_serial, _member, new Object[] {ret});
+                Object ret = ep.dispatch(_obj, _iface, _member, _args);
+                write_msg(MSG_RETURN, _sender, nextSerial(), _msg_serial, _member, ret == null ? null : new Object[] {ret});
               } catch (Exception e) {
                 if (debug) JFLog.log(e);
                 write_msg(MSG_ERROR, _sender, nextSerial(), _msg_serial, _member, new Object[] {e.toString()});
@@ -1486,7 +1524,7 @@ public class DBus implements IPC {
       }
     }
     private void method_return(byte msg_type) throws Exception {
-      String path = null;
+      String obj = null;
       String sender = null;
       String member = null;
       int signidx = -1;
@@ -1498,8 +1536,8 @@ public class DBus implements IPC {
           case FIELD_MEMBER:
             member = (String)field.value;
             break;
-          case FIELD_PATH:
-            path = (String)field.value;
+          case FIELD_OBJECT:
+            obj = (String)field.value;
             break;
           case FIELD_SIGNATURE:
             signidx = field.idx;
@@ -1559,7 +1597,7 @@ public class DBus implements IPC {
       JFLog.log("DBus:Warning:msg_return():no pending invoke found");
     }
     private void method_error() throws Exception {
-      String path = null;
+      String obj = null;
       String sender = null;
       String member = null;
       int signidx = -1;
@@ -1575,8 +1613,8 @@ public class DBus implements IPC {
           case FIELD_MEMBER:
             member = (String)field.value;
             break;
-          case FIELD_PATH:
-            path = (String)field.value;
+          case FIELD_OBJECT:
+            obj = (String)field.value;
             break;
           case FIELD_SIGNATURE:
             signidx = field.idx;
