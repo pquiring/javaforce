@@ -123,7 +123,7 @@ public class Dispatcher {
       }
     }
     if (selector != null) {
-      obj = selector.getInterface(iface_name, object);
+      obj = selector.getInterface(object, iface_name);
       if (obj == null) throw new Exception("Unknown Interface:" + iface_name);
       cls = obj.getClass();
     }
