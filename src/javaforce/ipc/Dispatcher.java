@@ -9,9 +9,6 @@ import static javaforce.ipc.DBus.*;
  *
  * This class can dispatch RPC messages to methods in an Object using reflection.
  *
- * Supported Data Types:
- *   - String, Integer, UInteger, Double, Boolean
- *
  * @author pquiring
  */
 
@@ -21,14 +18,21 @@ public class Dispatcher {
   private Class<?> cls;
   private Object obj;
 
+  private InterfaceSelector selector;
+
   /** Create Dispatcher that will dispatch methods in obj. */
   public Dispatcher(Object obj) {
     this.obj = obj;
     cls = obj.getClass();
   }
 
+  /** Create Dispatcher that will dispatch methods based on object and interface selection. */
+  public Dispatcher(InterfaceSelector selector) {
+    this.selector = selector;
+  }
+
   /** Dispatches a method request and returns the return value from the method. */
-  public Object dispatch(String method_name, Object[] args) throws Exception {
+  public Object dispatch(String object, String iface_name, String method_name, Object[] args) throws Exception {
     int argsLength = args.length;
     Class[] types = new Class[argsLength];
     for (int a = 0; a < argsLength; a++) {
@@ -117,6 +121,11 @@ public class Dispatcher {
           return null;
         }
       }
+    }
+    if (selector != null) {
+      obj = selector.getInterface(iface_name, object);
+      if (obj == null) throw new Exception("Unknown Interface:" + iface_name);
+      cls = obj.getClass();
     }
     if (debug) JFLog.log("Dispatcher:lookup method");
     Method method = cls.getMethod(method_name, types);

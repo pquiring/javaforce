@@ -40,7 +40,7 @@ public class JBus implements EndPoint {
     if (dispatch != null) {
       return dispatch.onMessage(method, args);
     } else {
-      return dispatcher.dispatch(method, args);
+      return dispatcher.dispatch(object, iface, method, args);
     }
   }
 

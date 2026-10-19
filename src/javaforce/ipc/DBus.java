@@ -83,6 +83,7 @@ public class DBus implements IPC {
     //GetManagedObjects()
     //InterfacesAdded()
     //InterfacesRemoved()
+  public static final String DBUS_MENU = "com.canonical.dbusmenu";
 
   private static final long max_packet_size = 32 * JF.MB;
 
@@ -478,7 +479,7 @@ public class DBus implements IPC {
         return null;
       }
       public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
-        return dispatcher.dispatch(method, args);
+        return dispatcher.dispatch(object, iface, method, args);
       }
     };
     return ep;
@@ -495,7 +496,7 @@ public class DBus implements IPC {
         return name;
       }
       public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
-        return dispatcher.dispatch(method, args);
+        return dispatcher.dispatch(object, iface, method, args);
       }
     };
     return ep;

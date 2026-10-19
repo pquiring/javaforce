@@ -185,7 +185,7 @@ public class TestIPC {
     }
 
     public Object dispatch(String object, String iface, String method, Object[] args) throws Exception {
-      return dispatcher.dispatch(method, args);
+      return dispatcher.dispatch(object, iface, method, args);
     }
 
     public void setIPC(IPC ipc) {
