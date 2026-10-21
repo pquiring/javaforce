@@ -31,7 +31,7 @@ public interface GL {
     return GLFFM.getInstance();
   }
 
-  public static final boolean debug = true;  //enable to see lots of debug info
+  public static final boolean debug = false;  //enable to see lots of debug info
 
   //GL constants
   public static final int GL_VERSION = 0x1F02;
