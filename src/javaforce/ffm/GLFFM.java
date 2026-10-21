@@ -57,12 +57,6 @@ public class GLFFM implements GL {
   private MethodHandle glStencilOp;
   public int glStencilOp(int a1,int a2,int a3) { try { int _ret_value_ = (int)glStencilOp.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle glGetProgramInfoLog;
-  public java.lang.String glGetProgramInfoLog(int a1) { try { String _ret_value_ = FFM.getString((MemorySegment)glGetProgramInfoLog.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle glGetShaderInfoLog;
-  public java.lang.String glGetShaderInfoLog(int a1) { try { String _ret_value_ = FFM.getString((MemorySegment)glGetShaderInfoLog.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
-
   private MethodHandle glGetString;
   public java.lang.String glGetString(int a1) { try { String _ret_value_ = FFM.getString((MemorySegment)glGetString.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
@@ -177,6 +171,12 @@ public class GLFFM implements GL {
   private MethodHandle glGetIntegerv;
   public void glGetIntegerv(int a1,int[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);glGetIntegerv.invokeExact(a1,_array_a2);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
 
+  private MethodHandle glGetProgramInfoLog;
+  public void glGetProgramInfoLog(int a1,int a2,int[] a3,byte[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);glGetProgramInfoLog.invokeExact(a1,a2,_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle glGetShaderInfoLog;
+  public void glGetShaderInfoLog(int a1,int a2,int[] a3,byte[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);glGetShaderInfoLog.invokeExact(a1,a2,_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle glLinkProgram;
   public void glLinkProgram(int a1) { try { glLinkProgram.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
@@ -255,8 +255,6 @@ public class GLFFM implements GL {
     glStencilFunc = ffm.getFunctionPtr("_glStencilFunc", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
     glStencilMask = ffm.getFunctionPtr("_glStencilMask", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
     glStencilOp = ffm.getFunctionPtr("_glStencilOp", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
-    glGetProgramInfoLog = ffm.getFunctionPtr("_glGetProgramInfoLog", ffm.getFunctionDesciptor(ADDRESS,JAVA_INT));
-    glGetShaderInfoLog = ffm.getFunctionPtr("_glGetShaderInfoLog", ffm.getFunctionDesciptor(ADDRESS,JAVA_INT));
     glGetString = ffm.getFunctionPtr("_glGetString", ffm.getFunctionDesciptor(ADDRESS,JAVA_INT));
     glActiveTexture = ffm.getFunctionPtr("_glActiveTexture", ffm.getFunctionDesciptorVoid(JAVA_INT));
     glAlphaFunc = ffm.getFunctionPtr("_glAlphaFunc", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT));
@@ -293,6 +291,8 @@ public class GLFFM implements GL {
     glGenRenderbuffers = ffm.getFunctionPtr("_glGenRenderbuffers", ffm.getFunctionDesciptorVoid(JAVA_INT,ADDRESS));
     glGenTextures = ffm.getFunctionPtr("_glGenTextures", ffm.getFunctionDesciptorVoid(JAVA_INT,ADDRESS));
     glGetIntegerv = ffm.getFunctionPtr("_glGetIntegerv", ffm.getFunctionDesciptorVoid(JAVA_INT,ADDRESS));
+    glGetProgramInfoLog = ffm.getFunctionPtr("_glGetProgramInfoLog", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,ADDRESS,ADDRESS));
+    glGetShaderInfoLog = ffm.getFunctionPtr("_glGetShaderInfoLog", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,ADDRESS,ADDRESS));
     glLinkProgram = ffm.getFunctionPtr("_glLinkProgram", ffm.getFunctionDesciptorVoid(JAVA_INT));
     glPixelStorei = ffm.getFunctionPtr("_glPixelStorei", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT));
     glReadPixels = ffm.getFunctionPtr("_glReadPixels", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,ADDRESS));

@@ -57,18 +57,33 @@ public class Scene {
     vertexShader = gl.glCreateShader(GL_VERTEX_SHADER);
     gl.glShaderSource(vertexShader, 1, new String[] {vertex}, null);
     gl.glCompileShader(vertexShader);
-    if (debug) JFLog.log("vertex log=" + gl.glGetShaderInfoLog(vertexShader));
+    {
+      byte[] log = new byte[1024];
+      int[] len = new int[1];
+      gl.glGetShaderInfoLog(vertexShader, 1024, len, log);
+      if (debug) JFLog.log("vertex log=" + new String(log, 0, len[0]));
+    }
 
     fragShader = gl.glCreateShader(GL_FRAGMENT_SHADER);
     gl.glShaderSource(fragShader, 1, new String[] {fragment}, null);
     gl.glCompileShader(fragShader);
-    if (debug) JFLog.log("fragment log=" + gl.glGetShaderInfoLog(fragShader));
+    {
+      byte[] log = new byte[1024];
+      int[] len = new int[1];
+      gl.glGetShaderInfoLog(fragShader, 1024, len, log);
+      if (debug) JFLog.log("fragment log=" + new String(log, 0, len[0]));
+    }
 
     program = gl.glCreateProgram();
     gl.glAttachShader(program, vertexShader);
     gl.glAttachShader(program, fragShader);
     gl.glLinkProgram(program);
-    if (debug) JFLog.log("program log=" + gl.glGetProgramInfoLog(program));
+    {
+      byte[] log = new byte[1024];
+      int[] len = new int[1];
+      gl.glGetProgramInfoLog(program, 1024, len, log);
+      if (debug) JFLog.log("program log=" + new String(log, 0, len[0]));
+    }
     gl.glUseProgram(program);
 
     vpa = gl.glGetAttribLocation(program, "aVertexPosition");

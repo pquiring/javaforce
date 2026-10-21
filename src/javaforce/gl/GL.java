@@ -31,7 +31,7 @@ public interface GL {
     return GLFFM.getInstance();
   }
 
-  public static final boolean debug = false;  //enable to see lots of debug info
+  public static final boolean debug = true;  //enable to see lots of debug info
 
   //GL constants
   public static final int GL_VERSION = 0x1F02;
@@ -219,8 +219,8 @@ public interface GL {
   public void glFrontFace(int id);
   public int glGetAttribLocation(int i1, String str);
   public int glGetError();
-  public String glGetProgramInfoLog(int id);
-  public String glGetShaderInfoLog(int id);
+  public void glGetProgramInfoLog(int id, int max, int[] len, byte[] log);
+  public void glGetShaderInfoLog(int id, int max, int[] len, byte[] log);
   public String glGetString(int type);
   public void glGetIntegerv(int type, int[] i);
   public void glGenBuffers(int i1, int[] i2);
