@@ -134,6 +134,16 @@ public interface GL {
   public static final int GL_BACK = 0x0405;
   public static final int GL_FRONT_AND_BACK = 0x0408;
 
+  //glShaders
+  public static final int GL_SHADER_TYPE = 0x8B4F;
+  public static final int GL_DELETE_STATUS = 0x8B80;
+  public static final int GL_COMPILE_STATUS = 0x8B81;
+  public static final int GL_INFO_LOG_LENGTH = 0x8B84;
+  public static final int GL_SHADER_SOURCE_LENGTH = 0x8B88;
+
+  //glPrograms
+  public static final int GL_LINK_STATUS = 0x8B82;
+
   /** Returns OpenGL version. ie: {3,3,0} */
   public static int[] getVersion() {
     GL gl = getInstance();
@@ -221,6 +231,8 @@ public interface GL {
   public int glGetError();
   public void glGetProgramInfoLog(int id, int max, int[] len, byte[] log);
   public void glGetShaderInfoLog(int id, int max, int[] len, byte[] log);
+  public void glGetProgramiv(int id, int pname, int[] params);
+  public void glGetShaderiv(int id, int pname, int[] params);
   public String glGetString(int type);
   public void glGetIntegerv(int type, int[] i);
   public void glGenBuffers(int i1, int[] i2);

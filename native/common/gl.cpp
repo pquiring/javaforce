@@ -44,6 +44,8 @@ JNIEXPORT int (*_glGetAttribLocation)(int,const char *);
 JNIEXPORT int (*_glGetError)();
 JNIEXPORT void (*_glGetProgramInfoLog)(int,int,int*,char*);
 JNIEXPORT void (*_glGetShaderInfoLog)(int,int,int*,char*);
+JNIEXPORT void (*_glGetProgramiv)(int,int,int*);
+JNIEXPORT void (*_glGetShaderiv)(int,int,int*);
 JNIEXPORT const char* (*_glGetString)(int);
 JNIEXPORT void (*_glGetIntegerv)(int,int *);
 JNIEXPORT void (*_glGenBuffers)(int,int *);
@@ -117,6 +119,8 @@ jboolean GL_get_functions()
   glGetFunction((void**)&_glGetError,"glGetError");
   glGetFunction((void**)&_glGetProgramInfoLog,"glGetProgramInfoLog");
   glGetFunction((void**)&_glGetShaderInfoLog,"glGetShaderInfoLog");
+  glGetFunction((void**)&_glGetProgramiv,"glGetProgramiv");
+  glGetFunction((void**)&_glGetShaderiv,"glGetShaderiv");
   glGetFunction((void**)&_glGetString,"glGetString");
   glGetFunction((void**)&_glGetIntegerv,"glGetIntegerv");
   glGetFunction((void**)&_glGenBuffers,"glGenBuffers");

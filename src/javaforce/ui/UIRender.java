@@ -1,6 +1,7 @@
 package javaforce.ui;
 
 import javaforce.gl.*;
+import javaforce.gl.glsl.*;
 
 /** UIRender - main render loop.
  *

@@ -6,6 +6,7 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.ui.*;
 import javaforce.gl.*;
+import javaforce.gl.glsl.*;
 
 /** OpenGL Test
  *

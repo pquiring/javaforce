@@ -1,4 +1,4 @@
-package javaforce.gl;
+package javaforce.gl.glsl;
 
 /**
  * Reference Vertex Shader.

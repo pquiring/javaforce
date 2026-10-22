@@ -174,8 +174,14 @@ public class GLFFM implements GL {
   private MethodHandle glGetProgramInfoLog;
   public void glGetProgramInfoLog(int a1,int a2,int[] a3,byte[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);glGetProgramInfoLog.invokeExact(a1,a2,_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
 
+  private MethodHandle glGetProgramiv;
+  public void glGetProgramiv(int a1,int a2,int[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);glGetProgramiv.invokeExact(a1,a2,_array_a3);FFM.copyBack(_array_a3,a3); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle glGetShaderInfoLog;
   public void glGetShaderInfoLog(int a1,int a2,int[] a3,byte[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);glGetShaderInfoLog.invokeExact(a1,a2,_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle glGetShaderiv;
+  public void glGetShaderiv(int a1,int a2,int[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);glGetShaderiv.invokeExact(a1,a2,_array_a3);FFM.copyBack(_array_a3,a3); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glLinkProgram;
   public void glLinkProgram(int a1) { try { glLinkProgram.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
@@ -292,7 +298,9 @@ public class GLFFM implements GL {
     glGenTextures = ffm.getFunctionPtr("_glGenTextures", ffm.getFunctionDesciptorVoid(JAVA_INT,ADDRESS));
     glGetIntegerv = ffm.getFunctionPtr("_glGetIntegerv", ffm.getFunctionDesciptorVoid(JAVA_INT,ADDRESS));
     glGetProgramInfoLog = ffm.getFunctionPtr("_glGetProgramInfoLog", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,ADDRESS,ADDRESS));
+    glGetProgramiv = ffm.getFunctionPtr("_glGetProgramiv", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,ADDRESS));
     glGetShaderInfoLog = ffm.getFunctionPtr("_glGetShaderInfoLog", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,ADDRESS,ADDRESS));
+    glGetShaderiv = ffm.getFunctionPtr("_glGetShaderiv", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,ADDRESS));
     glLinkProgram = ffm.getFunctionPtr("_glLinkProgram", ffm.getFunctionDesciptorVoid(JAVA_INT));
     glPixelStorei = ffm.getFunctionPtr("_glPixelStorei", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT));
     glReadPixels = ffm.getFunctionPtr("_glReadPixels", ffm.getFunctionDesciptorVoid(JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,ADDRESS));
