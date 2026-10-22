@@ -291,16 +291,6 @@
     <maven name="commons-logging" path="commons-logging" version="${commons-logging-version}"/>
   </target>
 
-  <available property="have-batik-all" file="${lib}/batik-all-${batik-version}.jar"/>
-  <target name="get-batik-all" unless="have-batik-all">
-    <maven name="batik-all" path="org/apache/xmlgraphics" version="${batik-version}"/>
-  </target>
-
-  <available property="have-xmlgraphics-commons" file="${lib}/xmlgraphics-commons-${xmlgraphics-commons-version}.jar"/>
-  <target name="get-xmlgraphics-commons" unless="have-xmlgraphics-commons">
-    <maven name="xmlgraphics-commons" path="org/apache/xmlgraphics" version="${xmlgraphics-commons-version}"/>
-  </target>
-
   <available property="have-pdfbox" file="${lib}/pdfbox-${pdfbox-version}.jar"/>
   <target name="get-pdfbox" unless="have-pdfbox">
     <maven name="pdfbox" path="org/apache/pdfbox" version="${pdfbox-version}"/>
@@ -319,11 +309,6 @@
   <available property="have-xmpbox" file="${lib}/xmpbox-${pdfbox-version}.jar"/>
   <target name="get-xmpbox" unless="have-xmpbox">
     <maven name="xmpbox" path="org/apache/pdfbox" version="${pdfbox-version}"/>
-  </target>
-
-  <available property="have-xml-apis-ext" file="${lib}/xml-apis-ext-${xml-apis-ext-version}.jar"/>
-  <target name="get-xml-apis-ext" unless="have-xml-apis-ext">
-    <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
   <!-- others -->
@@ -366,11 +351,6 @@
   <available property="have-tinyradius" file="${lib}/tinyradius-${tinyradius-version}.jar"/>
   <target name="get-tinyradius" unless="have-tinyradius">
     <maven name="tinyradius" path="org/tinyradius" version="${tinyradius-version}"/>
-  </target>
-
-  <available property="have-protobuf" file="${lib}/protobuf-${protobuf-version}.jar"/>
-  <target name="get-protobuf" unless="have-protobuf">
-    <maven name="protobuf-java" dest="protobuf" path="com/google/protobuf" version="${protobuf-version}"/>
   </target>
 
   <target name="getjars">
@@ -420,19 +400,15 @@
     <antcall target="get-derby"/>
     <antcall target="get-commons-lang3"/>
     <antcall target="get-commons-logging"/>
-    <antcall target="get-batik-all"/>
-    <antcall target="get-xmlgraphics-commons"/>
     <antcall target="get-pdfbox"/>
     <antcall target="get-pdfbox-io"/>
     <antcall target="get-fontbox"/>
     <antcall target="get-xmpbox"/>
-    <antcall target="get-xml-apis-ext"/>
     <antcall target="get-jcifs"/>
     <antcall target="get-jargs"/>
     <antcall target="get-llrp"/>
     <antcall target="get-jsvg"/>
     <antcall target="get-tinyradius"/>
-    <antcall target="get-protobuf"/>
     <antcall target="get-netty-common"/>
     <antcall target="get-netty-buffer"/>
     <antcall target="get-netty-transport"/>

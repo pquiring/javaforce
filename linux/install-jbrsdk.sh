@@ -19,7 +19,7 @@ aarch64)
 esac
 
 VERSION=25.0.4.1
-BUILD=b623.69
+BUILD=b635.78
 BASE=jbrsdk-$VERSION-linux-$JBRARCH-$BUILD
 TAR=$BASE.tar.gz
 FOLDER=jbrsdk-$VERSION-openjdk-$ARCH
