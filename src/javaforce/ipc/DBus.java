@@ -727,7 +727,6 @@ public class DBus implements IPC {
   /** Set a property.
    * @param dest = dot destination end point on bus
    * @param obj = slash object path within service
-   * @param iface = dot interface name
    * @param property = name of property
    * @param value = value to set property to
    * @return Property value.
