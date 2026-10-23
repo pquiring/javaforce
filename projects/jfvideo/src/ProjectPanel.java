@@ -17,6 +17,7 @@ import javaforce.awt.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 import javaforce.gl.*;
+import javaforce.gl.glsl.*;
 import javaforce.net.*;
 
 public class ProjectPanel extends javax.swing.JPanel implements MediaIO {

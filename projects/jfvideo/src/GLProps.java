@@ -13,6 +13,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.gl.*;
+import javaforce.gl.glsl.*;
 
 public class GLProps extends javax.swing.JPanel implements KeyListener {
 
