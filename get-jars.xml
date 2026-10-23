@@ -374,12 +374,10 @@
     <antcall target="get-jdom"/>
     <antcall target="get-log4j-core"/>
     <antcall target="get-log4j-api"/>
-    <antcall target="get-log4j12"/>
     <antcall target="get-slf4j-api"/>
     <antcall target="get-slf4j-nop"/>
     <antcall target="get-slf4j-simple"/>
     <antcall target="get-slf4j-jdk14"/>
-    <antcall target="get-slf4j-reload4j"/>
     <antcall target="get-mina-core"/>
     <antcall target="get-sshd-core"/>
     <antcall target="get-sshd-common"/>
