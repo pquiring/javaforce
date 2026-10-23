@@ -39,6 +39,9 @@ public class GenDEB {
     String arch = getArch();
     String archext = getArchExt();
     String release = Linux.getOSRelease("VERSION_ID");
+    if (release == null) {
+      throw new Exception("Error:/etc/os-release does not define VERSION_ID");
+    }
 
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);

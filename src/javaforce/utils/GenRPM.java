@@ -49,6 +49,9 @@ public class GenRPM {
     String arch = getArch();
     String archext = getArchExt();
     String release = Linux.getOSRelease("VERSION_ID");
+    if (release == null) {
+      throw new Exception("Error:/etc/os-release does not define VERSION_ID");
+    }
 
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
