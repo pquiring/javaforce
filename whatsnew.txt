@@ -1,5 +1,12 @@
 What's new...
 
+Oct 23/2026 : JF/121.0
+  - fix : opengl : glGetShaderInfoLog, glGetProgramInfoLog
+  - new : opengl : glGetShaderiv, glGetProgramiv
+  - new : DBus : added InterfaceSelector so that Dispatcher can support multiple interfaces
+    - allows for complex end points that process multiple different interfaces on different objects
+  - new : jfNetTools : added local port usage tool
+
 Oct 5/2026 : JF/120.0
   - new : ffmpeg : codec specific options can be specified in CodecInfo.video_opts and audio_opts when encoding
   - new : webui : Video capture/playback works (very codec specific)

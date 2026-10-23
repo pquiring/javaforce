@@ -1,5 +1,9 @@
 what's new in native API (since 113.0)
 
+121.0
+  - opengl : fixed glGetShaderInfoLog, glGetProgramInfoLog
+  - opengl : added glGetShaderiv, glGetProgramiv
+
 120.0
   - ffmpeg : add codec options for encoder
 
