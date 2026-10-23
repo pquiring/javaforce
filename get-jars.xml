@@ -150,12 +150,6 @@
     <maven name="log4j-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
   </target>
 
-  <!-- log4j 1.x api compatibility layer on top of 2.x -->
-  <available property="have-log4j12" file="${lib}/log4j-1.2-api-${log4j-version}.jar"/>
-  <target name="get-log4j12" unless="have-log4j12">
-    <maven name="log4j-1.2-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
-  </target>
-
   <!-- slf4j -->
 
   <available property="have-slf4j-api" file="${lib}/slf4j-api-${slf4j-version}.jar"/>
@@ -176,11 +170,6 @@
   <available property="have-slf4j-jdk14" file="${lib}/slf4j-jdk14-${slf4j-version}.jar"/>
   <target name="get-slf4j-jdk14" unless="have-slf4j-jdk14">
     <maven name="slf4j-jdk14" path="org/slf4j" version="${slf4j-version}"/>
-  </target>
-
-  <available property="have-slf4j-reload4j" file="${lib}/slf4j-reload4j-${slf4j-version}.jar"/>
-  <target name="get-slf4j-reload4j" unless="have-slf4j-reload4j">
-    <maven name="slf4j-reload4j" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
   <!-- mina/ssh -->

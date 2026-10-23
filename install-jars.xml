@@ -131,10 +131,6 @@
     <copyjar name="log4j-api" version="${log4j-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-log4j-1.2-api">
-    <copyjar name="log4j-1.2-api" version="${log4j-version}" path="${jarpath}"/>
-  </target>
-
   <!-- slf4j -->
 
   <target name="jar-slf4j-api">
@@ -151,10 +147,6 @@
 
   <target name="jar-slf4j-jdk14">
     <copyjar name="slf4j-jdk14" version="${slf4j-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-slf4j-reload4j">
-    <copyjar name="slf4j-reload4j" version="${slf4j-version}" path="${jarpath}"/>
   </target>
 
   <!-- mina/ssh -->
