@@ -238,24 +238,74 @@
     <maven name="plc4j-api" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
-  <available property="have-plc4j-spi" file="${lib}/plc4j-spi-${plc4j-version}.jar"/>
-  <target name="get-plc4j-spi" unless="have-plc4j-spi">
-    <maven name="plc4j-spi" path="org/apache/plc4x" version="${plc4j-version}"/>
+  <available property="have-plc4j-spi-buffers-api" file="${lib}/plc4j-spi-buffers-api-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-buffers-api" unless="have-plc4j-spi-buffers-api">
+    <maven name="plc4j-spi-buffers-api" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
-  <available property="have-plc4j-transport-tcp" file="${lib}/plc4j-transport-tcp-${plc4j-version}.jar"/>
-  <target name="get-plc4j-transport-tcp" unless="have-plc4j-transport-tcp">
-    <maven name="plc4j-transport-tcp" path="org/apache/plc4x" version="${plc4j-version}"/>
+  <available property="have-plc4j-spi-buffers-byte" file="${lib}/plc4j-spi-buffers-byte-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-buffers-byte" unless="have-plc4j-spi-buffers-byte">
+    <maven name="plc4j-spi-buffers-byte" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
-  <available property="have-plc4j-transport-udp" file="${lib}/plc4j-transport-udp-${plc4j-version}.jar"/>
-  <target name="get-plc4j-transport-udp" unless="have-plc4j-transport-udp">
-    <maven name="plc4j-transport-udp" path="org/apache/plc4x" version="${plc4j-version}"/>
+  <available property="have-plc4j-spi-buffers-xml" file="${lib}/plc4j-spi-buffers-xml-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-buffers-xml" unless="have-plc4j-spi-buffers-xml">
+    <maven name="plc4j-spi-buffers-xml" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-spi-config" file="${lib}/plc4j-spi-config-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-config" unless="have-plc4j-spi-config">
+    <maven name="plc4j-spi-config" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-spi-drivers" file="${lib}/plc4j-spi-drivers-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-drivers" unless="have-plc4j-spi-drivers">
+    <maven name="plc4j-spi-drivers" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-spi-fields" file="${lib}/plc4j-spi-fields-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-fields" unless="have-plc4j-spi-fields">
+    <maven name="plc4j-spi-fields" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-spi-utils" file="${lib}/plc4j-spi-utils-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-utils" unless="have-plc4j-spi-utils">
+    <maven name="plc4j-spi-utils" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-spi-values" file="${lib}/plc4j-spi-values-${plc4j-version}.jar"/>
+  <target name="get-plc4j-spi-values" unless="have-plc4j-spi-values">
+    <maven name="plc4j-spi-values" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-transports-api" file="${lib}/plc4j-transports-api-${plc4j-version}.jar"/>
+  <target name="get-plc4j-transports-api" unless="have-plc4j-transports-api">
+    <maven name="plc4j-transports-api" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-transports-cotp" file="${lib}/plc4j-transports-cotp-${plc4j-version}.jar"/>
+  <target name="get-plc4j-transports-cotp" unless="have-plc4j-transports-cotp">
+    <maven name="plc4j-transports-cotp" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-transports-tcp" file="${lib}/plc4j-transports-tcp-${plc4j-version}.jar"/>
+  <target name="get-plc4j-transports-tcp" unless="have-plc4j-transports-tcp">
+    <maven name="plc4j-transports-tcp" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-transports-udp" file="${lib}/plc4j-transports-udp-${plc4j-version}.jar"/>
+  <target name="get-plc4j-transports-udp" unless="have-plc4j-transports-udp">
+    <maven name="plc4j-transports-udp" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
   <available property="have-plc4j-driver-s7" file="${lib}/plc4j-driver-s7-${plc4j-version}.jar"/>
   <target name="get-plc4j-driver-s7" unless="have-plc4j-driver-s7">
     <maven name="plc4j-driver-s7" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-utils-audit-log-api" file="${lib}/plc4j-utils-audit-log-api-${plc4j-version}.jar"/>
+  <target name="get-plc4j-utils-audit-log-api" unless="have-plc4j-utils-audit-log-api">
+    <maven name="plc4j-utils-audit-log-api" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
   <!-- apache -->
@@ -402,9 +452,19 @@
     <antcall target="get-netty-handler"/>
     <antcall target="get-netty-codec"/>
     <antcall target="get-plc4j-api"/>
-    <antcall target="get-plc4j-spi"/>
-    <antcall target="get-plc4j-transport-tcp"/>
-    <antcall target="get-plc4j-transport-udp"/>
+    <antcall target="get-plc4j-spi-buffers-api"/>
+    <antcall target="get-plc4j-spi-buffers-byte"/>
+    <antcall target="get-plc4j-spi-buffers-xml"/>
+    <antcall target="get-plc4j-spi-config"/>
+    <antcall target="get-plc4j-spi-drivers"/>
+    <antcall target="get-plc4j-spi-fields"/>
+    <antcall target="get-plc4j-spi-utils"/>
+    <antcall target="get-plc4j-spi-values"/>
+    <antcall target="get-plc4j-transports-api"/>
+    <antcall target="get-plc4j-transports-cotp"/>
+    <antcall target="get-plc4j-transports-tcp"/>
+    <antcall target="get-plc4j-transports-udp"/>
     <antcall target="get-plc4j-driver-s7"/>
+    <antcall target="get-plc4j-utils-audit-log-api"/>
   </target>
 </project>

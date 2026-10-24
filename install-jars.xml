@@ -5,10 +5,6 @@
     <copyjar name="javaforce" version="${javaforce-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-jficons">
-    <copyjar name="jficons" version="${javaforce-version}" path="${jarpath}"/>
-  </target>
-
   <!-- twelvemonkeys -->
 
   <target name="jar-twelvemonkeys-common-lang">
@@ -203,20 +199,60 @@
     <copyjar name="plc4j-api" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-plc4j-spi">
-    <copyjar name="plc4j-spi" version="${plc4j-version}" path="${jarpath}"/>
+  <target name="jar-plc4j-spi-buffers-api">
+    <copyjar name="plc4j-spi-buffers-api" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-plc4j-transport-tcp">
-    <copyjar name="plc4j-transport-tcp" version="${plc4j-version}" path="${jarpath}"/>
+  <target name="jar-plc4j-spi-buffers-byte">
+    <copyjar name="plc4j-spi-buffers-byte" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-plc4j-transport-udp">
-    <copyjar name="plc4j-transport-udp" version="${plc4j-version}" path="${jarpath}"/>
+  <target name="jar-plc4j-spi-buffers-xml">
+    <copyjar name="plc4j-spi-buffers-xml" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-spi-config">
+    <copyjar name="plc4j-spi-config" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-spi-drivers">
+    <copyjar name="plc4j-spi-drivers" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-spi-fields">
+    <copyjar name="plc4j-spi-fields" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-spi-utils">
+    <copyjar name="plc4j-spi-utils" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-spi-values">
+    <copyjar name="plc4j-spi-values" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-transports-api">
+    <copyjar name="plc4j-transports-api" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-transports-cotp">
+    <copyjar name="plc4j-transports-cotp" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-transports-tcp">
+    <copyjar name="plc4j-transports-tcp" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-transports-udp">
+    <copyjar name="plc4j-transports-udp" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-plc4j-driver-s7">
     <copyjar name="plc4j-driver-s7" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-utils-audit-log-api">
+    <copyjar name="plc4j-utils-audit-log-api" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
   <!-- apache -->

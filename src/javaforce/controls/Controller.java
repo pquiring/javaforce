@@ -34,7 +34,6 @@ public class Controller {
   private InputStream is;
   private OutputStream os;
   private PlcConnection plcConn;
-  private PlcDriver plcDrv;
   private int plcType;
   private int plcSubType;
   private Object lock = new Object();  //read/write lock
@@ -98,12 +97,11 @@ public class Controller {
         case "AB": plcSubType = ControllerType.AB; break;
       }
       try {
-        plcConn = PlcDriverManager.getDefault().getConnectionManager().getConnection(url);
+        plcConn = PlcDriverManager.getDefault().getConnectionFactory().getConnection(url);
         JFLog.log("Controller:conn=" + plcConn);
-        plcDrv = PlcDriverManager.getDefault().getDriver(driver);
-        JFLog.log("Controller:driver=" + plcDrv);
+        connected = true;
         return true;
-      } catch (Exception e) {
+      } catch (Throwable e) {
         JFLog.log(e);
         return false;
       }
@@ -444,25 +442,24 @@ public class Controller {
   public byte[] read(String addr) {
     addr = addr.toUpperCase();
     synchronized(lock) {
-      if (!connected) return null;
+      if (!connected) {
+        JFLog.log("Controller:not connected!");
+        return null;
+      }
       switch (plcType) {
         case ControllerType.PLC4J: {
           try {
             PlcReadRequest.Builder reader = plcConn.readRequestBuilder();
-            switch (plcSubType) {
-              case ControllerType.S7: if (!addr.startsWith("%")) addr = "%" + addr; break;
-            }
-            //why is plcConn.parseTagAddress() @deprecated ?
-            PlcTag plcTag = plcDrv.prepareTag(addr);
-            reader.addTag("tag0", plcTag);
+            reader.addTagAddress("tag0", addr);
             PlcReadResponse data = reader.build().execute().get(5000, TimeUnit.MILLISECONDS);
             PlcValue value = data.getPlcValue("tag0");
+            JFLog.log("value=" + value);
             if (value != null) {
               return value.getRaw();
             } else {
               return empty;
             }
-          } catch (Exception e) {
+          } catch (Throwable e) {
             JFLog.log(e);
           }
           break;
@@ -601,9 +598,7 @@ public class Controller {
             switch (plcSubType) {
               case ControllerType.S7: if (!tag.startsWith("%")) tag = "%" + tag; break;
             }
-            //why is plcConn.parseTagAddress() @deprecated ?
-            PlcTag plcTag = plcDrv.prepareTag(tag);
-            reader.addTag("tag" + idx, plcTag);
+            reader.addTagAddress("tag" + idx, tag);
             idx++;
           }
           PlcReadResponse data = reader.build().execute().get(5000, TimeUnit.MILLISECONDS);

@@ -1,2 +1,4 @@
 @echo off
-%HOME%\bin\jfexec -cp javaforce.jar javaforce.tests.Test%1 %2
+set TEST=%1
+shift
+%HOME%\bin\jfexec -cp javaforce.jar javaforce.tests.Test%TEST% %*

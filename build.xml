@@ -49,13 +49,13 @@
 
   <available property="have-glfw" file="native/glfw/src/window.c"/>
   <target name="get-glfw" unless="have-glfw" description="download glfw">
-    <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
+    <exec command="git clone -q https://github.com/glfw/glfw.git native/glfw"/>
     <exec command="git checkout -q tags/${glfw-version}" dir="native/glfw"/>
   </target>
 
   <available property="have-stb" file="native/stb/stb_truetype.h"/>
   <target name="get-stb" unless="have-stb" description="download stb">
-    <exec command="git clone https://github.com/nothings/stb.git native/stb"/>
+    <exec command="git clone -q https://github.com/nothings/stb.git native/stb"/>
   </target>
 
   <target name="update-stb" description="update stb">
@@ -64,13 +64,13 @@
 
   <available property="have-opencl" file="native/opencl/CL/cl.h"/>
   <target name="get-opencl" unless="have-opencl" description="download opencl headers">
-    <exec command="git clone https://github.com/KhronosGroup/OpenCL-Headers.git native/opencl"/>
+    <exec command="git clone -q https://github.com/KhronosGroup/OpenCL-Headers.git native/opencl"/>
     <exec command="git checkout -q tags/${opencl-version}" dir="native/opencl"/>
   </target>
 
   <available property="have-vulkan" file="native/vulkan/include/vulkan/vulkan.h"/>
   <target name="get-vulkan" unless="have-vulkan" description="download vulkan headers">
-    <exec command="git clone https://github.com/KhronosGroup/Vulkan-Headers.git native/vulkan"/>
+    <exec command="git clone -q https://github.com/KhronosGroup/Vulkan-Headers.git native/vulkan"/>
     <exec command="git checkout -q tags/${vulkan-version}" dir="native/vulkan"/>
   </target>
 
@@ -131,16 +131,27 @@
     <antcall target="jar-pdfbox-io"/>
     <antcall target="jar-fontbox"/>
     <antcall target="jar-xmpbox"/>
+    <antcall target="jar-commons-lang3"/>
     <antcall target="jar-netty-common"/>
     <antcall target="jar-netty-buffer"/>
     <antcall target="jar-netty-transport"/>
     <antcall target="jar-netty-handler"/>
     <antcall target="jar-netty-codec"/>
     <antcall target="jar-plc4j-api"/>
-    <antcall target="jar-plc4j-spi"/>
-    <antcall target="jar-plc4j-transport-tcp"/>
-    <antcall target="jar-plc4j-transport-udp"/>
+    <antcall target="jar-plc4j-spi-buffers-api"/>
+    <antcall target="jar-plc4j-spi-buffers-byte"/>
+    <antcall target="jar-plc4j-spi-buffers-xml"/>
+    <antcall target="jar-plc4j-spi-config"/>
+    <antcall target="jar-plc4j-spi-drivers"/>
+    <antcall target="jar-plc4j-spi-fields"/>
+    <antcall target="jar-plc4j-spi-utils"/>
+    <antcall target="jar-plc4j-spi-values"/>
+    <antcall target="jar-plc4j-transports-api"/>
+    <antcall target="jar-plc4j-transports-cotp"/>
+    <antcall target="jar-plc4j-transports-tcp"/>
+    <antcall target="jar-plc4j-transports-udp"/>
     <antcall target="jar-plc4j-driver-s7"/>
+    <antcall target="jar-plc4j-utils-audit-log-api"/>
   </target>
 
   <target name="compile" depends="depjars" unless="fast-build" description="compile the source">

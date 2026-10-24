@@ -30,4 +30,4 @@ what's new in native API (since 113.0)
   - fixed Windows Pipes
 
 113.0
-  - initial version with all JNI removed except for JFHeap
+  - initial version with all JNI replaced with FFM except for 4 methods in JFHeap
