@@ -49,6 +49,9 @@ char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
 char xoptions[MAX_PATH];
+bool aot = false;
+char aotcache[MAX_PATH];
+char xxaotcache[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
 bool debug = false;
@@ -278,6 +281,11 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = (char*)"-Djava.home=/usr/bin";
   } else {
     opts[nOpts++] = CreateClassPath();
+  }
+  if (aot) {
+    strcpy(xxaotcache, "-XX:AOTCache=");
+    strcat(xxaotcache, aotcache);
+    opts[nOpts++] = xxaotcache;
   }
   opts[nOpts++] = (char*)"-Djavaforce.loader=true";
   if (strlen(xoptions) > 0) {
@@ -645,6 +653,20 @@ bool try_jvm() {
   return true;
 }
 
+bool try_aot() {
+  strcat(aotcache, getenv("HOME"));
+  strcat(aotcache, "\\cache\\");
+  char* module = strrchr(g_argv[0], '/');
+  if (module == NULL) {
+    module = g_argv[0];
+  } else {
+    module++;
+  }
+  strcat(aotcache, module);  //exe name
+  strcat(aotcache, ".aot");
+  return exists(aotcache);
+}
+
 void replace(char *str, char find, char with) {
   while (*str) {
     if (*str == find) *str = with;
@@ -675,6 +697,7 @@ int main(int argc, char **argv) {
     if (!try_jvm()) {
       return 2;
     }
+    aot = try_aot();
   }
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
