@@ -146,6 +146,11 @@ Javaforce now uses FFM (Foreign Function & Memory API) to access native function
 Some JNI is used to pin arrays for better performance.
 See docs/ffm.txt for more details.
 
+AOT Tasks
+---------
+aot-gen : generates AOT cache
+aot-run : executes app with AOT cache
+
 Graal Support
 -------------
 JavaForce includes some support for building AOT executables using GraalVM (http://www.graalvm.org)
