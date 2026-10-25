@@ -14,19 +14,24 @@ public class ExecProject implements ShellProcessListener {
   private BuildTools tools;
 
   public static void main(String[] args) {
-    if (args.length != 1) {
+    if (args.length < 1) {
       System.out.println("ExecProject : Runs project using java");
-      System.out.println("  Usage : ExecProject buildfile");
+      System.out.println("  Usage : ExecProject buildfile [aot-cache-folder]");
       System.exit(1);
     }
     try {
-      new ExecProject().run(args[0]);
+      new ExecProject().run(args);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  public void run(String buildfile) throws Exception {
+  public void run(String[] args) throws Exception {
+    String buildfile = args[0];
+    String aotcache = null;
+    if (args.length > 1) {
+      aotcache = args[1];
+    }
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
 
@@ -68,6 +73,15 @@ public class ExecProject implements ShellProcessListener {
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add(user_home + File.separator + "bin" + File.separator + exec);
+    if (aotcache != null) {
+      String path = JF.getUserPath() + "/cache";
+      new File(path).mkdir();
+      String cache = path + "/" + app + ".aot";
+      switch (aotcache) {
+        case "aot-gen": cmd.add("-XX:AOTCacheOutput=" + cache); break;
+        case "aot-run": cmd.add("-XX:AOTCache=" + cache); break;
+      }
+    }
     cmd.add("-cp");
     if (JF.isWindows()) {
       cmd.add(classpath);

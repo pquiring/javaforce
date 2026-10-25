@@ -142,6 +142,8 @@
     </sequential>
   </target>
 
+  <!--graalvm-->
+
   <target name="graalmeta" depends="" description="build meta jar file">
     <jar destfile="meta.jar" includes="META-INF/**/*" basedir=".">
     </jar>
@@ -157,6 +159,26 @@
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
+  </target>
+
+  <!--aotcache-->
+
+  <target name="aot-gen">
+    <sequential>
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true" jvm="${user.home}/bin/jfexec">
+        <arg value="${ant.file}"/>
+        <arg value="aot-gen"/>
+      </java>
+    </sequential>
+  </target>
+
+  <target name="aot-run">
+    <sequential>
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true" jvm="${user.home}/bin/jfexec">
+        <arg value="${ant.file}"/>
+        <arg value="aot-run"/>
+      </java>
+    </sequential>
   </target>
 
   <target name="run">
