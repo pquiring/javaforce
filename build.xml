@@ -152,6 +152,13 @@
     <antcall target="jar-plc4j-transports-udp"/>
     <antcall target="jar-plc4j-driver-s7"/>
     <antcall target="jar-plc4j-utils-audit-log-api"/>
+    <antcall target="jar-milo-stack-core"/>
+    <antcall target="jar-milo-sdk-core"/>
+    <antcall target="jar-milo-sdk-client"/>
+    <antcall target="jar-milo-sdk-server"/>
+    <antcall target="jar-milo-transport"/>
+    <antcall target="jar-milo-encoding-json"/>
+    <antcall target="jar-milo-encoding-xml"/>
   </target>
 
   <target name="compile" depends="depjars" unless="fast-build" description="compile the source">

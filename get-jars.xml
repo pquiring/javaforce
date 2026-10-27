@@ -67,7 +67,7 @@
     <maven name="bcutil-jdk18on" dest="bcutil" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
-  <!-- tomcat 9.x api (servlets) -->
+  <!-- apache tomcat 9.x api (servlets) -->
 
   <available property="have-servlet-api" file="${lib}/servlet-api-${tomcat-version}.jar"/>
   <target name="get-servlet-api" unless="have-servlet-api">
@@ -94,7 +94,7 @@
     <maven name="tomcat-juli" dest="juli-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
-  <!-- tomcat 11.x api (servlets) -->
+  <!-- apache tomcat 11.x api (servlets) -->
 
   <available property="have-servlet11-api" file="${lib}/servlet-api-${tomcat11-version}.jar"/>
   <target name="get-servlet11-api" unless="have-servlet11-api">
@@ -138,7 +138,7 @@
     <maven name="jakarta.websocket-api" dest="jakarta-websocket-api" path="jakarta/websocket" version="${jakarta-websocket-version}"/>
   </target>
 
-  <!-- log4j -->
+  <!-- apache log4j -->
 
   <available property="have-log4j-core" file="${lib}/log4j-core-${log4j-version}.jar"/>
   <target name="get-log4j-core" unless="have-log4j-core">
@@ -172,7 +172,7 @@
     <maven name="slf4j-jdk14" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
-  <!-- mina/ssh -->
+  <!-- apache mina/ssh -->
 
   <available property="have-mina-core" file="${lib}/mina-core-${mina-version}.jar"/>
   <target name="get-mina-core" unless="have-mina-core">
@@ -231,7 +231,7 @@
     <maven name="netty-codec" path="io/netty" version="${netty-version}"/>
   </target>
 
-  <!-- plc4j -->
+  <!-- apache plc4j -->
 
   <available property="have-plc4j-api" file="${lib}/plc4j-api-${plc4j-version}.jar"/>
   <target name="get-plc4j-api" unless="have-plc4j-api">
@@ -308,7 +308,7 @@
     <maven name="plc4j-utils-audit-log-api" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
-  <!-- apache -->
+  <!-- apache misc -->
 
   <available property="have-derby" file="${lib}/derby-${derby-version}.jar"/>
   <target name="get-derby" unless="have-derby">
@@ -348,6 +348,43 @@
   <available property="have-xmpbox" file="${lib}/xmpbox-${pdfbox-version}.jar"/>
   <target name="get-xmpbox" unless="have-xmpbox">
     <maven name="xmpbox" path="org/apache/pdfbox" version="${pdfbox-version}"/>
+  </target>
+
+  <!-- eclipse milo -->
+
+  <available property="have-milo-stack-core" file="${lib}/milo-stack-core-${milo-version}.jar"/>
+  <target name="get-milo-stack-core" unless="have-milo-stack-core">
+    <maven name="milo-stack-core" path="org/eclipse/milo" version="${milo-version}"/>
+  </target>
+
+  <available property="have-milo-sdk-core" file="${lib}/milo-sdk-core-${milo-version}.jar"/>
+  <target name="get-milo-sdk-core" unless="have-milo-sdk-core">
+    <maven name="milo-sdk-core" path="org/eclipse/milo" version="${milo-version}"/>
+  </target>
+
+  <available property="have-milo-sdk-client" file="${lib}/milo-sdk-client-${milo-version}.jar"/>
+  <target name="get-milo-sdk-client" unless="have-milo-sdk-client">
+    <maven name="milo-sdk-client" path="org/eclipse/milo" version="${milo-version}"/>
+  </target>
+
+  <available property="have-milo-sdk-server" file="${lib}/milo-sdk-server-${milo-version}.jar"/>
+  <target name="get-milo-sdk-server" unless="have-milo-sdk-server">
+    <maven name="milo-sdk-server" path="org/eclipse/milo" version="${milo-version}"/>
+  </target>
+
+  <available property="have-milo-transport" file="${lib}/milo-transport-${milo-version}.jar"/>
+  <target name="get-milo-transport" unless="have-milo-transport">
+    <maven name="milo-transport" path="org/eclipse/milo" version="${milo-version}"/>
+  </target>
+
+  <available property="have-milo-encoding-json" file="${lib}/milo-encoding-json-${milo-version}.jar"/>
+  <target name="get-milo-encoding-json" unless="have-milo-encoding-json">
+    <maven name="milo-encoding-json" path="org/eclipse/milo" version="${milo-version}"/>
+  </target>
+
+  <available property="have-milo-encoding-xml" file="${lib}/milo-encoding-xml-${milo-version}.jar"/>
+  <target name="get-milo-encoding-xml" unless="have-milo-encoding-xml">
+    <maven name="milo-encoding-xml" path="org/eclipse/milo" version="${milo-version}"/>
   </target>
 
   <!-- others -->
@@ -466,5 +503,12 @@
     <antcall target="get-plc4j-transports-udp"/>
     <antcall target="get-plc4j-driver-s7"/>
     <antcall target="get-plc4j-utils-audit-log-api"/>
+    <antcall target="get-milo-stack-core"/>
+    <antcall target="get-milo-sdk-core"/>
+    <antcall target="get-milo-sdk-client"/>
+    <antcall target="get-milo-sdk-server"/>
+    <antcall target="get-milo-transport"/>
+    <antcall target="get-milo-encoding-json"/>
+    <antcall target="get-milo-encoding-xml"/>
   </target>
 </project>

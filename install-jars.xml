@@ -59,7 +59,7 @@
     <copyjar name="bcutil" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
-  <!-- tomcat 9.x api (servlets) -->
+  <!-- apache tomcat 9.x api (servlets) -->
 
   <target name="jar-servlet-api">
     <copyjar name="servlet-api" version="${tomcat-version}" path="${jarpath}"/>
@@ -81,7 +81,7 @@
     <copyjar name="juli-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
 
-  <!-- tomcat 11.x api (servlets) -->
+  <!-- apache tomcat 11.x api (servlets) -->
 
   <target name="jar-servlet11-api">
     <copyjar name="servlet11-api" version="${tomcat11-version}" path="${jarpath}"/>
@@ -117,7 +117,7 @@
     <copyjar name="jakarta-websocket-api" version="${jakarta-websocket-version}" path="${jarpath}"/>
   </target>
 
-  <!-- log4j -->
+  <!-- apache log4j -->
 
   <target name="jar-log4j-core">
     <copyjar name="log4j-core" version="${log4j-version}" path="${jarpath}"/>
@@ -145,7 +145,7 @@
     <copyjar name="slf4j-jdk14" version="${slf4j-version}" path="${jarpath}"/>
   </target>
 
-  <!-- mina/ssh -->
+  <!-- apache mina/ssh -->
 
   <target name="jar-mina-core">
     <copyjar name="mina-core" version="${mina-version}" path="${jarpath}"/>
@@ -193,7 +193,7 @@
     <copyjar name="netty-codec" version="${netty-version}" path="${jarpath}"/>
   </target>
 
-  <!-- plc4j -->
+  <!-- apache plc4j -->
 
   <target name="jar-plc4j-api">
     <copyjar name="plc4j-api" version="${plc4j-version}" path="${jarpath}"/>
@@ -255,7 +255,7 @@
     <copyjar name="plc4j-utils-audit-log-api" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
-  <!-- apache -->
+  <!-- apache misc -->
 
   <target name="jar-derby">
     <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
@@ -287,6 +287,36 @@
 
   <target name="jar-xmpbox">
     <copyjar name="xmpbox" version="${pdfbox-version}" path="${jarpath}"/>
+  </target>
+
+  <!-- eclipse milo -->
+
+  <target name="jar-milo-stack-core">
+    <copyjar name="milo-stack-core" version="${milo-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-milo-sdk-core">
+    <copyjar name="milo-sdk-core" version="${milo-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-milo-sdk-client">
+    <copyjar name="milo-sdk-client" version="${milo-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-milo-sdk-server">
+    <copyjar name="milo-sdk-server" version="${milo-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-milo-transport">
+    <copyjar name="milo-transport" version="${milo-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-milo-encoding-json">
+    <copyjar name="milo-encoding-json" version="${milo-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-milo-encoding-xml">
+    <copyjar name="milo-encoding-xml" version="${milo-version}" path="${jarpath}"/>
   </target>
 
   <!-- others -->
