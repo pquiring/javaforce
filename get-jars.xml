@@ -231,6 +231,18 @@
     <maven name="netty-codec" path="io/netty" version="${netty-version}"/>
   </target>
 
+  <!-- netty add-ons -->
+
+  <available property="have-netty-channel-fsm" file="${lib}/netty-channel-fsm-${netty-channel-fsm-version}.jar"/>
+  <target name="get-netty-channel-fsm" unless="have-netty-channel-fsm">
+    <maven name="netty-channel-fsm" path="com/digitalpetri/netty" version="${netty-channel-fsm-version}"/>
+  </target>
+
+  <available property="have-strict-machine" file="${lib}/strict-machine-${strict-machine-version}.jar"/>
+  <target name="get-strict-machine" unless="have-strict-machine">
+    <maven name="strict-machine" path="com/digitalpetri/fsm" version="${strict-machine-version}"/>
+  </target>
+
   <!-- apache plc4j -->
 
   <available property="have-plc4j-api" file="${lib}/plc4j-api-${plc4j-version}.jar"/>
@@ -488,6 +500,8 @@
     <antcall target="get-netty-transport"/>
     <antcall target="get-netty-handler"/>
     <antcall target="get-netty-codec"/>
+    <antcall target="get-netty-channel-fsm"/>
+    <antcall target="get-strict-machine"/>
     <antcall target="get-plc4j-api"/>
     <antcall target="get-plc4j-spi-buffers-api"/>
     <antcall target="get-plc4j-spi-buffers-byte"/>

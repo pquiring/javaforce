@@ -29,6 +29,11 @@
     <include name="pdfbox-io.jar"/>
     <include name="slf4j-api.jar"/>
     <include name="plc4j-api.jar"/>
+    <include name="milo-stack-core.jar"/>
+    <include name="milo-sdk-core.jar"/>
+    <include name="milo-sdk-client.jar"/>
+    <include name="milo-sdk-server.jar"/>
+    <include name="milo-transport.jar"/>
   </fileset>
 
   <property file="versions.properties"/>
@@ -137,6 +142,8 @@
     <antcall target="jar-netty-transport"/>
     <antcall target="jar-netty-handler"/>
     <antcall target="jar-netty-codec"/>
+    <antcall target="jar-netty-channel-fsm"/>
+    <antcall target="jar-strict-machine"/>
     <antcall target="jar-plc4j-api"/>
     <antcall target="jar-plc4j-spi-buffers-api"/>
     <antcall target="jar-plc4j-spi-buffers-byte"/>

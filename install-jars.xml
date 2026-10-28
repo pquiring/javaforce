@@ -193,6 +193,16 @@
     <copyjar name="netty-codec" version="${netty-version}" path="${jarpath}"/>
   </target>
 
+  <!-- netty add-ons -->
+
+  <target name="jar-netty-channel-fsm">
+    <copyjar name="netty-channel-fsm" version="${netty-channel-fsm-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-strict-machine">
+    <copyjar name="strict-machine" version="${strict-machine-version}" path="${jarpath}"/>
+  </target>
+
   <!-- apache plc4j -->
 
   <target name="jar-plc4j-api">
