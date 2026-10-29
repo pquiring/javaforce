@@ -3,6 +3,7 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javaforce.*;
 import javaforce.bus.*;
@@ -345,6 +346,7 @@ public class MQTTServer extends ConfigServlet {
     private ServerSocket ss;
     private int port;
     private boolean secure;
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
 
     public boolean worker_active;
 
@@ -366,8 +368,14 @@ public class MQTTServer extends ConfigServlet {
         while (worker_active) {
           Socket s = ss.accept();
           Client client = new Client(s);
-          client.start();
+          threads.submit(client);
         }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      try {
+        threads.shutdown();
+        threads = null;
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -485,7 +493,7 @@ public class MQTTServer extends ConfigServlet {
 
   public static Client[] ClientArrayType = new Client[0];
 
-  private class Client extends Thread {
+  private class Client implements Runnable {
     public Socket s;
     public InputStream is;
     public OutputStream os;
