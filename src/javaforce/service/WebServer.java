@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.security.*;
+import java.util.concurrent.*;
 import javax.net.ssl.*;
 
 import javaforce.*;
@@ -67,16 +68,18 @@ public class WebServer {
       ss = null;
     }
     //NOTE:this could be Connection thread callback so stop threads in another thread
-    new Thread() {public void run() {
-      while (clients.size() > 0) {
-        synchronized (clientsLock) {
-          if (clients.size() == 0) break;
-          Connection conn = clients.get(0);
-          conn.cancel();
+    new Thread() {
+      public void run() {
+        while (clients.size() > 0) {
+          synchronized (clientsLock) {
+            if (clients.size() == 0) break;
+            Connection conn = clients.get(0);
+            conn.cancel();
+          }
+          JF.sleep(100);
         }
-        JF.sleep(100);
       }
-    }}.start();
+    }.start();
   }
 
   public void setClientVerify(boolean state) {
@@ -86,6 +89,7 @@ public class WebServer {
 
   private static class Server extends Thread {
     private WebServer web;
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public Server(WebServer web) {
       this.web = web;
     }
@@ -99,16 +103,22 @@ public class WebServer {
           synchronized (web.clientsLock) {
             web.clients.add(conn);
           }
-          conn.start();
+          threads.submit(conn);
         } catch (SocketException e) {
           if (debug) JFLog.log("WebServer.Server:disconnected");
         } catch (Exception e) {
           JFLog.log(e);
         }
       }
+      try {
+        threads.shutdown();
+        threads = null;
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     }
   }
-  private static class Connection extends Thread {
+  private static class Connection implements Runnable {
     private Socket s;
     private InputStream is;
     private WebServer web;
@@ -117,7 +127,6 @@ public class WebServer {
       this.s = s;
     }
     public void run() {
-      setName("WebServer.Connection");
       //read request and pass to WebHandler
       try {
         StringBuilder request = new StringBuilder();
