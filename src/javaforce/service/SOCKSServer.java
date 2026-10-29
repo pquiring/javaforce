@@ -3,6 +3,7 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javax.net.ssl.*;
 
@@ -167,6 +168,7 @@ public class SOCKSServer extends ConfigServlet {
   }
 
   private class Server extends Thread {
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public boolean active;
     public void run() {
       JFLog.append(JF.getLogPath() + "/jfsocks.log", true);
@@ -200,12 +202,12 @@ public class SOCKSServer extends ConfigServlet {
         active = true;
         for(ForwardLocal fl : forward_local_list) {
           ForwardLocalWorker flw = new ForwardLocalWorker(fl);
-          flw.start();
+          threads.submit(flw);
           forward_local_workers.add(flw);
         }
         for(ForwardRemote fr : forward_remote_list) {
           ForwardRemoteWorker frw = new ForwardRemoteWorker(fr);
-          frw.start();
+          threads.submit(frw);
           forward_remote_workers.add(frw);
         }
         while (active) {
@@ -224,10 +226,16 @@ public class SOCKSServer extends ConfigServlet {
             }
             SocksWorker sess = new SocksWorker(s);
             addSession(sess);
-            sess.start();
+            threads.submit(sess);
           } catch (Exception e) {
             log(e);
           }
+        }
+        try {
+          threads.shutdown();
+          threads = null;
+        } catch (Exception e) {
+          JFLog.log(e);
         }
       } catch (Exception e) {
         JFLog.log(e);
@@ -550,7 +558,7 @@ public class SOCKSServer extends ConfigServlet {
     return false;
   }
 
-  public class SocksWorker extends Thread {
+  public class SocksWorker implements Runnable {
     private Socket c;
     private Socket o;
     private ProxyData pd1, pd2;
@@ -686,12 +694,12 @@ public class SOCKSServer extends ConfigServlet {
       reply[1] = 0x5a;  //success
       cos.write(reply);
       //now just proxy data back and forth
+      ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
       pd1 = new ProxyData(c,o,"s4-1");
-      pd1.start();
+      threads.submit(pd1);
       pd2 = new ProxyData(o,c,"s4-2");
-      pd2.start();
-      pd1.join();
-      pd2.join();
+      threads.submit(pd2);
+      threads.close();   //joins both threads
       JFLog.log("SOCKS4:connect() Session end");
     }
 
@@ -740,12 +748,12 @@ public class SOCKSServer extends ConfigServlet {
         }
         cos.write(reply);
         //now just proxy data back and forth
+        ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
         pd1 = new ProxyData(c,o,"s4-1");
-        pd1.start();
+        threads.submit(pd1);
         pd2 = new ProxyData(o,c,"s4-2");
-        pd2.start();
-        pd1.join();
-        pd2.join();
+        threads.submit(pd2);
+        threads.close();  //joins both threads
       } catch (Exception e) {
         log(e);
       }
@@ -854,12 +862,12 @@ public class SOCKSServer extends ConfigServlet {
       o = new Socket(dest, port);
       connected = true;
       //now just proxy data back and forth
+      ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
       pd1 = new ProxyData(c,o,"s5-1");
-      pd1.start();
+      threads.submit(pd1);
       pd2 = new ProxyData(o,c,"s5-2");
-      pd2.start();
-      pd1.join();
-      pd2.join();
+      threads.submit(pd2);
+      threads.close();  //join both threads
       JFLog.log("SOCKS5:connect() Session end");
     }
     private void socks5_bind() throws Exception {
@@ -923,12 +931,12 @@ public class SOCKSServer extends ConfigServlet {
         cos.write(reply);
         connected = true;
         //now just proxy data back and forth
+        ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
         pd1 = new ProxyData(c,o,"s5-1");
-        pd1.start();
+        threads.submit(pd1);
         pd2 = new ProxyData(o,c,"s5-2");
-        pd2.start();
-        pd1.join();
-        pd2.join();
+        threads.submit(pd2);
+        threads.close();  //joins both threads
       } catch (Exception e) {
         log(e);
       }
@@ -939,9 +947,10 @@ public class SOCKSServer extends ConfigServlet {
     }
   }
 
-  public class ForwardLocalWorker extends Thread {
+  public class ForwardLocalWorker implements Runnable {
     private ForwardLocal forward;
     private ServerSocket ss;
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public ForwardLocalWorker(ForwardLocal forward) {
       this.forward = forward;
     }
@@ -953,14 +962,27 @@ public class SOCKSServer extends ConfigServlet {
           Socket from = ss.accept();
           try {
             Socket to = new Socket(forward.to.toInetAddress(), forward.to.port);
-            ProxyData pd1 = new ProxyData(from, to, "f-1");
-            pd1.start();
-            ProxyData pd2 = new ProxyData(to, from, "f-2");
-            pd2.start();
-            //TODO : join ProxyData threads
+            threads.submit(
+              new Runnable() {
+                public void run() {
+                  ExecutorService pthreads = Executors.newVirtualThreadPerTaskExecutor();
+                  ProxyData pd1 = new ProxyData(from, to, "f-1");
+                  pthreads.submit(pd1);
+                  ProxyData pd2 = new ProxyData(to, from, "f-2");
+                  pthreads.submit(pd2);
+                  pthreads.close();  //joins both threads
+                }
+              }
+            );
           } catch (Exception e) {
             log(e);
           }
+        }
+        try {
+          threads.shutdown();
+          threads = null;
+        } catch (Exception e) {
+          JFLog.log(e);
         }
       } catch (Exception e) {
         log(e);
@@ -972,7 +994,7 @@ public class SOCKSServer extends ConfigServlet {
     }
   }
 
-  public class ForwardRemoteWorker extends Thread {
+  public class ForwardRemoteWorker implements Runnable {
     private ForwardRemote forward;
     public ForwardRemoteWorker(ForwardRemote forward) {
       this.forward = forward;
@@ -998,11 +1020,12 @@ public class SOCKSServer extends ConfigServlet {
               }
             }
             Socket to = new Socket(forward.to.toInetAddress(), forward.to.port);
+            ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
             ProxyData pd1 = new ProxyData(from, to, "f-1");
-            pd1.start();
+            threads.submit(pd1);
             ProxyData pd2 = new ProxyData(to, from, "f-2");
-            pd2.start();
-            //TODO : join ProxyData threads
+            threads.submit(pd2);
+            threads.close();  //joins both threads
             wait = false;
           } catch (Exception e) {
             log(e);
@@ -1032,7 +1055,7 @@ public class SOCKSServer extends ConfigServlet {
     }
   }
 
-  public class ProxyData extends Thread {
+  public class ProxyData implements Runnable {
     private Socket sRead;
     private Socket sWrite;
     private volatile boolean active;
