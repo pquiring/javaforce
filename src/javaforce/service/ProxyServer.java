@@ -396,6 +396,14 @@ public class ProxyServer extends ConfigServlet {
     return secureSite.port;
   }
 
+  /** SecureSite.
+   *
+   * This is used when config:filtersecure is enabled.
+   * Creates a local self-signed secure server for clients to connect to and redirect
+   * traffic to requested host.
+   * Allows for monitoring secure traffic.
+   * The client may need to install local generated certificate.
+   */
   public class SecureSite extends Thread {
     private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public String domain;
