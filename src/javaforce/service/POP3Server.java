@@ -3,6 +3,7 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javaforce.*;
 import javaforce.net.*;
@@ -293,6 +294,7 @@ public class POP3Server extends ConfigServlet {
     private int port;
     private boolean secure;
     private boolean worker_active;
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
 
     public ServerWorker(int port, boolean secure) {
       this.port = port;
@@ -335,8 +337,14 @@ public class POP3Server extends ConfigServlet {
           }
           ClientWorker sess = new ClientWorker(s, secure);
           addSession(sess);
-          sess.start();
+          threads.submit(sess);
         }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      try {
+        threads.shutdown();
+        threads = null;
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -360,7 +368,7 @@ public class POP3Server extends ConfigServlet {
     return false;
   }
 
-  public class ClientWorker extends Thread {
+  public class ClientWorker implements Runnable {
     private Socket c;
     private boolean secure;
     private InputStream cis = null;
