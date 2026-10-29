@@ -193,6 +193,10 @@
     <copyjar name="netty-codec" version="${netty-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-netty-resolver">
+    <copyjar name="netty-resolver" version="${netty-version}" path="${jarpath}"/>
+  </target>
+
   <!-- netty add-ons -->
 
   <target name="jar-netty-channel-fsm">

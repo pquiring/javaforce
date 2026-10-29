@@ -231,6 +231,11 @@
     <maven name="netty-codec" path="io/netty" version="${netty-version}"/>
   </target>
 
+  <available property="have-netty-resolver" file="${lib}/netty-resolver-${netty-version}.jar"/>
+  <target name="get-netty-resolver" unless="have-netty-resolver">
+    <maven name="netty-resolver" path="io/netty" version="${netty-version}"/>
+  </target>
+
   <!-- netty add-ons -->
 
   <available property="have-netty-channel-fsm" file="${lib}/netty-channel-fsm-${netty-channel-fsm-version}.jar"/>
@@ -500,6 +505,7 @@
     <antcall target="get-netty-transport"/>
     <antcall target="get-netty-handler"/>
     <antcall target="get-netty-codec"/>
+    <antcall target="get-netty-resolver"/>
     <antcall target="get-netty-channel-fsm"/>
     <antcall target="get-strict-machine"/>
     <antcall target="get-plc4j-api"/>

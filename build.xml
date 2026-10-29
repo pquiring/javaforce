@@ -142,6 +142,7 @@
     <antcall target="jar-netty-transport"/>
     <antcall target="jar-netty-handler"/>
     <antcall target="jar-netty-codec"/>
+    <antcall target="jar-netty-resolver"/>
     <antcall target="jar-netty-channel-fsm"/>
     <antcall target="jar-strict-machine"/>
     <antcall target="jar-plc4j-api"/>
