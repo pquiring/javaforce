@@ -3,6 +3,7 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javaforce.*;
 import javaforce.net.*;
@@ -69,6 +70,7 @@ public class FileSyncServer {
   }
 
   private class Server extends Thread {
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public boolean active;
     public ServerSocket ss;
     public IP4Port bind = new IP4Port();
@@ -101,8 +103,14 @@ public class FileSyncServer {
           Socket s = ss.accept();
           Client client = new Client(s);
           addClient(client);
-          client.start();
+          threads.submit(client);
         }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      try {
+        threads.shutdown();
+        threads = null;
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -175,7 +183,7 @@ public class FileSyncServer {
     JFLog.log(s.toString());
   }
 
-  private class Client extends Thread {
+  private class Client implements Runnable {
     public String remote;
     private Socket s;
     private InputStream is;
