@@ -3,9 +3,10 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javaforce.bus.*;
+import java.util.concurrent.*;
 
 import javaforce.*;
+import javaforce.bus.*;
 import javaforce.net.*;
 
 /** FTP Server.
@@ -307,6 +308,8 @@ public class FTPServer extends ConfigServlet {
     private ServerSocket ss;
     private int port;
     private boolean secure;
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
+
     public boolean worker_active;
 
     public ServerWorker(int port, boolean secure) {
@@ -352,8 +355,14 @@ public class FTPServer extends ConfigServlet {
           }
           ClientWorker sess = new ClientWorker(s, secure);
           addSession(sess);
-          sess.start();
+          threads.submit(sess);
         }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      try {
+        threads.shutdown();
+        threads = null;
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -390,7 +399,7 @@ public class FTPServer extends ConfigServlet {
 
   private enum Mode {none, passive, port};
 
-  public class ClientWorker extends Thread {
+  public class ClientWorker implements Runnable {
     private Socket c;
     private boolean secure;
     private InputStream cis = null;
