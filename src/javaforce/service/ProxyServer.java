@@ -3,8 +3,9 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.net.ssl.*;
 import java.security.*;
+import java.util.concurrent.*;
+import javax.net.ssl.*;
 
 import javaforce.*;
 import javaforce.bus.*;
@@ -51,7 +52,7 @@ public class ProxyServer extends ConfigServlet {
   private int port = 3128;
   private int nextSSLport = 8081;
   private boolean filtersecure = false;
-  private HashMap<String, SecureSite> secureSites = new HashMap<String,SecureSite>();
+  private HashMap<String, SecureSite> secureSites = new HashMap<String, SecureSite>();
   private String keyPath;
   private SSLSocketFactory sslSocketFactory;
 
@@ -100,6 +101,7 @@ public class ProxyServer extends ConfigServlet {
   }
 
   private class Server extends Thread {
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public boolean active;
     public void run() {
       JFLog.append(getLogFile(), true);
@@ -169,8 +171,14 @@ public class ProxyServer extends ConfigServlet {
         while (active) {
           s = ss.accept();
           sess = new Session(s, false);
-          sess.start();
+          threads.submit(sess);
         }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      try {
+        threads.shutdown();
+        threads = null;
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -206,12 +214,18 @@ public class ProxyServer extends ConfigServlet {
     + "allow=0.0.0.0/0 #allow all\n"
     + "#allow=192.168.0.0/24 #allow subnet\n"
     + "#allow=10.1.2.3/32 #allow single ip\n"
+    + "#filtersecure=false #redirect secure traffic thru local self-signed redirection server for monitoring\n"
     + "\n"
     + "[blockdomain]\n"
-    + ".*youtube[.]com\n"
+    + "#.*youtube[.]com\n"
+    + "\n"
+    + "[blockurl]\n"
+    + "#/private\n"
     + "\n"
     + "[urlchange]\n"
-    + "#www.example.com/test = www.google.com\n";
+    + "#www.example.com/test = www.google.com\n"
+    ;
+
 
   private void loadConfig() {
     filtersecure = false;
@@ -383,6 +397,7 @@ public class ProxyServer extends ConfigServlet {
   }
 
   public class SecureSite extends Thread {
+    private ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
     public String domain;
     public SSLContext sc;
     public SSLServerSocketFactory serverSocketFactory;
@@ -497,8 +512,14 @@ public class ProxyServer extends ConfigServlet {
         while (!ss.isClosed()) {
           s = (SSLSocket)ss.accept();
           sess = new Session(s, true);
-          sess.start();
+          threads.submit(sess);
         }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      try {
+        threads.shutdown();
+        threads = null;
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -513,7 +534,7 @@ public class ProxyServer extends ConfigServlet {
     }
   }
 
-  private class Session extends Thread {
+  private class Session implements Runnable {
     private Socket p, i;  //proxy, internet
     private InputStream pis, iis;
     private OutputStream pos, ios;
@@ -935,12 +956,12 @@ public class ProxyServer extends ConfigServlet {
       }
       pos.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
       pos.flush();
+      ExecutorService threads = Executors.newVirtualThreadPerTaskExecutor();
       ConnectRelay i2p = new ConnectRelay(iis, pos);
       ConnectRelay p2i = new ConnectRelay(pis, ios);
-      i2p.start();
-      p2i.start();
-      i2p.join();
-      p2i.join();
+      threads.submit(i2p);
+      threads.submit(p2i);
+      threads.close();  //implicitly join all threads
       disconn = true;  //not HTTP/1.1 compatible?
     }
     private String removeHost(String req) throws Exception {
@@ -953,7 +974,7 @@ public class ProxyServer extends ConfigServlet {
       URL url = new URI(urlstr).toURL();
       return p[0] + " " + url.getFile() + " " + p[2];
     }
-    private class ConnectRelay extends Thread {
+    private class ConnectRelay implements Runnable {
       private InputStream is;
       private OutputStream os;
       private byte[] buf = new byte[4096];
