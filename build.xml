@@ -99,7 +99,7 @@
 
   <available property="have-repo" file="repo/readme.txt"/>
   <target name="get-repo" unless="have-repo" description="download repo">
-    <exec command="git clone https://github.com/pquiring/repo"/>
+    <exec command="git clone -q https://github.com/pquiring/repo"/>
   </target>
 
   <target name="depjars" unless="fast-build">
@@ -110,7 +110,7 @@
     <antcall target="get-opencl"/>
     <antcall target="get-vulkan"/>
     <antcall target="get-repo"/>
-    <antcall target="getjars"/>
+    <antcall target="get-jars"/>
     <antcall target="jar-jcifs"/>
     <antcall target="jar-bcprov"/>
     <antcall target="jar-bctls"/>
@@ -224,10 +224,6 @@
       <java classpath="${home}/utils.jar;${home}/jsvg.jar" classname="javaforce.utils.GenIcons" fork="true" jvm="${user.home}/bin/jfexec">
       </java>
     </sequential>
-  </target>
-
-  <target name="repo" description="download repo files">
-    <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
   <target name="install" description="install files">

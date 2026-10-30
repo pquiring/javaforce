@@ -446,7 +446,7 @@
     <maven name="tinyradius" path="org/tinyradius" version="${tinyradius-version}"/>
   </target>
 
-  <target name="getjars">
+  <target name="get-jars">
     <!-- depends via antcalls -->
     <antcall target="get-twelvemonkeys-common-lang"/>
     <antcall target="get-twelvemonkeys-common-io"/>
