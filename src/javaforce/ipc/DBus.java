@@ -45,9 +45,6 @@ import javaforce.ipc.transport.*;
  *  - sender field required to send back RPC reply
  *    - although technically not required for DBus on Linux
  *      it is required for the Windows Pipes implementation
- *  - methods must return a value (void is not supported)
- *    - return boolean at the least and always return true
- *      so caller knows call was successful
  *  - on Linux a dbus conf is installed to allow end points to
  *      use names that begin with "javaforce." (root only)
  *      Clients should just use a system supplied bus name
