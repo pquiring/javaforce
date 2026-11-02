@@ -1,0 +1,11 @@
+<project name="javaforce:libs" default="get-jars" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+  <description>JavaForce:libs</description>
+  <property name="home" value=".."/>
+
+  <target name="depjars"></target>
+  <target name="jar"></target>
+
+  <import file="${home}/base.xml"/>
+
+  <import file="get-jars.xml"/>
+</project>

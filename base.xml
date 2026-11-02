@@ -132,7 +132,7 @@
     </sequential>
   </macrodef>
 
-  <import file="install-jars.xml"/>
+  <import file="lib/install-jars.xml"/>
 
   <target name="executable" depends="jar,depjars,depnatives" description="create executable launcher">
     <sequential>

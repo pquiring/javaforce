@@ -36,9 +36,7 @@
     <include name="milo-transport.jar"/>
   </fileset>
 
-  <property file="versions.properties"/>
-  <property file="javaforce.properties"/>
-
+  <property file="${home}/javaforce.properties"/>
   <property name="version" value="${javaforce-version}"/>
 
   <condition property="have-jfexec">
@@ -95,8 +93,6 @@
     <unzip src="ffmpeg-win64-src-${ffmpeg-version}.zip" dest="ffmpeg-src"/>
   </target>
 
-  <import file="get-jars.xml"/>
-
   <available property="have-repo" file="repo/readme.txt"/>
   <target name="get-repo" unless="have-repo" description="download repo">
     <exec command="git clone -q https://github.com/pquiring/repo"/>
@@ -110,7 +106,6 @@
     <antcall target="get-opencl"/>
     <antcall target="get-vulkan"/>
     <antcall target="get-repo"/>
-    <antcall target="get-jars"/>
     <antcall target="jar-jcifs"/>
     <antcall target="jar-bcprov"/>
     <antcall target="jar-bctls"/>
