@@ -4,6 +4,7 @@ import javaforce.JFLog;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.helpers.MessageFormatter;
 
 /** JFLog compatible with SLF
  *
@@ -31,15 +32,15 @@ public class JFLogger implements Logger {
   }
 
   public void trace(String format, Object arg) {
-    JFLog.log(JFLog.TRACE, String.format(format, arg));
+    JFLog.log(JFLog.TRACE, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void trace(String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.TRACE, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.TRACE, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void trace(String format, Object... args) {
-    JFLog.log(JFLog.TRACE, String.format(format, args));
+    JFLog.log(JFLog.TRACE, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void trace(String msg, Throwable t) {
@@ -56,15 +57,15 @@ public class JFLogger implements Logger {
   }
 
   public void trace(Marker marker, String format, Object arg) {
-    JFLog.log(JFLog.TRACE, String.format(format, arg));
+    JFLog.log(JFLog.TRACE, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void trace(Marker marker, String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.TRACE, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.TRACE, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void trace(Marker marker, String format, Object... args) {
-    JFLog.log(JFLog.TRACE, String.format(format, args));
+    JFLog.log(JFLog.TRACE, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void trace(Marker marker, String msg, Throwable t) {
@@ -81,15 +82,15 @@ public class JFLogger implements Logger {
   }
 
   public void debug(String format, Object arg) {
-    JFLog.log(JFLog.DEBUG, String.format(format, arg));
+    JFLog.log(JFLog.DEBUG, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void debug(String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.DEBUG, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.DEBUG, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void debug(String format, Object... args) {
-    JFLog.log(JFLog.DEBUG, String.format(format, args));
+    JFLog.log(JFLog.DEBUG, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void debug(String msg, Throwable t) {
@@ -106,15 +107,15 @@ public class JFLogger implements Logger {
   }
 
   public void debug(Marker marker, String format, Object arg) {
-    JFLog.log(JFLog.DEBUG, String.format(format, arg));
+    JFLog.log(JFLog.DEBUG, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void debug(Marker marker, String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.DEBUG, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.DEBUG, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void debug(Marker marker, String format, Object... args) {
-    JFLog.log(JFLog.DEBUG, String.format(format, args));
+    JFLog.log(JFLog.DEBUG, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void debug(Marker marker, String msg, Throwable t) {
@@ -131,15 +132,15 @@ public class JFLogger implements Logger {
   }
 
   public void info(String format, Object arg) {
-    JFLog.log(JFLog.INFO, String.format(format, arg));
+    JFLog.log(JFLog.INFO, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void info(String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.INFO, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.INFO, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void info(String format, Object... args) {
-    JFLog.log(JFLog.INFO, String.format(format, args));
+    JFLog.log(JFLog.INFO, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void info(String msg, Throwable t) {
@@ -156,15 +157,15 @@ public class JFLogger implements Logger {
   }
 
   public void info(Marker marker, String format, Object arg) {
-    JFLog.log(JFLog.INFO, String.format(format, arg));
+    JFLog.log(JFLog.INFO, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void info(Marker marker, String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.INFO, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.INFO, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void info(Marker marker, String format, Object... args) {
-    JFLog.log(JFLog.INFO, String.format(format, args));
+    JFLog.log(JFLog.INFO, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void info(Marker marker, String msg, Throwable t) {
@@ -181,15 +182,15 @@ public class JFLogger implements Logger {
   }
 
   public void warn(String format, Object arg) {
-    JFLog.log(JFLog.WARN, String.format(format, arg));
+    JFLog.log(JFLog.WARN, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void warn(String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.WARN, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.WARN, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void warn(String format, Object... args) {
-    JFLog.log(JFLog.WARN, String.format(format, args));
+    JFLog.log(JFLog.WARN, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void warn(String msg, Throwable t) {
@@ -206,15 +207,15 @@ public class JFLogger implements Logger {
   }
 
   public void warn(Marker marker, String format, Object arg) {
-    JFLog.log(JFLog.WARN, String.format(format, arg));
+    JFLog.log(JFLog.WARN, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void warn(Marker marker, String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.WARN, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.WARN, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void warn(Marker marker, String format, Object... args) {
-    JFLog.log(JFLog.WARN, String.format(format, args));
+    JFLog.log(JFLog.WARN, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void warn(Marker marker, String msg, Throwable t) {
@@ -231,15 +232,15 @@ public class JFLogger implements Logger {
   }
 
   public void error(String format, Object arg) {
-    JFLog.log(JFLog.ERROR, String.format(format, arg));
+    JFLog.log(JFLog.ERROR, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void error(String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.ERROR, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.ERROR, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void error(String format, Object... args) {
-    JFLog.log(JFLog.ERROR, String.format(format, args));
+    JFLog.log(JFLog.ERROR, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void error(String msg, Throwable t) {
@@ -256,15 +257,15 @@ public class JFLogger implements Logger {
   }
 
   public void error(Marker marker, String format, Object arg) {
-    JFLog.log(JFLog.ERROR, String.format(format, arg));
+    JFLog.log(JFLog.ERROR, MessageFormatter.format(format, arg).getMessage());
   }
 
   public void error(Marker marker, String format, Object arg1, Object arg2) {
-    JFLog.log(JFLog.ERROR, String.format(format, arg1, arg2));
+    JFLog.log(JFLog.ERROR, MessageFormatter.format(format, arg1, arg2).getMessage());
   }
 
   public void error(Marker marker, String format, Object... args) {
-    JFLog.log(JFLog.ERROR, String.format(format, args));
+    JFLog.log(JFLog.ERROR, MessageFormatter.arrayFormat(format, args).getMessage());
   }
 
   public void error(Marker marker, String msg, Throwable t) {
