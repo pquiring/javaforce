@@ -13,11 +13,11 @@ import javaforce.*;
  * @author peter.quiring
  */
 
-public class ServiceProvider implements org.slf4j.spi.SLF4JServiceProvider {
+public class JFSLFServiceProvider implements org.slf4j.spi.SLF4JServiceProvider {
 
   public ILoggerFactory getLoggerFactory() {
     JFLog.log("javaforce.slf.ServiceProvider.getLoggerFactory");
-    return new LoggerFactory();
+    return new JFLoggerFactory();
   }
 
   public IMarkerFactory getMarkerFactory() {

@@ -1,5 +1,5 @@
 /**
- * Provides slf4j interfaces using javaforce.JFLog
+ * Provides slf4j (Simple Logging Facade) interfaces using javaforce.JFLog
  *
  */
 package javaforce.slf;
