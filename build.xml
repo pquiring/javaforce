@@ -36,6 +36,7 @@
     <include name="milo-transport.jar"/>
   </fileset>
 
+  <property file="${home}/versions.properties"/>
   <property file="${home}/javaforce.properties"/>
   <property name="version" value="${javaforce-version}"/>
 
