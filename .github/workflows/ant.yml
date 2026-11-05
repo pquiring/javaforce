@@ -23,8 +23,6 @@ jobs:
         java-version: '25'
         distribution: 'temurin'
     - name: Download deps
-      working-directory: ./lib
-      run: ant -noinput -buildfile build.xml
+      run: ant -noinput -buildfile build.xml get-jars
     - name: Build project
-      working-directory: .
       run: ant -noinput -buildfile build.xml

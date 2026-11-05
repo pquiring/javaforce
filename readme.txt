@@ -50,9 +50,7 @@ Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
   git checkout tags/121.0
-  cd lib
-  ant
-  cd ..
+  ant get-jars
   ant
 Next build the native loaders.
 
