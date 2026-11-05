@@ -66,7 +66,6 @@ package sshd-scp jfsshd-scp $sshd_version
 package slf4j-api jfslf4j-api $slf4j_version
 package slf4j-jdk14 jfslf4j-jdk14 $slf4j_version
 package slf4j-nop jfslf4j-nop $slf4j_version
-package slf4j-reload4j jfslf4j-reload4j $slf4j_version
 package slf4j-simple jfslf4j-simple $slf4j_version
 package llrp jfllrp $llrp_version
 package filters jffilters $filters_version
@@ -76,6 +75,5 @@ package bcutil jfbcutil $bouncycastle_version
 package mina-core jfmina-core $mina_version
 package log4j-api jflog4j-api $log4j_version
 package log4j-core jflog4j-core $log4j_version
-package log4j-1.2-api jflog4j-1.2-api $log4j_version
 package mysql-jdbc jfmysql-jdbc $mysql_jdbc_version
 package mssql-jdbc jfmssql-jdbc $mssql_jdbc_version
