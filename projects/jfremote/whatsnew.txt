@@ -1,3 +1,6 @@
+2026-11-06 : v0.13
+  - new : upgraded FreeRDP to 3.33 on Windows
+
 2026-09-24 : v0.12
   - new : upgraded FreeRDP to 3.32 on Windows
 
