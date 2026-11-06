@@ -1,3 +1,6 @@
+2026-11-06 : 0.15 released
+  - new : implemented virtual threads for better performance
+
 2026-07-28 : 0.14 released
   - fix : version bump for server/viewer split
 
