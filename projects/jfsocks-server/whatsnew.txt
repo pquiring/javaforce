@@ -1,5 +1,8 @@
 Whats new ???
 
+Nov 6, 2026 : 0.19
+  - new : implemented virtual threads for better performance
+
 Aug 28, 2026 : 0.18
   - new : apps split into server/client packages
 
