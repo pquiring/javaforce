@@ -1,5 +1,16 @@
 What's new...
 
+Nov 6/2026 : JF/122.0
+  - many servers in javaforce.service.* support virtual threads for improved performance
+    - MQTTServer/0.15
+    - FTPServer/0.2
+    - ProxyServer/0.10
+    - POP3Server/0.2
+    - SMTPServer/0.2
+    - SOCKSServer/0.19
+  - jfRemote/0.13
+    - upgraded to FreeRDP/3.33.0
+
 Oct 23/2026 : JF/121.0
   - fix : opengl : glGetShaderInfoLog, glGetProgramInfoLog
   - new : opengl : glGetShaderiv, glGetProgramiv

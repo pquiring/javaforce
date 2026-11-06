@@ -1,5 +1,8 @@
 what's new in native API (since 113.0)
 
+122.0
+  - new : added support for AOTCache
+
 121.0
   - opengl : fixed glGetShaderInfoLog, glGetProgramInfoLog
   - opengl : added glGetShaderiv, glGetProgramiv
