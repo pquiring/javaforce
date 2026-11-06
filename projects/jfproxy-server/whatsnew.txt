@@ -1,6 +1,9 @@
 what's new?
 ===========
 
+Nov 6, 2026 : version 0.10
+  - new : implemented virtual threads for better performance
+
 Sept 28, 2020 : version 0.9
   - fix : log retention set to 30 days
 
