@@ -34,6 +34,9 @@ public class PLCFactory {
     //register default PLC Drivers
     registerDriver(new ABDriver());
     registerDriver(new S7Driver());
+    registerDriver(new ModbusDriver());
+    registerDriver(new JFCDriver());
+    registerDriver(new PLC4JDriver());
   }
 
   public static void registerDriver(PLCDriver driver) {

@@ -9,7 +9,7 @@ import javaforce.controls.*;
  * @author pquiring
  */
 
-public class ModbusDriver {
+public class ModbusDriver implements PLCDriver {
   public final static String name = "MB";
   public String getName() {return name;}
   public PLC create() {

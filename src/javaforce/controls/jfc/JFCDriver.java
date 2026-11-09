@@ -4,6 +4,8 @@ import javaforce.controls.*;
 
 /** JFC Driver.
  *
+ * JFC is a JavaForce protocol implemented by jfControls.
+ *
  * @author pquiring
  */
 
