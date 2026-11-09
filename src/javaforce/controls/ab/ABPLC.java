@@ -24,7 +24,6 @@ public class ABPLC implements PLC {
   public static boolean debug;
   public Exception lastException;
 
-  @Override
   public boolean connect(String host) {
       ab_context = new ENIPContext();
       try {
@@ -68,6 +67,10 @@ public class ABPLC implements PLC {
       JFLog.log(e);
       return false;
     }
+  }
+
+  public boolean login(String user, String pass) {
+    return false;
   }
 
   public boolean isConnected() {

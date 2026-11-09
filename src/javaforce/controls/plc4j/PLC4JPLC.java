@@ -62,6 +62,10 @@ public class PLC4JPLC implements PLC {
     return true;
   }
 
+  public boolean login(String user, String pass) {
+    return false;
+  }
+
   public boolean isConnected() {
     return plcConn != null;
   }

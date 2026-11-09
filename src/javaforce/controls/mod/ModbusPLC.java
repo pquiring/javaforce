@@ -49,6 +49,10 @@ public class ModbusPLC implements PLC {
     }
   }
 
+  public boolean login(String user, String pass) {
+    return false;
+  }
+
   public boolean isConnected() {
     if (socket == null) return false;
     return socket.isConnected();

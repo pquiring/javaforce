@@ -14,6 +14,8 @@ public interface PLC {
   public boolean connect(String host);
   /** Disconnects device. */
   public boolean disconnect();
+  /** Login with device if required. */
+  public boolean login(String user, String pass);
   /** Returns true if device is connected. */
   public boolean isConnected();
   /** Returns true if device uses Big Endian byte order. */
