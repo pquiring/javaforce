@@ -10,6 +10,10 @@ import javax.swing.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.controls.*;
+import javaforce.controls.s7.*;
+import javaforce.controls.ab.*;
+import javaforce.controls.mod.*;
+import javaforce.controls.jfc.*;
 
 public class TagDialog extends javax.swing.JDialog {
 
@@ -59,7 +63,7 @@ public class TagDialog extends javax.swing.JDialog {
 
     jLabel1.setText("Type");
 
-    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Siemens", "AllenBradley", "ModBus", "NI", "MIC" }));
+    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Siemens", "AllenBradley", "ModBus", "JFC" }));
     type.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         typeItemStateChanged(evt);
@@ -279,11 +283,10 @@ public class TagDialog extends javax.swing.JDialog {
 
   public void load(Tag in) {
     switch (in.type) {
-      case ControllerType.S7: type.setSelectedIndex(0); break;
-      case ControllerType.AB: type.setSelectedIndex(1); break;
-      case ControllerType.MB: type.setSelectedIndex(2); break;
-//      case ControllerType.NI: type.setSelectedIndex(3); break;
-      case ControllerType.MIC: type.setSelectedIndex(4); break;
+      case S7Driver.name: type.setSelectedIndex(0); break;
+      case ABDriver.name: type.setSelectedIndex(1); break;
+      case ModbusDriver.name: type.setSelectedIndex(2); break;
+      case JFCDriver.name: type.setSelectedIndex(3); break;
     }
     host.setText(in.host);
     tag.setText(in.tag);
@@ -323,11 +326,10 @@ public class TagDialog extends javax.swing.JDialog {
   public boolean save(Tag out) {
     try {
       switch (type.getSelectedIndex()) {
-        case 0: out.type = ControllerType.S7; break;
-        case 1: out.type = ControllerType.AB; break;
-        case 2: out.type = ControllerType.MB; break;
-//        case 3: out.type = ControllerType.NI; break;
-        case 4: out.type = ControllerType.MIC; break;
+        case 0: out.type = PLCFactory.PLC_S7; break;
+        case 1: out.type = PLCFactory.PLC_AB; break;
+        case 2: out.type = PLCFactory.PLC_MB; break;
+        case 3: out.type = PLCFactory.PLC_JFC; break;
       }
       out.host = host.getText();
       out.tag = tag.getText();

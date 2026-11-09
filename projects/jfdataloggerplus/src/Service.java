@@ -180,13 +180,7 @@ public class Service {
       tag.setListener(listener);
       tag.setData("id", query[a][0]);
       tag.host = query[a][1];
-      switch (query[a][2]) {
-        case "JF": tag.type = ControllerType.JF; break;
-        case "S7": tag.type = ControllerType.S7; break;
-        case "AB": tag.type = ControllerType.AB; break;
-        case "MB": tag.type = ControllerType.MB; break;
-//        case "NI": tag.type = ControllerType.NI; break;
-      }
+      tag.type = query[a][2];
       tag.tag = query[a][3];
       switch (query[a][4]) {
         case "bit": tag.size = TagType.bit; break;

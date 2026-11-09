@@ -4,6 +4,10 @@
  */
 
 import javaforce.controls.*;
+import javaforce.controls.s7.*;
+import javaforce.controls.ab.*;
+import javaforce.controls.mod.*;
+import javaforce.controls.jfc.*;
 import javaforce.webui.*;
 import javaforce.webui.panel.*;
 
@@ -28,11 +32,10 @@ public class EditTagPopup extends PopupPanel {
     row.add(label);
     type = new ComboBox();
     row.add(type);
-    type.add("JF", "jfControls");
+    type.add("JFC", "jfControls");
     type.add("S7", "Siemens S7 PLC");
     type.add("AB", "Allen Bradley PLC");
     type.add("MB", "Modbus TCP");
-    type.add("NI", "National Instruments");
 
     row = new Row();
     add(row);
@@ -132,11 +135,10 @@ public class EditTagPopup extends PopupPanel {
 
   public void editTag(Tag intag) {
     switch (intag.type) {
-      case ControllerType.JF: type.setSelectedIndex(0); break;
-      case ControllerType.S7: type.setSelectedIndex(1); break;
-      case ControllerType.AB: type.setSelectedIndex(2); break;
-      case ControllerType.MB: type.setSelectedIndex(3); break;
-//      case ControllerType.NI: type.setSelectedIndex(4); break;
+      case JFCDriver.name: type.setSelectedIndex(0); break;
+      case S7Driver.name: type.setSelectedIndex(1); break;
+      case ABDriver.name: type.setSelectedIndex(2); break;
+      case ModbusDriver.name: type.setSelectedIndex(3); break;
     }
     host.setText(intag.host);
     tag.setText(intag.tag);
@@ -179,11 +181,10 @@ public class EditTagPopup extends PopupPanel {
   public void saveTag(Tag outtag) {
     int ctype = type.getSelectedIndex();
     switch (ctype) {
-      case 0: outtag.type = ControllerType.JF; break;
-      case 1: outtag.type = ControllerType.S7; break;
-      case 2: outtag.type = ControllerType.AB; break;
-      case 3: outtag.type = ControllerType.MB; break;
-//      case 4: outtag.type = ControllerType.NI; break;
+      case 0: outtag.type = PLCFactory.PLC_JFC; break;
+      case 1: outtag.type = PLCFactory.PLC_S7; break;
+      case 2: outtag.type = PLCFactory.PLC_AB; break;
+      case 3: outtag.type = PLCFactory.PLC_MB; break;
     }
     outtag.host = host.getText();
     outtag.tag = tag.getText();

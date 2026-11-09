@@ -8,7 +8,7 @@ import javaforce.controls.*;
  */
 
 public class ABDriver implements PLCDriver {
-  public static String name = "AB";
+  public final static String name = "AB";
   public String getName() {return name;}
   public PLC create() {
     return new ABPLC();

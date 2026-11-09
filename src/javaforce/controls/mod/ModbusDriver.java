@@ -10,7 +10,7 @@ import javaforce.controls.*;
  */
 
 public class ModbusDriver {
-  public static String name = "MB";
+  public final static String name = "MB";
   public String getName() {return name;}
   public PLC create() {
     return new ModbusPLC();

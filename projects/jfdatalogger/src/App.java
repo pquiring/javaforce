@@ -13,6 +13,10 @@ import javax.swing.table.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.controls.*;
+import javaforce.controls.s7.*;
+import javaforce.controls.ab.*;
+import javaforce.controls.mod.*;
+import javaforce.controls.jfc.*;
 
 public class App extends javax.swing.JFrame {
 
@@ -628,12 +632,10 @@ public class App extends javax.swing.JFrame {
     String f[] = data.split("[|]");
     tag.host = f[0];
     switch (f[1]) {
-      case "S7": tag.type = ControllerType.S7; break;
-      case "AB": tag.type = ControllerType.AB; break;
-      case "MB": tag.type = ControllerType.MB; break;
-//      case "NI": tag.type = ControllerType.NI; break;
-      case "JF": tag.type = ControllerType.JF; break;
-      case "MIC": tag.type = ControllerType.MIC; break;
+      case "S7": tag.type = PLCFactory.PLC_S7; break;
+      case "AB": tag.type = PLCFactory.PLC_AB; break;
+      case "MB": tag.type = PLCFactory.PLC_MB; break;
+      case "JFC": tag.type = PLCFactory.PLC_JFC; break;
       default: JFLog.log("Unknown Tag Type:" + f[1]);
     }
     tag.tag = f[2];
@@ -668,15 +670,7 @@ public class App extends javax.swing.JFrame {
   }
 
   public String tag_save_short(Tag tag) {
-    String ctrl = "";
-    switch (tag.type) {
-      case ControllerType.S7: ctrl = "S7"; break;
-      case ControllerType.AB: ctrl = "AB"; break;
-      case ControllerType.MB: ctrl = "MB"; break;
-//      case ControllerType.NI: ctrl = "NI"; break;
-      case ControllerType.JF: ctrl = "JF"; break;
-      case ControllerType.MIC: ctrl = "MIC"; break;
-    }
+    String ctrl = tag.type;
     String size = "";
     switch (tag.size) {
       case TagType.bit: size = "bit"; break;
@@ -691,15 +685,7 @@ public class App extends javax.swing.JFrame {
   }
 
   public String tag_save(Tag tag) {
-    String ctrl = "";
-    switch (tag.type) {
-      case ControllerType.S7: ctrl = "S7"; break;
-      case ControllerType.AB: ctrl = "AB"; break;
-      case ControllerType.MB: ctrl = "MB"; break;
-//      case ControllerType.NI: ctrl = "NI"; break;
-      case ControllerType.JF: ctrl = "JF"; break;
-      case ControllerType.MIC: ctrl = "MIC"; break;
-    }
+    String ctrl = tag.type;
     String size = "";
     switch (tag.size) {
       case TagType.bit: size = "bit"; break;
@@ -1186,9 +1172,7 @@ public class App extends javax.swing.JFrame {
       //create controllers and find fastest timer
       tableModel.setColumnCount(0);
       tableModel.addColumn("timestamp");
-      Controller.rate = 1000 / delay;
       active = true;
-      System.out.println("rate=" + Controller.rate);
       System.gc();  //ensure all prev connections are closed
       int cnt = tags.size();
       triggerValid = trigger.isValid();
@@ -1204,6 +1188,7 @@ public class App extends javax.swing.JFrame {
       //start tag timers
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
+        tag.delay = delay;
         if (SOCKSEnable) {
           tag.setSOCKS(SOCKSHost);
         } else {

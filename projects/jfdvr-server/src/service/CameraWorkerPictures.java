@@ -37,7 +37,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   private boolean isEncoder;
   private boolean isDecoder;
 
-  private Controller controller;
+  private PLC plc;
 
   public Camera getCamera() {
     return camera;
@@ -97,7 +97,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
       last_value = camera.pos_edge;
       while (active) {
         //read tag_trigger until we need to take a picture
-        byte[] data = controller.read(camera.tag_trigger);
+        byte[] data = plc.readTag(camera.tag_trigger);
         if (data == null) {
           JF.sleep(25);
           continue;
@@ -192,14 +192,17 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   //connect to controller
   public boolean connect() {
-    controller = new Controller();
-    return controller.connect(camera.controller);
+    int idx = camera.controller.indexOf(':');
+    String plc_type = camera.controller.substring(0, idx);
+    String plc_host = camera.controller.substring(idx + 1);
+    plc = PLCFactory.create(plc_type);
+    return plc.connect(plc_host);
   }
 
   public void disconnect() {
-    if (controller != null) {
-      controller.disconnect();
-      controller = null;
+    if (plc != null) {
+      plc.disconnect();
+      plc = null;
     }
   }
 
@@ -285,15 +288,15 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   private void take_picture() {
     if (camera.tag_value.length() > 0) {
-      byte[] data = controller.read(camera.tag_value);
+      byte[] data = plc.readTag(camera.tag_value);
       if (data == null) {
         tag_value = "error_";
       } else {
         switch (data.length) {
           case 1: tag_value = Integer.toString(data[0]) + "_"; break;
-          case 2: tag_value = get16(data, controller.isBE()) + "_"; break;
-          case 4: tag_value = get32(data, controller.isBE()) + "_"; break;
-          case 8: tag_value = get64(data, controller.isBE()) + "_"; break;
+          case 2: tag_value = get16(data, plc.isBE()) + "_"; break;
+          case 4: tag_value = get32(data, plc.isBE()) + "_"; break;
+          case 8: tag_value = get64(data, plc.isBE()) + "_"; break;
           default: try {tag_value = new String(data, "UTF-8") + "_";} catch (Exception e) {JFLog.log(e); tag_value = "error_";}
         }
       }
