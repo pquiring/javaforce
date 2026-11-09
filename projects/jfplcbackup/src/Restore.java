@@ -23,8 +23,12 @@ public class Restore {
       usage();
     }
     try {
-      Controller c = new Controller();
-      if (!c.connect(args[0])) {
+      String url = args[0];
+      int idx = url.indexOf(':');
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
+      PLC plc = PLCFactory.create(plc_type);
+      if (!plc.connect(plc_host)) {
         throw new Exception("Error:Controller.connect() failed");
       }
       FileInputStream fis = new FileInputStream(args[2]);
@@ -34,12 +38,12 @@ public class Restore {
       }
       boolean ok = false;
       if (args.length == 4) {
-        Controller.datatype dt = Controller.getDataType(args[3]);
-        ok = c.write(args[1], data, dt);
+        int dt = PLCFactory.getDataType(args[3]);
+        ok = plc.writeTag(args[1], data, dt);
       } else {
-        ok = c.write(args[1], data);
+        ok = plc.writeTag(args[1], data);
       }
-      c.disconnect();
+      plc.disconnect();
       if (ok) {
         System.out.println("Restore complete!");
       } else {

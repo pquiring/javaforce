@@ -8,7 +8,6 @@ package javaforce.controls.jfc;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.controls.Controller;
 
 public class JFPacket {
   public static JFTag decodeAddress(String name) {

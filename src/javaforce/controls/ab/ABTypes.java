@@ -1,6 +1,6 @@
 package javaforce.controls.ab;
 
-/** Allen Bradley Data Types
+/** Allen Bradley Binary Data Types
  *
  * @author pquiring
  */

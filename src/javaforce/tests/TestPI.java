@@ -123,8 +123,8 @@ public class TestPI implements WebUIHandler {
   }
 
   public static void write(String ip, String tag, String value) {
-    Controller c = new Controller();
-    if (!c.connect("MODBUS:" + ip)) {
+    PLC plc = PLCFactory.create(PLCFactory.PLC_MB);
+    if (!plc.connect(ip)) {
       JFLog.log("Error:connect() failed");
       return;
     }
@@ -134,17 +134,17 @@ public class TestPI implements WebUIHandler {
       case "false": break;
       default: BE.setuint16(data, 0, Integer.valueOf(value)); break;
     }
-    c.write(tag, data);
+    plc.writeTag(tag, data);
     JF.sleep(500);
     JFLog.log("write:" + tag + "=" + value);
   }
   public static void read(String ip, String tag) {
-    Controller c = new Controller();
-    if (!c.connect("MODBUS:" + ip)) {
+    PLC plc = PLCFactory.create(PLCFactory.PLC_MB);
+    if (!plc.connect(ip)) {
       JFLog.log("Error:connect() failed");
       return;
     }
-    byte[] data = c.read(tag);
+    byte[] data = plc.readTag(tag);
     if (data == null) {
       JFLog.log("Error:read() == null");
       return;

@@ -69,10 +69,10 @@ public class RemoteController {
     }
     tag.tag = tagBase.name;
     switch (controllerType) {
-      case 0: tag.type = ControllerType.JF; break;
-      case 1: tag.type = ControllerType.S7; break;
-      case 2: tag.type = ControllerType.AB; break;
-      case 3: tag.type = ControllerType.MB; break;
+      case 0: tag.type = PLCFactory.PLC_JFC; break;
+      case 1: tag.type = PLCFactory.PLC_S7; break;
+      case 2: tag.type = PLCFactory.PLC_AB; break;
+      case 3: tag.type = PLCFactory.PLC_MB; break;
 //      case 4: tag.type = ControllerType.NI; break;
       default: JFLog.log("Error:Controller type unknown:" + controllerType);
     }

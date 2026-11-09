@@ -22,22 +22,27 @@ public class Backup {
     }
     if (args.length > 3) {
       if (args[3].equals("debug")) {
-        Controller.debug = true;
+        PLCFactory.debug = true;
       }
     }
     try {
-      Controller c = new Controller();
-      if (!c.connect(args[0])) {
+      String url = args[0];
+      int idx = url.indexOf(':');
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
+      PLC plc = PLCFactory.create(plc_type);
+      if (!plc.connect(plc_host)) {
         throw new Exception("Error:Controller.connect() failed");
       }
-      byte data[] = c.read(args[1]);
+      byte data[] = plc.readTag(args[1]);
       if (data == null) {
-        if (c.lastException != null) {
-          c.lastException.printStackTrace();
+        Exception e = plc.getException();
+        if (e != null) {
+          e.printStackTrace();
         }
         throw new Exception("Error:null data");
       }
-      c.disconnect();
+      plc.disconnect();
       FileOutputStream fis = new FileOutputStream(args[2]);
       fis.write(data);
       fis.close();

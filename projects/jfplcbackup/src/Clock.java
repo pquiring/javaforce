@@ -19,13 +19,17 @@ public class Clock {
       usage();
     }
     try {
-      Controller c = new Controller();
-      if (!c.connect(args[0])) {
+      String url = args[0];
+      int idx = url.indexOf(':');
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
+      PLC plc = PLCFactory.create(plc_type);
+      if (!plc.connect(plc_host)) {
         throw new Exception("Error:Controller.connect() failed");
       }
       switch (args[1]) {
         case "read": {
-          Calendar cal = c.readTime();
+          Calendar cal = plc.getClock();
           if (cal == null) throw new Exception("read failed");
           int year = cal.get(Calendar.YEAR);
           int month = cal.get(Calendar.MONTH) + 1;
@@ -56,7 +60,7 @@ public class Clock {
             cal.set(Calendar.MINUTE, min);
             cal.set(Calendar.SECOND, sec);
           }
-          boolean success = c.writeTime(cal);
+          boolean success = plc.setClock(cal);
           if (!success) throw new Exception("write failed");
           System.out.println("PLC Clock updated!");
           break;
@@ -66,7 +70,7 @@ public class Clock {
           break;
         }
       }
-      c.disconnect();
+      plc.disconnect();
     } catch (Exception e) {
       e.printStackTrace();
     }

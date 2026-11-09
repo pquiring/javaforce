@@ -15,7 +15,7 @@ public class Tag {
   /** Host (usually IP Address) */
   public String host;
   /** Type of host (S7, AB, MB, NI, MIC) See ControllerType */
-  public int type;
+  public String type;
   /** Tag name. */
   public String tag;
   /** Size of tag. See TagType */
@@ -43,7 +43,7 @@ public class Tag {
     user.put(key, value);
   }
   /** Set host,type,tag,size,delay(ms). */
-  public void setTag(String host, int type, String tag, int size, int delay) {
+  public void setTag(String host, String type, String tag, int size, int delay) {
     this.host = host;
     this.type = type;
     this.tag = tag;
@@ -53,13 +53,13 @@ public class Tag {
 
   public boolean isValid() {
     if (size == TagType.unknown) return false;
-    if (type == ControllerType.UNKNOWN) return false;
+    if (type == null) return false;
     if (host == null || host.length() == 0) return false;
     if (host.equalsIgnoreCase("null")) return false;
     return true;
   }
 
-  private Controller c;
+  private PLC plc;
   private String socks;
   private Timer timer;
   private Reader reader;
@@ -78,25 +78,25 @@ public class Tag {
     return size == TagType.float32 || size == TagType.float64;
   }
 
-  /** Returns true is controller is Big Endian byte order. */
+  /** Returns true if controller is Big Endian byte order. */
   public boolean isBE() {
     if (parent != null) {
-      return parent.c.isBE();
+      return parent.plc.isBE();
     }
-    return c.isBE();
+    return plc.isBE();
   }
 
   /** Returns true is controller is Little Endian byte order. */
   public boolean isLE() {
     if (parent != null) {
-      return parent.c.isLE();
+      return parent.plc.isLE();
     }
-    return c.isLE();
+    return plc.isLE();
   }
 
   /** Enables reading multiple tags in one request (currently only S7 supported) */
   public void setMultiRead(boolean state) {
-    if (type != ControllerType.S7) return;
+    if (!type.equals("s7")) return;
     if (true) return;  //TODO!!!
     multiRead = state;
   }
@@ -132,22 +132,14 @@ public class Tag {
   }
 
   public String getURL() {
-    switch (type) {
-      case ControllerType.JF: return "JF:" + host;
-      case ControllerType.S7: return "S7:" + host;
-      case ControllerType.AB: return "AB:" + host;
-      case ControllerType.MB: return "MB:" + host;
-      case ControllerType.MIC: return "MIC:" + host;
-    }
-    JFLog.log("Tag:Error:type unknown:" + type);
-    return null;
+    return type + ":" + host;
   }
 
-  public Controller getController() {
+  public PLC getPLC() {
     if (parent != null) {
-      return parent.c;
+      return parent.plc;
     } else {
-      return c;
+      return plc;
     }
   }
 
@@ -157,9 +149,6 @@ public class Tag {
 
   public String toString() {
     if (!isValid()) return "not set";
-    if (type == ControllerType.MIC) {
-      return "MIC:" + host;
-    }
     if (desc != null && desc.length() > 0) {
       return tag + " - " + desc;
     }
@@ -185,12 +174,11 @@ public class Tag {
   private boolean startTimer() {
     if (parent == null) {
       childData = null;
-      c = new Controller();
       if (socks != null) {
-        c.setSOCKS(socks);
+        PLCFactory.setSOCKS(socks);
       }
     } else {
-      c = null;
+      plc = null;
     }
     timer = new Timer();
     reader = new Reader();
@@ -234,7 +222,8 @@ public class Tag {
 
   public boolean connect() {
     if (parent != null) return false;  //wait for parent to connect
-    if (c.connect(getURL())) return true;
+    plc = PLCFactory.create(type);
+    if (plc.connect(host)) return true;
     return false;
   }
 
@@ -243,9 +232,9 @@ public class Tag {
       parent = null;
       return;
     }
-    if (c != null) {
-      c.disconnect();
-      c = null;
+    if (plc != null) {
+      plc.disconnect();
+      plc = null;
     }
     children.clear();
   }
@@ -312,7 +301,7 @@ public class Tag {
   /** Reads value directly. */
   public byte[] read() {
     if (parent != null) {
-      if (parent.c == null) return null;
+      if (parent.plc == null) return null;
       if (multiRead) {
         return parent.read(childIdx);
       } else {
@@ -320,18 +309,18 @@ public class Tag {
         synchronized(lock) {
           parent.queue(this);
           try {lock.wait();} catch (Exception e) {}
-          return parent.c.read(tag);
+          return parent.plc.readTag(tag);
         }
       }
     } else {
-      if (multiRead && type == ControllerType.S7 && children.size() > 0) {
+      if (multiRead && type.equals("s7") && children.size() > 0) {
         int cnt = children.size();
         String[] tags = new String[cnt+1];
         tags[cnt] = tag;
         for(int a=0;a<cnt;a++) {
           tags[a] = children.get(a).tag;
         }
-        childData = c.read(tags);
+        childData = plc.readTags(tags);
         if (childData == null) return null;
         return childData[cnt];
       } else {
@@ -344,7 +333,7 @@ public class Tag {
             }
           }
         }
-        return c.read(tag);
+        return plc.readTag(tag);
       }
     }
   }
@@ -352,10 +341,10 @@ public class Tag {
   /** Writes data to tag. */
   public void write(byte[] data) {
     if (parent != null) {
-      if (parent.c == null) return;
-      parent.c.write(tag, data);
+      if (parent.plc == null) return;
+      parent.plc.writeTag(tag, data);
     } else {
-      c.write(tag, data);
+      plc.writeTag(tag, data);
     }
   }
 
@@ -371,7 +360,7 @@ public class Tag {
       try {
         String lastValue = tag.value;
         if (tag.parent == null) {
-          if (!tag.c.isConnected()) {
+          if (!tag.plc.isConnected()) {
             if (!tag.connect()) {
               return;
             }

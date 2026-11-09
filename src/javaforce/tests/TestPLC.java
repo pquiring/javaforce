@@ -36,13 +36,16 @@ public class TestPLC {
     try {
       String action = args[0];
       String url = args[1];
+      int idx = url.indexOf(":");
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
       String tag = args[2];
-      Controller c = new Controller();
-      if (!c.connect(url)) {
+      PLC plc = PLCFactory.create(plc_host);
+      if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
       }
-      byte[] data = c.read(tag);
+      byte[] data = plc.readTag(tag);
       if (data == null) {
         System.out.println("read failed");
         return;
@@ -65,11 +68,14 @@ public class TestPLC {
     try {
       String action = args[0];
       String url = args[1];
+      int idx = url.indexOf(":");
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
       String tag = args[2];
       String type = args[3];
       String[] bytes = args[4].split("[,]");
-      Controller c = new Controller();
-      if (!c.connect(url)) {
+      PLC plc = PLCFactory.create(plc_host);
+      if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
       }
@@ -77,8 +83,8 @@ public class TestPLC {
       for(int a=0;a<bytes.length;a++) {
         data[a] = (byte)(int)Integer.valueOf(bytes[a], 16);
       }
-      Controller.datatype dt = Controller.getDataType(type);
-      if (!c.write(tag, data, dt)) {
+      int dt = PLCFactory.getDataType(type);
+      if (!plc.writeTag(tag, data, dt)) {
         System.out.println("write failed");
       } else {
         System.out.println("write ok");
@@ -96,12 +102,15 @@ public class TestPLC {
     try {
       String action = args[0];
       String url = args[1];
-      Controller c = new Controller();
-      if (!c.connect(url)) {
+      int idx = url.indexOf(":");
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
+      PLC plc = PLCFactory.create(plc_host);
+      if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
       }
-      Calendar dt = c.readTime();
+      Calendar dt = plc.getClock();
       if (dt == null) {
         System.out.println("read failed");
         return;
@@ -120,14 +129,17 @@ public class TestPLC {
     try {
       String action = args[0];
       String url = args[1];
+      int idx = url.indexOf(":");
+      String plc_type = url.substring(0, idx);
+      String plc_host = url.substring(idx + 1);
 
       Calendar dt = Calendar.getInstance();
-      Controller c = new Controller();
-      if (!c.connect(url)) {
+      PLC plc = PLCFactory.create(plc_host);
+      if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
       }
-      if (!c.writeTime(dt)) {
+      if (!plc.setClock(dt)) {
         System.out.println("update failed");
       } else {
         System.out.println("update success");

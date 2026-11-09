@@ -148,15 +148,20 @@ public class ABPacket {
     }
   }
 
-  public static byte getType(Controller.datatype type) {
+  /** Converts TagType to ABBinaryType. */
+  public static byte getType(int type) {
     switch (type) {
-      case INTEGER8: return ABTypes.SINT;
-      case INTEGER16: return ABTypes.INT;
-      case INTEGER32: return ABTypes.DINT;
-      case INTEGER64: return ABTypes.LINT;
-      case FLOAT: return ABTypes.REAL;
-      case DOUBLE: return ABTypes.LREAL;
-      case BOOLEAN: return ABTypes.BOOL;
+      case TagType.uint8:
+      case TagType.int8: return ABTypes.SINT;
+      case TagType.uint16:
+      case TagType.int16: return ABTypes.INT;
+      case TagType.uint32:
+      case TagType.int32: return ABTypes.DINT;
+      case TagType.uint64:
+      case TagType.int64: return ABTypes.LINT;
+      case TagType.float32: return ABTypes.REAL;
+      case TagType.float64: return ABTypes.LREAL;
+      case TagType.bit: return ABTypes.BOOL;
     }
     return 0;
   }
