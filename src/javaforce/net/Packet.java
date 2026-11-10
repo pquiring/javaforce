@@ -75,6 +75,17 @@ public class Packet {
     length = 0;
   }
 
+  /** Grow or shrink data buffer. */
+  public void setLength(int new_length) {
+    byte[] new_data = new byte[new_length];
+    int to_copy = data.length;
+    if (data.length > new_data.length) {
+      to_copy = new_data.length;
+    }
+    System.arraycopy(data, 0, new_data, 0, to_copy);
+    data = new_data;
+  }
+
   /** Set Packet Endian.
    * @param value = javaforce.Endian.*
    */
@@ -133,6 +144,12 @@ public class Packet {
     if (offset + buf_length > length) throw new Exception("Buffer underflow");
     System.arraycopy(data, offset, buf, buf_offset, buf_length);
     offset += buf_length;
+  }
+
+  public String readString(int len) throws Exception {
+    byte[] str = new byte[len];
+    read(str);
+    return new String(str);
   }
 
   public void writeByte(byte value) throws Exception {
@@ -204,6 +221,10 @@ public class Packet {
     if (offset > length) {
       length = offset;
     }
+  }
+
+  public void writeString(String str) throws Exception {
+    write(str.getBytes());
   }
 
   public static void setDefaultMTU(int mtu) {
