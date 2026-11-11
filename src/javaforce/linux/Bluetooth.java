@@ -12,6 +12,7 @@ import javaforce.ipc.*;
  * @author pquiring
  */
 
+@Deprecated
 public class Bluetooth {
   private static boolean debug = true;
 

@@ -13,6 +13,7 @@ import javaforce.net.*;
  * @author pquiring
  */
 
+@Deprecated
 public class RDP {
 
   public static boolean debug = true;
