@@ -5,7 +5,7 @@
 # Netbeans is not available in Debian repo
 
 if [ ! -f /opt/netbeans/bin/netbeans ]; then
-  version=31
+  version=32
 
   zip=netbeans-$version-bin.zip
 
