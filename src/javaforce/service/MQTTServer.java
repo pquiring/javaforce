@@ -298,6 +298,7 @@ public class MQTTServer extends ConfigServlet {
   private static int bufsiz = 4096;
 
   public static boolean debug = false;
+  public static boolean debug_conn = true;
   public static boolean debug_auth = false;
   public static boolean debug_msg = false;
 
@@ -511,7 +512,7 @@ public class MQTTServer extends ConfigServlet {
         is = s.getInputStream();
         os = s.getOutputStream();
         ip = s.getInetAddress().getHostAddress();
-        if (debug) JFLog.log("connect:" + ip);
+        if (debug_conn) JFLog.log("connect:" + ip);
         byte[] buf = new byte[bufsiz];
         if (config.user == null || config.pass == null) {
           auth = true;
@@ -553,8 +554,8 @@ public class MQTTServer extends ConfigServlet {
       } catch (Exception e) {
         JFLog.log(e);
       }
-      unsubscribeAll(this);
-      if (debug) JFLog.log("disconnect:" + ip);
+      disconnect();
+      if (debug_conn) JFLog.log("disconnect:" + ip);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
       //totalLength = packet.length
