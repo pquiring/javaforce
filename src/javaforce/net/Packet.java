@@ -84,6 +84,7 @@ public class Packet {
     }
     System.arraycopy(data, 0, new_data, 0, to_copy);
     data = new_data;
+    length = data.length;
   }
 
   /** Set Packet Endian.

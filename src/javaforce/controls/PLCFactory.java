@@ -49,7 +49,10 @@ public class PLCFactory {
   public static PLC create(String name) {
     if (name == null) return null;
     PLCDriver driver = drivers.get(name);
-    if (driver == null) return null;
+    if (driver == null) {
+      JFLog.log("PLCFactory:driver not registered:" + name);
+      return null;
+    }
     return driver.create();
   }
 
