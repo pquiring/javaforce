@@ -20,11 +20,13 @@ public class TestPLC {
       usage();
       return;
     }
-    switch (args[0].toLowerCase()) {
+    String action = args[0].toLowerCase();
+    switch (action) {
       case "readtag": readtag(args); break;
       case "writetag": writetag(args); break;
       case "readtime": readtime(args); break;
       case "writetime": writetime(args); break;
+      default: JFLog.log("Unknown action:" + action); break;
     }
   }
   public static void readtag(String[] args) {
@@ -40,7 +42,7 @@ public class TestPLC {
       String plc_type = url.substring(0, idx);
       String plc_host = url.substring(idx + 1);
       String tag = args[2];
-      PLC plc = PLCFactory.create(plc_host);
+      PLC plc = PLCFactory.create(plc_type);
       if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
@@ -74,7 +76,7 @@ public class TestPLC {
       String tag = args[2];
       String type = args[3];
       String[] bytes = args[4].split("[,]");
-      PLC plc = PLCFactory.create(plc_host);
+      PLC plc = PLCFactory.create(plc_type);
       if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
@@ -105,7 +107,7 @@ public class TestPLC {
       int idx = url.indexOf(":");
       String plc_type = url.substring(0, idx);
       String plc_host = url.substring(idx + 1);
-      PLC plc = PLCFactory.create(plc_host);
+      PLC plc = PLCFactory.create(plc_type);
       if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
@@ -134,7 +136,7 @@ public class TestPLC {
       String plc_host = url.substring(idx + 1);
 
       Calendar dt = Calendar.getInstance();
-      PLC plc = PLCFactory.create(plc_host);
+      PLC plc = PLCFactory.create(plc_type);
       if (!plc.connect(plc_host)) {
         System.out.println("Connection failed");
         return;
