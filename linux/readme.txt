@@ -1,24 +1,12 @@
 jfLinux
 =======
 
-Desc:
+Description
+-----------
   This folder contains scripts to install the JavaForce Linux (jfLinux) package repos.
   jfLinux is a complete desktop environment (DE) using the JavaForce library and related apps.
   The installation script will install the package repo and optionally install the DE.
   Installing the DE is not required to use other JF apps.
-
-Wayland Support (highly experimental):
-  Wayland is now supported using JetBrains Runtime (JBR): https://github.com/JetBrains/JetBrainsRuntime
-  The JBR is a fork of the OpenJDK with Project Wakefield implemented: https://openjdk.org/projects/wakefield/
-  To install the JBRSDK run:
-    wget http://pquiring.github.io/javaforce/linux/install-jbrsdk.sh
-    chmod +x install-jbrsdk.sh
-    ./install-jbrsdk.sh
-  Then install JavaForce including the DE.
-  You'll need to setup a small config file:
-    vi /etc/javaforce.conf
-      wayland=true
-  The DE is very unstable and most X11 features need to be ported to wayland.
 
 Instructions
 ------------
@@ -48,6 +36,20 @@ Currently supported
   fedora : amd64 arm64 (includes centos)
   arch : amd64
 Full details are here : https://pquiring.github.io/repo/javaforce-status.txt
+
+Wayland Support
+---------------
+  Wayland is now supported (highly experimental) using JetBrains Runtime (JBR): https://github.com/JetBrains/JetBrainsRuntime
+  The JBR is a fork of the OpenJDK with Project Wakefield implemented: https://openjdk.org/projects/wakefield/
+  To install the JBRSDK run:
+    wget http://pquiring.github.io/javaforce/linux/install-jbrsdk.sh
+    chmod +x install-jbrsdk.sh
+    ./install-jbrsdk.sh
+  Then install JavaForce including the DE.
+  You'll need to setup a small config file:
+    vi /etc/javaforce.conf
+      wayland=true
+  The DE is very unstable and most X11 features need to be ported to wayland.
 
 key expired
 -----------
