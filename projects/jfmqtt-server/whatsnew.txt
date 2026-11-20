@@ -1,3 +1,6 @@
+2026-11-20 : 0.16 released
+  - fix : ensure clients disconnect properly
+
 2026-11-06 : 0.15 released
   - new : implemented virtual threads for better performance
 
