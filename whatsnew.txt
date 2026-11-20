@@ -1,5 +1,11 @@
 What's new...
 
+Nov 20/2026 : JF/123.0
+  - new : Controls has been split into PLCFactory, PLCDriver and PLC interfaces
+    - this will allow for third party drivers
+  - fix : jfMQTT-Server
+    - ensure clients disconnect properly
+
 Nov 6/2026 : JF/122.0
   - many servers in javaforce.service.* support virtual threads for improved performance
     - MQTTServer/0.15
