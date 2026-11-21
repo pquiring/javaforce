@@ -8,7 +8,7 @@ Description
 JavaForce (JF) is a Java library featuring:
 
   - SIP/VoIP/RTSP
-  - native bindings for FFmpeg, OpenGL, Vulkan, OpenCL and Camera
+  - native API for FFmpeg, OpenGL, Vulkan, OpenCL and Camera via FFM
   - PLC I/O
   - custom native loaders for console apps, desktop apps and system services
   - tasks to package apps (msi, deb, rpm, etc.)
@@ -57,7 +57,7 @@ Next build the native loaders.
 Building native loaders
 -----------------------
 Native loaders are in /native which includes native API for FFmpeg, OpenGL, Vulkan, OpenCL and Camera.
-JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI/FFM.
+JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using FFM.
 The native methods are also placed in a shared library in case you prefer not to use the custom loaders.
 See readme.txt in each platform folder for more info.
 
@@ -70,9 +70,9 @@ Pre-built packages are hosted on sourceforge.net which can be installed through 
 
 JavaForce Ant tasks:
 --------------------
-get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64 (ant may fail to extract zip)
-get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader) (ant may fail to extract zip)
-  ffmpeg-win64 versions 7.1.0, 8.1.1, 9.0.2 are available (you must edit versions.properties)
+get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
+get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader)
+  ffmpeg-win64 versions 7.1.0, 8.1.1, 9.0.2 are available (you must edit versions.properties to match)
 jre-all : pre-link JRE with all modules
 jre-base : pre-link JRE with minimal modules for console apps/services
 jre-base-desktop : pre-link JRE with desktop support
