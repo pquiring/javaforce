@@ -13,18 +13,18 @@ package javaforce.gl.glsl;
 public class VertexShader {
   public static String source =
 "#version 330\n" +
-"attribute vec3 aVertexPosition;\n" +
-"attribute vec2 aTextureCoord1;\n" +
-"attribute vec2 aTextureCoord2;\n" +
+"in vec3 aVertexPosition;\n" +
+"in vec2 aTextureCoord1;\n" +
+"in vec2 aTextureCoord2;\n" +
 "\n" +
 "uniform mat4 uPMatrix;\n" +  //perspective matrix
 "uniform mat4 uVMatrix;\n" +  //view (world) matrix
 "uniform mat4 uMMatrix;\n" +  //model matrix
 "uniform int uUVMaps;\n" +
 "\n" +
-"varying vec2 vTextureCoord1;\n" +
-"varying vec2 vTextureCoord2;\n" +
-"varying float vLength;\n" +
+"out vec2 vTextureCoord1;\n" +
+"out vec2 vTextureCoord2;\n" +
+"out float vLength;\n" +
 "\n" +
 "void main() {\n" +
 "  gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);\n" +  //NOTE:order of matrix multiply matters

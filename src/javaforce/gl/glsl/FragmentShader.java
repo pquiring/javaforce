@@ -13,9 +13,9 @@ package javaforce.gl.glsl;
 public class FragmentShader {
   public static String source =
 "#version 330\n" +
-"varying vec2 vTextureCoord1;\n" +
-"varying vec2 vTextureCoord2;\n" +
-"varying float vLength;\n" +
+"in vec2 vTextureCoord1;\n" +
+"in vec2 vTextureCoord2;\n" +
+"in float vLength;\n" +
 "\n" +
 "uniform sampler2D uSampler1;\n" +
 "uniform sampler2D uSampler2;\n" +
