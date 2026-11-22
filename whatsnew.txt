@@ -1,5 +1,8 @@
 What's new...
 
+Nov 21/2026 : JF/123.1
+  - fix : Linux loader NPE when checking for aotcache when running as a service
+
 Nov 20/2026 : JF/123.0
   - new : Controls has been split into PLCFactory, PLCDriver and PLC interfaces
     - this will allow for third party drivers

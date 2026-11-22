@@ -1,5 +1,8 @@
 what's new in native API (since 113.0)
 
+123.1
+  - fix : Linux loader NPE when looking for aotcache when running as a service
+
 122.0
   - new : added support for AOTCache
 
