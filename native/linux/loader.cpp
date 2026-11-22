@@ -654,7 +654,9 @@ bool try_jvm() {
 }
 
 bool try_aot() {
-  strcat(aotcache, getenv("HOME"));
+  char* home = getenv("HOME");
+  if (home == NULL) return 0;
+  strcat(aotcache, home);
   strcat(aotcache, "\\cache\\");
   char* module = strrchr(g_argv[0], '/');
   if (module == NULL) {
