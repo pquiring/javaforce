@@ -1,1 +1,1 @@
-#define JF_ABI_VERSION "123.1"
+#define JF_ABI_VERSION "123.2"

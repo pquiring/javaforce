@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 123.1
+Version 123.2
 
 Description
 ===========

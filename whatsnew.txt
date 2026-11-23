@@ -1,6 +1,11 @@
 What's new...
 
-Nov 21/2026 : JF/123.1
+Nov 23/2026 : JF/123.2
+  - jfMQTT-Server/0.17
+    - fix : UNSUB with wildcards
+    - fix : support SUB to future topics
+
+Nov 22/2026 : JF/123.1
   - fix : Linux loader NPE when checking for aotcache when running as a service
 
 Nov 20/2026 : JF/123.0
