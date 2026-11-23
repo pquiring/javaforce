@@ -2188,4 +2188,29 @@ public class JF {
   public static boolean isDerivedFrom(Class<?> superCls, Class<?> baseCls) {
     return baseCls.isAssignableFrom(superCls);
   }
+
+  /** Generate thread dump for all running threads. */
+  public static String generateThreadDump() {
+    StringBuilder dump = new StringBuilder();
+    ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+
+    // true, true captures locked monitors and ownable synchronizers (just like VisualVM)
+    ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
+
+    for (ThreadInfo threadInfo : threadInfos) {
+      // ThreadInfo.toString() formats the stack trace, state, and locks in standard JVM style
+      dump.append(threadInfo.toString());
+    }
+
+    // Optional: Check for deadlocks just like VisualVM does
+    long[] deadlockedThreads = threadMXBean.findDeadlockedThreads();
+    if (deadlockedThreads != null) {
+      dump.append("\nFound deadlock:\n");
+      for (ThreadInfo info : threadMXBean.getThreadInfo(deadlockedThreads, true, true)) {
+        dump.append(info.toString());
+      }
+    }
+
+    return dump.toString();
+  }
 }
