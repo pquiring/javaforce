@@ -40,6 +40,8 @@ public class MQTTServer extends ConfigServlet {
     for(String arg : args) {
       switch (arg) {
         case "debug": debug = true; JFLog.log("debug enabled"); break;
+        case "debug_conn": debug_conn = true; JFLog.log("debug conn enabled"); break;
+        case "debug_sub": debug_sub = true; JFLog.log("debug sub enabled"); break;
         case "debug_auth": debug_auth = true; JFLog.log("debug auth enabled"); break;
         case "debug_msg": debug_msg = true; JFLog.log("debug messages enabled");break;
       }
@@ -47,6 +49,7 @@ public class MQTTServer extends ConfigServlet {
   }
 
   public static void serviceStop() {
+    JFLog.log("MQTT : Stopping service");
     if (service != null) {
       service.stop();
       service = null;
@@ -245,6 +248,9 @@ public class MQTTServer extends ConfigServlet {
       synchronized (lock) {
         subs.add(client);
       }
+      if (debug_sub) {
+        JFLog.log("Topic:" + name + ":subscribe:" + client + ":count=" + subs.size());
+      }
       if (value != null) {
         try {client.publish(name, value, QOS_0);} catch (Exception e) {}
       }
@@ -252,6 +258,9 @@ public class MQTTServer extends ConfigServlet {
     public void unsubscribe(Client client) {
       synchronized (lock) {
         subs.remove(client);
+      }
+      if (debug_sub) {
+        JFLog.log("Topic:" + name + ":unsubscribe:" + client + ":count=" + subs.size());
       }
     }
     public boolean matches(String topic) {
@@ -301,6 +310,7 @@ public class MQTTServer extends ConfigServlet {
   public static boolean debug_conn = true;
   public static boolean debug_auth = false;
   public static boolean debug_msg = false;
+  public static boolean debug_sub = false;
 
   private class Server extends Thread {
     public boolean active;
@@ -308,6 +318,7 @@ public class MQTTServer extends ConfigServlet {
       active = true;
       try {
         JFLog.append(getLogFile(), true);
+        JFLog.log("MQTT : Starting service");
         config = loadConfig();
         loadKeys();
         if (config.forward != null) {
@@ -391,7 +402,10 @@ public class MQTTServer extends ConfigServlet {
     }
   }
 
-  private Topic getTopic(String name) {
+  private Topic getTopic(String name) throws Exception {
+    if (hasWildcard(name)) {
+      throw new Exception("Topic can not include wildcard char:" + name);
+    }
     synchronized (lock) {
       Topic topic = topics.get(name);
       if (topic != null) return topic;
@@ -414,6 +428,9 @@ public class MQTTServer extends ConfigServlet {
   }
 
   private void unsubscribeAll(Client client) {
+    if (debug_sub) {
+      JFLog.log("unsubscribeAll:" + client);
+    }
     synchronized (lock) {
       Topic[] alltopics = (Topic[])topics.values().toArray(Topic.TopicArrayType);
       for(Topic topic : alltopics) {
@@ -499,6 +516,7 @@ public class MQTTServer extends ConfigServlet {
     public InputStream is;
     public OutputStream os;
     public String ip;
+    public int port;
     public boolean client_active = true;
     public String client_id;
     public boolean auth;
@@ -512,7 +530,8 @@ public class MQTTServer extends ConfigServlet {
         is = s.getInputStream();
         os = s.getOutputStream();
         ip = s.getInetAddress().getHostAddress();
-        if (debug_conn) JFLog.log("connect:" + ip);
+        port = s.getPort();
+        if (debug_conn) JFLog.log("connect:" + ip + ":" + port);
         byte[] buf = new byte[bufsiz];
         if (config.user == null || config.pass == null) {
           auth = true;
@@ -555,7 +574,7 @@ public class MQTTServer extends ConfigServlet {
         JFLog.log(e);
       }
       disconnect();
-      if (debug_conn) JFLog.log("disconnect:" + ip);
+      if (debug_conn) JFLog.log("disconnect:" + ip + ":" + port);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
       //totalLength = packet.length
@@ -675,7 +694,7 @@ public class MQTTServer extends ConfigServlet {
           msgLength = totalLength - pos;
           if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
           msg = new String(packet, pos, msgLength);
-          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg);
+          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + port + ";topic=" + topic_name + ":msg=" + msg);
           Topic topic = getTopic(topic_name);
           topic.publish(msg, retain);
           switch (qos) {
@@ -770,7 +789,7 @@ public class MQTTServer extends ConfigServlet {
               Topic topic = getTopic(topic_name);
               topic.subscribe(this);
             }
-            if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + topic_name);
+            if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + port + ";topic=" + topic_name);
             if (events != null) {
               events.onSubscribe(topic_name);
             }
@@ -807,9 +826,16 @@ public class MQTTServer extends ConfigServlet {
             if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
             topic_name = getString(packet, pos, topicLength);
             pos += topicLength;
-            Topic topic = getTopic(topic_name);
-            topic.unsubscribe(this);
-            if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + topic_name);
+            if (hasWildcard(topic_name)) {
+              Topic[] topics = getTopics(topic_name);
+              for(Topic topic : topics) {
+                topic.unsubscribe(this);
+              }
+            } else {
+              Topic topic = getTopic(topic_name);
+              topic.unsubscribe(this);
+            }
+            if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + port + ";topic=" + topic_name);
           }
           reply = new byte[4];
           reply[0] = (byte)(CMD_UNSUBSCRIBE_ACK << 4);
@@ -826,7 +852,7 @@ public class MQTTServer extends ConfigServlet {
           reply = new byte[2];
           reply[0] = (byte)(CMD_PONG << 4);
 //          setPacketLength(reply);  //zero
-          if (debug_msg) JFLog.log("PING:" + ip);
+          if (debug_msg) JFLog.log("PING:" + ip + ":" + port);
           break;
         case CMD_DISCONNECT:
           disconnect();
@@ -939,6 +965,10 @@ public class MQTTServer extends ConfigServlet {
 
     private void setStringLength(byte[] data, int offset, short length) {
       BE.setuint16(data, offset, length);
+    }
+
+    public String toString() {
+      return "Client:ip=" + ip + ":" + port;
     }
   }
 

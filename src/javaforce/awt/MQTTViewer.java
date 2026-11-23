@@ -302,11 +302,14 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private KeyMgmt keys;
   private boolean connected;
   private KeepAlive keepalive;
+  private Object lock = new Object();
 
   private static String[] args;
 
   public void addText(String msg) {
-    msgs.setText(msgs.getText() + msg);
+    synchronized (lock) {
+      msgs.setText(msgs.getText() + msg);
+    }
   }
 
   public void onConnect() {
@@ -370,6 +373,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
         return;
       }
     }
+    client.setListener(this);
     if (authenticate.isSelected()) {
       String _user = username.getText();
       String _pass = password.getText();
@@ -378,7 +382,6 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       client.connect();
     }
     msgs.setText("Connected to " + _server + "\r\n");
-    client.setListener(this);
     start.setText("Stop");
     setState(false);
   }
