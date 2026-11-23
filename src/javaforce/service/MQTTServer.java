@@ -80,13 +80,11 @@ public class MQTTServer extends ConfigServlet {
   public void stop() {
     if (server == null) return;
     server.active = false;
-    synchronized(lock) {
-      ServerWorker[] sa = servers.toArray(new ServerWorker[0]);
-      for(ServerWorker s : sa) {
-        s.close();
-      }
-      servers.clear();
+    ServerWorker[] sa = servers.toArray(new ServerWorker[0]);
+    for(ServerWorker s : sa) {
+      s.close();
     }
+    servers.clear();
     if (forwarder != null) {
       forwarder.stop();
       forwarder = null;
@@ -221,11 +219,42 @@ public class MQTTServer extends ConfigServlet {
     return false;
   }
 
+  public static boolean matches(String topic, String wildcard) {
+    String[] ts = topic.split("[/]");
+    String[] ws = wildcard.split("[/]");
+    int ti = 0;
+    int wi = 0;
+    for(;ti<ts.length;ti++) {
+      String t = ts[ti];
+      if (wi == ws.length) return false;
+      String w = ws[wi];
+      wi++;
+      if (w.equals(wildcard_single_level)) {
+        //match any section
+        continue;
+      }
+      if (w.equals(wildcard_multi_level)) {
+        //match remainder
+        return true;
+      }
+      if (!t.equals(w)) {
+        //section does not match
+        return false;
+      }
+    }
+    if (wi != ws.length) {
+      String w = ws[wi];
+      if (w.equals(wildcard_multi_level)) return true;
+      return false;
+    }
+    return true;
+  }
+
   private static class Topic {
     private String name;
     private String value;  //retained value
-    private ArrayList<Client> subs = new ArrayList<>();
-    private Object lock = new Object();
+    private ArrayList<Client> client_subs = new ArrayList<>();
+    private Object topic_lock = new Object();
     public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
       this.name = name;
@@ -234,8 +263,8 @@ public class MQTTServer extends ConfigServlet {
       if (retain) {
         this.value = value;
       }
-      synchronized (lock) {
-        for(Client sub : subs.toArray(ClientArrayType)) {
+      synchronized (topic_lock) {
+        for(Client sub : client_subs.toArray(ClientArrayType)) {
           try {
             sub.publish(name, value, QOS_0);
           } catch (Exception e) {
@@ -245,60 +274,35 @@ public class MQTTServer extends ConfigServlet {
       }
     }
     public void subscribe(Client client) {
-      synchronized (lock) {
-        subs.add(client);
+      synchronized (topic_lock) {
+        client_subs.add(client);
       }
       if (debug_sub) {
-        JFLog.log("Topic:" + name + ":subscribe:" + client + ":count=" + subs.size());
+        JFLog.log("Topic:" + name + ":subscribe:" + client + ":count=" + client_subs.size());
       }
       if (value != null) {
         try {client.publish(name, value, QOS_0);} catch (Exception e) {}
       }
     }
     public void unsubscribe(Client client) {
-      synchronized (lock) {
-        subs.remove(client);
+      synchronized (topic_lock) {
+        client_subs.remove(client);
       }
       if (debug_sub) {
-        JFLog.log("Topic:" + name + ":unsubscribe:" + client + ":count=" + subs.size());
+        JFLog.log("Topic:" + name + ":unsubscribe:" + client + ":count=" + client_subs.size());
       }
     }
-    public boolean matches(String topic) {
-      String[] ns = name.split("[/]");
-      String[] ws = topic.split("[/]");
-      int ni = 0;
-      int wi = 0;
-      for(;ni<ns.length;ni++) {
-        String n = ns[ni];
-        if (wi == ws.length) return false;
-        String w = ws[wi];
-        wi++;
-        if (w.equals(wildcard_single_level)) {
-          //match any section
-          continue;
-        }
-        if (w.equals(wildcard_multi_level)) {
-          //match remainder
-          return true;
-        }
-        if (!n.equals(w)) {
-          //section does not match
-          return false;
-        }
-      }
-      if (wi != ws.length) {
-        String w = ws[wi];
-        if (w.equals(wildcard_multi_level)) return true;
-        return false;
-      }
-      return true;
+    public boolean matches(String wildcard) {
+      return MQTTServer.matches(name, wildcard);
     }
   }
 
   private Server server;
   private Config config;
-  private Object lock = new Object();
+  private Object topics_lock = new Object();
   private HashMap<String, Topic> topics = new HashMap<>();
+  private Object clients_lock = new Object();
+  private ArrayList<Client> clients = new ArrayList<>();
   private MQTTEvents events;
   private KeyMgmt keys;
 
@@ -402,22 +406,42 @@ public class MQTTServer extends ConfigServlet {
     }
   }
 
+  /** Return clients that have subscribed to topic. */
+  private Client[] getClients(String topic) {
+    ArrayList<Client> list = new ArrayList<>();
+    synchronized (clients_lock) {
+      for(Client client : clients) {
+        if (client.subscribed(topic)) {
+          list.add(client);
+        }
+      }
+    }
+    return list.toArray(ClientArrayType);
+  }
+
+  /** Get a Topic based on topic name. */
   private Topic getTopic(String name) throws Exception {
     if (hasWildcard(name)) {
       throw new Exception("Topic can not include wildcard char:" + name);
     }
-    synchronized (lock) {
+    synchronized (topics_lock) {
       Topic topic = topics.get(name);
       if (topic != null) return topic;
       topic = new Topic(name);
+      //subscribe any clients that have subscribed to topic in the past
+      Client[] clients = getClients(name);
+      for(Client client : clients) {
+        topic.subscribe(client);
+      }
       topics.put(name, topic);
       return topic;
     }
   }
 
+  /** Return all topics that match wildcards. */
   private Topic[] getTopics(String wc) {
     ArrayList<Topic> topics_sub = new ArrayList<>();
-    synchronized (lock) {
+    synchronized (topics_lock) {
       for(Topic topic : topics.values().toArray(Topic.TopicArrayType)) {
         if (topic.matches(wc)) {
           topics_sub.add(topic);
@@ -431,7 +455,7 @@ public class MQTTServer extends ConfigServlet {
     if (debug_sub) {
       JFLog.log("unsubscribeAll:" + client);
     }
-    synchronized (lock) {
+    synchronized (topics_lock) {
       Topic[] alltopics = (Topic[])topics.values().toArray(Topic.TopicArrayType);
       for(Topic topic : alltopics) {
         topic.unsubscribe(client);
@@ -522,10 +546,15 @@ public class MQTTServer extends ConfigServlet {
     public boolean auth;
     public int ver = 4;
     public int keep_alive;
+    public Object subs_lock = new Object();
+    public ArrayList<String> subs = new ArrayList<>();
     public Client(Socket s) {
       this.s = s;
     }
     public void run() {
+      synchronized (clients_lock) {
+        clients.add(this);
+      }
       try {
         is = s.getInputStream();
         os = s.getOutputStream();
@@ -572,6 +601,9 @@ public class MQTTServer extends ConfigServlet {
       } catch (SocketException se) {
       } catch (Exception e) {
         JFLog.log(e);
+      }
+      synchronized (clients_lock) {
+        clients.remove(this);
       }
       disconnect();
       if (debug_conn) JFLog.log("disconnect:" + ip + ":" + port);
@@ -780,6 +812,9 @@ public class MQTTServer extends ConfigServlet {
             pos += 2;
             topic_name = getString(packet, pos, topicLength);
             pos += topicLength;
+            synchronized (subs_lock) {
+              subs.add(topic_name);
+            }
             if (hasWildcard(topic_name)) {
               Topic[] topics = getTopics(topic_name);
               for(Topic topic : topics) {
@@ -826,6 +861,9 @@ public class MQTTServer extends ConfigServlet {
             if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
             topic_name = getString(packet, pos, topicLength);
             pos += topicLength;
+            synchronized (subs_lock) {
+              subs.remove(topic_name);
+            }
             if (hasWildcard(topic_name)) {
               Topic[] topics = getTopics(topic_name);
               for(Topic topic : topics) {
@@ -965,6 +1003,15 @@ public class MQTTServer extends ConfigServlet {
 
     private void setStringLength(byte[] data, int offset, short length) {
       BE.setuint16(data, offset, length);
+    }
+
+    private boolean subscribed(String topic) {
+      synchronized (subs_lock) {
+        for(String sub : subs) {
+          if (matches(topic, sub)) return true;
+        }
+      }
+      return false;
     }
 
     public String toString() {
