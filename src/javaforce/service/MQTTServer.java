@@ -275,6 +275,7 @@ public class MQTTServer extends ConfigServlet {
     }
     public void subscribe(Client client) {
       synchronized (topic_lock) {
+        if (client_subs.contains(client)) return;
         client_subs.add(client);
       }
       if (debug_sub) {
@@ -813,7 +814,9 @@ public class MQTTServer extends ConfigServlet {
             topic_name = getString(packet, pos, topicLength);
             pos += topicLength;
             synchronized (subs_lock) {
-              subs.add(topic_name);
+              if (!subs.contains(topic_name)) {
+                subs.add(topic_name);
+              }
             }
             if (hasWildcard(topic_name)) {
               Topic[] topics = getTopics(topic_name);
