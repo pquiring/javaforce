@@ -1,4 +1,4 @@
-<project name="jfmqtt-viewer" basedir=".">
+<project name="jfmqtt-viewer" default="jar" basedir=".">
   <description>MQTT Viewer</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfmqtt-viewer"/>
@@ -9,7 +9,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives">
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
