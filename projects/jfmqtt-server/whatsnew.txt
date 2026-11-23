@@ -1,3 +1,7 @@
+2026-11-23 : 0.17 released
+  - fix : UNSUB with wildcards
+  - fix : support SUB to future topics
+
 2026-11-20 : 0.16 released
   - fix : ensure clients disconnect properly
 
