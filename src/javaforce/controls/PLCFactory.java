@@ -30,6 +30,7 @@ public class PLCFactory {
   public final static String PLC_MB = ModbusDriver.name;
   public final static String PLC_JFC = JFCDriver.name;
   public final static String PLC_PLC4J = PLC4JDriver.name;
+  public final static String PLC_OPCUA = OPCUADriver.name;
 
   static {
     //register default PLC Drivers

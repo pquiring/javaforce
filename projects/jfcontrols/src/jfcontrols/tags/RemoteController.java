@@ -73,7 +73,8 @@ public class RemoteController {
       case 1: tag.type = PLCFactory.PLC_S7; break;
       case 2: tag.type = PLCFactory.PLC_AB; break;
       case 3: tag.type = PLCFactory.PLC_MB; break;
-//      case 4: tag.type = ControllerType.NI; break;
+      case 4: tag.type = PLCFactory.PLC_OPCUA; break;
+      case 5: tag.type = PLCFactory.PLC_PLC4J; break;
       default: JFLog.log("Error:Controller type unknown:" + controllerType);
     }
     map.put(tagBase.name, tagBase);

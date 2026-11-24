@@ -8,9 +8,10 @@ import javaforce.controls.*;
  */
 
 public class OPCUADriver implements PLCDriver {
+  public final static String name = "PLC4J";
 
   public String getName() {
-    return "OPCUA";
+    return name;
   }
 
   public PLC create() {

@@ -216,7 +216,8 @@ public class Database {
     list.add(new ListRow(1, "S7"));
     list.add(new ListRow(2, "AB"));
     list.add(new ListRow(3, "MB"));
-    list.add(new ListRow(4, "NI"));
+    list.add(new ListRow(4, "OPCUA"));
+    list.add(new ListRow(5, "PLC4J"));
     list.save();
 
     list = addList("jfc_ctrl_speed");
