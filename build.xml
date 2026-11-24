@@ -59,7 +59,8 @@
 
   <available property="have-stb" file="native/stb/stb_truetype.h"/>
   <target name="get-stb" unless="have-stb" description="download stb">
-    <exec command="git clone -q https://github.com/nothings/stb.git native/stb"/>
+    <exec command="git clone -q https://github.com/pquiring/stb.git native/stb"/>
+    <exec command="git checkout -q tags/${stb-version}" dir="native/stb"/>
   </target>
 
   <target name="update-stb" description="update stb">
