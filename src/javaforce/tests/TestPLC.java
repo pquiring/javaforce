@@ -21,7 +21,6 @@ public class TestPLC {
       usage();
       return;
     }
-    PLCFactory.registerDriver(new OPCUADriver());
     OPCUAPLC.setPort(OPCUAPLC.PORT_IGNITION);
     String action = args[0].toLowerCase();
     switch (action) {

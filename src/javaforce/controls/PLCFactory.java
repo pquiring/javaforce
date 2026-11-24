@@ -8,6 +8,7 @@ import javaforce.controls.ab.*;
 import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
 import javaforce.controls.jfc.*;
+import javaforce.controls.opcua.*;
 import javaforce.controls.plc4j.*;
 
 /** PLC "Factory".
@@ -36,6 +37,7 @@ public class PLCFactory {
     registerDriver(new S7Driver());
     registerDriver(new ModbusDriver());
     registerDriver(new JFCDriver());
+    registerDriver(new OPCUADriver());
     registerDriver(new PLC4JDriver());
   }
 
