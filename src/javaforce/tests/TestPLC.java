@@ -4,6 +4,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.controls.*;
+import javaforce.controls.opcua.*;
 
 /** Test PLC (Controller)
  *
@@ -20,6 +21,8 @@ public class TestPLC {
       usage();
       return;
     }
+    PLCFactory.registerDriver(new OPCUADriver());
+    OPCUAPLC.setPort(OPCUAPLC.PORT_IGNITION);
     String action = args[0].toLowerCase();
     switch (action) {
       case "readtag": readtag(args); break;
@@ -56,6 +59,7 @@ public class TestPLC {
       for(int a=0;a<data.length;a++) {
         System.out.print(String.format("%02d,", data[a] & 0xff));
       }
+      plc.disconnect();
     } catch (Throwable t) {
       JFLog.log(t);
     }
@@ -91,6 +95,7 @@ public class TestPLC {
       } else {
         System.out.println("write ok");
       }
+      plc.disconnect();
     } catch (Throwable t) {
       JFLog.log(t);
     }
@@ -118,6 +123,7 @@ public class TestPLC {
         return;
       }
       JFLog.log("time=" + JF.Date2String(dt) + " " + JF.Time2String(dt));
+      plc.disconnect();
     } catch (Throwable t) {
       JFLog.log(t);
     }
@@ -146,6 +152,7 @@ public class TestPLC {
       } else {
         System.out.println("update success");
       }
+      plc.disconnect();
     } catch (Throwable t) {
       JFLog.log(t);
     }
