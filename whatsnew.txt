@@ -1,5 +1,10 @@
 What's new...
 
+Nov 24/2026 : JF/123.3
+  - fix : remove obsolete linux deps
+  - new : upgrade to ffmpeg/9.1 (windows)
+  - new : use stb fork with known releases to avoid "surprises"
+
 Nov 23/2026 : JF/123.2
   - jfMQTT-Server/0.17
     - fix : UNSUB with wildcards
