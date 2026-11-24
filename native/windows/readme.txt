@@ -42,9 +42,10 @@ Compiling using ffmpeg downloaded manually
     - you do not need to make it, only the headers are needed
   - run ant
   - you'll need to find shared libraries from ffmpeg.org and extract to ../../ffmpeg-bin/${ffmpeg-version}
+    - see https://www.gyan.dev/ffmpeg/builds/
   - I don't recommend trying to compile ffmpeg yourself
-  - update ffmpeg-version in ../../versions.xml to match
-  - JavaForce currently requires ffmpeg/5.1 or higher
+  - update ffmpeg-version in ../../versions.properties to match
+  - JavaForce currently requires ffmpeg/7.1 or higher
 
 Downloading pre-built binaries
 ------------------------------

@@ -94,6 +94,22 @@
     <unzip src="ffmpeg-win64-src-${ffmpeg-version}.zip" dest="ffmpeg-src"/>
   </target>
 
+  <target name="zip-ffmpeg-win64-bin" description="zip ffmpeg for win64">
+    <zip destfile="${home}/ffmpeg-win64-bin-${ffmpeg-version}.zip">
+      <fileset dir="ffmpeg-bin/${ffmpeg-version}">
+        <include name="*.dll"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="zip-ffmpeg-win64-src" description="zip ffmpeg for win64">
+    <zip destfile="${home}/ffmpeg-win64-src-${ffmpeg-version}.zip">
+      <fileset dir="ffmpeg-src/${ffmpeg-version}">
+        <include name="**/*"/>
+      </fileset>
+    </zip>
+  </target>
+
   <available property="have-repo" file="repo/readme.txt"/>
   <target name="get-repo" unless="have-repo" description="download repo">
     <exec command="git clone -q https://github.com/pquiring/repo"/>
